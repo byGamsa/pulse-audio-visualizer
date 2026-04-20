@@ -1,0 +1,129 @@
+@import 'tailwindcss';
+
+/* Spacing-Utilities sind in Pixeln benannt (p-16 = 16px) */
+@theme {
+  /* Colors */
+  --color-studio-black: #101012;
+  --color-deep-anvil: #17171a;
+  --color-pure-ink: #000000;
+  --color-warm-cream: #f7f4ef;
+  --color-bone: #ffffff;
+  --color-smoke: #c2c2c1;
+  --color-ember-coral: #fd429c;
+  --color-dusk-wash: #8a2a3a;
+
+  /* Typography: Inter und Instrument Serif als Fallback */
+  --font-neue-montreal: 'Neue Montreal', 'Inter Variable', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-editorial-new: 'Editorial New', 'Instrument Serif', 'GT Sectra', Georgia, serif;
+
+  /* Typography — Scale */
+  --text-caption: 12px;
+  --leading-caption: 1.5;
+  --text-body-sm: 14px;
+  --leading-body-sm: 1.55;
+  --text-body: 16px;
+  --leading-body: 1.5;
+  --text-subheading: 20px;
+  --leading-subheading: 1.4;
+  --tracking-subheading: -0.26px;
+  --text-heading-sm: 24px;
+  --leading-heading-sm: 1.33;
+  --tracking-heading-sm: -0.31px;
+  --text-heading: 40px;
+  --leading-heading: 1.14;
+  --tracking-heading: -1.04px;
+  --text-heading-lg: 72px;
+  --leading-heading-lg: 1;
+  --tracking-heading-lg: -1.87px;
+  --text-display: 140px;
+  --leading-display: 0.87;
+  --tracking-display: -3.64px;
+
+  /* Spacing */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  --spacing-60: 60px;
+  --spacing-64: 64px;
+  --spacing-72: 72px;
+  --spacing-80: 80px;
+  --spacing-100: 100px;
+  --spacing-104: 104px;
+  --spacing-120: 120px;
+
+  /* Border Radius */
+  --radius-md: 6px;
+  --radius-xl: 12px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+
+  /* Shadows */
+  --shadow-xl: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px;
+
+  /* Animationen über transform, nicht über translate */
+  --animate-rise: rise 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-slide-in: slide-in 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-fade-in: fade-in 0.5s ease;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateX(12px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+@layer base {
+  :root { color-scheme: dark; }
+  html, body, #root { height: 100%; overflow: hidden; }
+  body {
+    @apply bg-studio-black font-neue-montreal text-body-sm font-light text-warm-cream antialiased;
+  }
+  button { cursor: pointer; }
+  :focus-visible { outline: 1px solid rgb(247 244 239 / 0.6); outline-offset: 2px; }
+}
+
+/* Range-Slider braucht Pseudo-Elemente */
+@layer components {
+  .range {
+    appearance: none;
+    display: block;
+    width: 100%;
+    height: 16px;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .range::-webkit-slider-runnable-track {
+    height: 2px;
+    border-radius: 1px;
+    background:
+      linear-gradient(var(--color-warm-cream), var(--color-warm-cream)) 0 / var(--p) 100% no-repeat,
+      rgb(255 255 255 / 0.12);
+  }
+  .range::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    margin-top: -5px;
+    border-radius: 9999px;
+    background: var(--color-warm-cream);
+    transition: transform 0.15s ease;
+  }
+  .range:hover::-webkit-slider-thumb { transform: scale(1.2); }
+  .range::-moz-range-track { height: 2px; background: rgb(255 255 255 / 0.12); }
+  .range::-moz-range-progress { height: 2px; background: var(--color-warm-cream); }
+  .range::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 9999px; background: var(--color-warm-cream); }
+}
