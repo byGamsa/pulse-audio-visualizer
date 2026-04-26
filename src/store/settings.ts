@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { TransitionChoice } from '../engine/transitions';
 
 export interface AudioSettings {
   // Verstärkung vor dem Auto-Gain
@@ -39,6 +40,7 @@ export interface PlaybackSettings {
   // Sekunden bis zum nächsten Modus
   switchInterval: number;
   transitionDuration: number;
+  transition: TransitionChoice;
 }
 
 export interface UiSettings {
@@ -88,6 +90,7 @@ const defaults = {
     autoSwitch: true,
     switchInterval: 120,
     transitionDuration: 2.5,
+    transition: 'auto' as TransitionChoice,
   } satisfies PlaybackSettings,
   ui: {
     showHud: true,
