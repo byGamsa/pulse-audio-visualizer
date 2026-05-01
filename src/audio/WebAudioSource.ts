@@ -43,6 +43,11 @@ class AnalysisGraph {
     this.kick = mk(1024);
 
     const splitter = ctx.createChannelSplitter(2);
+    // Mono auf Stereo hochmischen, sonst ist rechts still
+    const stereo = ctx.createGain();
+    stereo.channelCount = 2;
+    stereo.channelCountMode = 'explicit';
+    stereo.channelInterpretation = 'speakers';
     const lowpass = ctx.createBiquadFilter();
     lowpass.type = 'lowpass';
     lowpass.frequency.value = 140;
@@ -50,11 +55,11 @@ class AnalysisGraph {
 
     input.connect(this.low);
     input.connect(this.high);
-    input.connect(splitter);
+    input.connect(stereo).connect(splitter);
     splitter.connect(this.left, 0);
     splitter.connect(this.right, 1);
     input.connect(lowpass).connect(this.kick);
-    this.nodes = [this.low, this.high, this.left, this.right, this.kick, splitter, lowpass];
+    this.nodes = [this.low, this.high, this.left, this.right, this.kick, splitter, stereo, lowpass];
 
     this.lowDb = new Float32Array(this.low.frequencyBinCount);
     this.highDb = new Float32Array(this.high.frequencyBinCount);
