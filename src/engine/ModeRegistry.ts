@@ -19,6 +19,11 @@ export const MODES: RegistryEntry[] = [
       description: 'Nordlicht über einem stillen See. Die Mitten bewegen die Vorhänge.' },
     () => import('../modes/aurora').then((m) => m.default),
   ),
+  mode(
+    { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
+      description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
+    () => import('../modes/liquid-gradient').then((m) => m.default),
+  ),
 ];
 
 export function findMode(id: string): RegistryEntry {

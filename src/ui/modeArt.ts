@@ -7,6 +7,10 @@ const ART: Record<string, string> = {
     'radial-gradient(circle at 50% 50%, #f7f4ef 0 6%, transparent 7%), ' +
     'radial-gradient(circle at 50% 50%, transparent 0 30%, #f3c9a8 31% 33%, transparent 35%), ' +
     'radial-gradient(circle at 50% 50%, #5a2236 0%, #1a0f14 70%)',
+  'liquid-gradient':
+    'radial-gradient(circle at 25% 30%, #d4622a 0%, transparent 55%), ' +
+    'radial-gradient(circle at 75% 70%, #8a2a3a 0%, transparent 60%), ' +
+    'radial-gradient(circle at 70% 20%, #e8b48a 0%, transparent 40%), #1a0a0e',
   aurora:
     'linear-gradient(180deg, transparent 55%, #0b0c10 56%), ' +
     'radial-gradient(ellipse 70% 45% at 40% 35%, rgba(120,220,170,0.75), transparent 70%), ' +
