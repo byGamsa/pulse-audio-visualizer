@@ -6,7 +6,7 @@ import type { ModeContext, ModeDefinition, VisualMode } from '../../engine/types
 import { hash, palette } from '../../shared/glsl';
 
 // Raymarch-Schritte durch die Vorhangschicht
-const LAYERS = 64;
+const LAYERS = 48;
 
 const frag = `
 precision highp float;
