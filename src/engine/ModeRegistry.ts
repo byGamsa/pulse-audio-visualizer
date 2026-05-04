@@ -15,6 +15,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/halo').then((m) => m.default),
   ),
   mode(
+    { id: 'silk-ribbon', name: 'Silk Ribbon', category: 'lineart', gpuCost: 2,
+      description: 'Ein Band aus 1 800 haarfeinen Fäden, das sich mit der Musik verdreht und flirrt.' },
+    () => import('../modes/silk-ribbon').then((m) => m.default),
+  ),
+  mode(
     { id: 'aurora', name: 'Aurora', category: 'ambient', gpuCost: 2,
       description: 'Nordlicht über einem stillen See. Die Mitten bewegen die Vorhänge.' },
     () => import('../modes/aurora').then((m) => m.default),
