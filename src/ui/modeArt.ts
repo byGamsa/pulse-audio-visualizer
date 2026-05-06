@@ -14,6 +14,9 @@ const ART: Record<string, string> = {
   'silk-ribbon':
     'linear-gradient(150deg, transparent 38%, rgba(247,244,239,0.85) 47%, rgba(247,244,239,0.25) 52%, transparent 60%), ' +
     'linear-gradient(150deg, transparent 58%, rgba(247,244,239,0.25) 63%, transparent 68%), #0d0d0f',
+  'dot-matrix':
+    'radial-gradient(circle, rgba(247,244,239,0.75) 0.8px, transparent 1.3px) 0 0 / 5px 5px, ' +
+    'linear-gradient(180deg, #0d0d0f 30%, #3a1d22 100%)',
   aurora:
     'linear-gradient(180deg, transparent 55%, #0b0c10 56%), ' +
     'radial-gradient(ellipse 70% 45% at 40% 35%, rgba(120,220,170,0.75), transparent 70%), ' +

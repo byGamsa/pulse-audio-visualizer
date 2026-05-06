@@ -20,6 +20,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/silk-ribbon').then((m) => m.default),
   ),
   mode(
+    { id: 'dot-matrix', name: 'Dot Matrix', category: 'lineart', gpuCost: 2,
+      description: 'Ein Punktraster als Gelände aus den letzten Sekunden Spektrum, mit Bokeh im Vordergrund.' },
+    () => import('../modes/dot-matrix').then((m) => m.default),
+  ),
+  mode(
     { id: 'aurora', name: 'Aurora', category: 'ambient', gpuCost: 2,
       description: 'Nordlicht über einem stillen See. Die Mitten bewegen die Vorhänge.' },
     () => import('../modes/aurora').then((m) => m.default),
