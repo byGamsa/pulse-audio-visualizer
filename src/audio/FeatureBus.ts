@@ -123,7 +123,10 @@ export class FeatureBus {
 
     if (rising && kick > threshold && kick > 0.02 && time - this.lastBeat > 0.27) {
       if (this.lastBeat > 0) {
-        const iv = time - this.lastBeat;
+        let iv = time - this.lastBeat;
+        // Auf 70..180 BPM falten
+        while (iv > 60 / 70) iv /= 2;
+        while (iv < 60 / 180) iv *= 2;
         this.intervals.push(iv);
         if (this.intervals.length > 16) this.intervals.shift();
         const sorted = [...this.intervals].sort((x, y) => x - y);
