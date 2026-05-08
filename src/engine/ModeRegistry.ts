@@ -20,6 +20,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/silk-ribbon').then((m) => m.default),
   ),
   mode(
+    { id: 'neon-tunnel', name: 'Neon Tunnel', category: 'retro', gpuCost: 2,
+      description: 'Flug durch einen endlosen Tunnel aus Neonringen, die das Spektrum nachzeichnen.' },
+    () => import('../modes/neon-tunnel').then((m) => m.default),
+  ),
+  mode(
     { id: 'dot-matrix', name: 'Dot Matrix', category: 'lineart', gpuCost: 2,
       description: 'Ein Punktraster als Gelände aus den letzten Sekunden Spektrum, mit Bokeh im Vordergrund.' },
     () => import('../modes/dot-matrix').then((m) => m.default),
