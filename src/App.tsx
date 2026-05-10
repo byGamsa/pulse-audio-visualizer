@@ -30,7 +30,7 @@ export function App() {
     if (!engine || startOpen) return;
     const onKey = (ev: KeyboardEvent) => {
       if (ev.target instanceof HTMLSelectElement) return;
-      if (ev.target instanceof HTMLInputElement) return;
+      if (ev.target instanceof HTMLInputElement && ev.target.type !== 'range' && ev.target.type !== 'checkbox') return;
       const s = useSettings.getState();
       switch (ev.key) {
         case 'ArrowRight': engine.nextMode(1); break;
