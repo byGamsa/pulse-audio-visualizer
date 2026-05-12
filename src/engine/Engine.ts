@@ -59,6 +59,7 @@ export class Engine {
   private next: Slot | null = null;
   private transition = 0;
   private transitionDuration = 2.5;
+  private loadingId: string | null = null;
   private lastSwitch = 0;
   private transitionType: TransitionType = 'dissolve';
 
@@ -133,9 +134,12 @@ export class Engine {
     transition: TransitionChoice = useSettings.getState().playback.transition,
   ) {
     if (this.current?.meta.id === id && !this.next) return;
-    if (this.next?.meta.id === id) return;
+    if (this.loadingId === id || this.next?.meta.id === id) return;
+    this.loadingId = id;
     const entry = findMode(id);
     const def = await entry.load();
+    if (this.loadingId !== id) return; // inzwischen wurde ein anderer Modus angefordert
+    this.loadingId = null;
 
     const mode = def.create();
     await mode.init(this.ctx);
