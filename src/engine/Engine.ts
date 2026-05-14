@@ -189,7 +189,7 @@ export class Engine {
   }
 
   private frame(now: number) {
-    const dt = (now - this.lastFrame) / 1000;
+    const dt = Math.min((now - this.lastFrame) / 1000, 0.1);
     this.lastFrame = now;
     this.time += dt;
 
