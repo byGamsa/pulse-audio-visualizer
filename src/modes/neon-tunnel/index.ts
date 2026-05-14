@@ -8,7 +8,7 @@ import { palette } from '../../shared/glsl';
 const SPEC = 16;
 const RING_SPACING = 2.0;
 // Abstand vor der Kamera, an dem ein Beat-Ring aufleuchtet
-const BEAT_RING_AHEAD = 8;
+const BEAT_RING_AHEAD = 12;
 
 const frag = `
 precision highp float;
