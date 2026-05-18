@@ -34,12 +34,146 @@ vec3 dissolve(vec2 uv, float p) {
   return mix(ca, cb, mask) + (ca + cb + 0.15) * 2.5 * glow;
 }
 
+// Zoom Warp
+vec3 zoomBlur(sampler2D tex, vec2 uv, float zoom, float blur) {
+  vec2 c = uv - 0.5;
+  vec3 acc = vec3(0.0);
+  for (int i = 0; i < 16; i++) {
+    float k = float(i) / 15.0;
+    acc += textureLod(tex, clamp(c / (zoom * (1.0 + blur * k)) + 0.5, 0.0, 1.0), 0.0).rgb;
+  }
+  return acc / 16.0;
+}
+
+vec3 zoomWarp(vec2 uv, float p) {
+  float sA = 1.0 + p * p * 2.0;
+  float sB = 0.35 + 0.65 * smoothstep(0.0, 1.0, p);
+  vec3 ca = zoomBlur(tA, uv, sA, p * 0.35);
+  vec3 cb = zoomBlur(tB, uv, sB, (1.0 - p) * 0.35);
+  float m = smoothstep(0.38, 0.62, p);
+  float flash = exp(-pow((p - 0.5) / 0.05, 2.0));
+  return mix(ca, cb, m) * (1.0 - flash * 0.3) + vec3(1.0, 0.96, 0.92) * flash * 0.3;
+}
+
+// Glitch Cut
+vec3 glitch(vec2 uv, float p) {
+  float intensity = sin(p * 3.14159);
+  // Zeit in Sprüngen, damit es digital ruckelt
+  float tick = floor(uTime * 24.0);
+  float row = floor(uv.y * 60.0);
+  uv.x += (hash12(vec2(row, tick)) - 0.5) * 0.12 * intensity * step(0.7, hash12(vec2(row * 1.3, tick + 4.0)));
+
+  vec2 block = floor(uv * vec2(18.0, 10.0));
+  float order = hash12(block + 0.5);
+  float flicker = hash12(block + tick * 0.13);
+  bool showB = order < p * 1.15 - 0.075 + (flicker - 0.5) * 0.3 * intensity;
+
+  float split = 0.012 * intensity * (0.5 + flicker);
+  vec2 off = vec2(split, 0.0);
+  vec3 col = showB
+    ? vec3(B(uv + off).r, B(uv).g, B(uv - off).b)
+    : vec3(A(uv - off).r, A(uv).g, A(uv + off).b);
+
+  // Einzelne Blöcke kurz invertiert oder überstrahlt
+  float burst = step(1.0 - 0.06 * intensity, hash12(block * 1.7 + tick));
+  col = mix(col, vec3(1.0) * 1.5 - col * 0.5, burst);
+  col *= 1.0 - 0.15 * intensity * step(0.5, fract(uv.y * 240.0));
+  return col;
+}
+
+// Liquid Displace
+vec3 liquid(vec2 uv, float p) {
+  vec2 q = (uv - 0.5) * vec2(uAspect, 1.0);
+  float n = fbm(q * 1.6 + vec2(0.0, uTime * 0.08)) * 0.5 + 0.5;
+  // Diagonale Front, vom Noise ausgefranst
+  float front = (uv.x * 0.45 + uv.y * 0.55) * 0.7 + n * 0.3;
+  float t = p * 1.3 - 0.15;
+  float d = front - t;
+  float mask = smoothstep(0.03, -0.03, d);
+
+  // Nahe der Front wird das alte Bild weggedrückt, das neue „fließt nach“
+  float push = exp(-max(d, 0.0) * 12.0) * (1.0 - mask);
+  vec2 dir = normalize(vec2(0.45, 0.55));
+  vec3 ca = A(uv + dir * push * 0.08 + (n - 0.5) * 0.02 * push);
+  float pull = exp(-max(-d, 0.0) * 10.0) * mask;
+  vec3 cb = B(uv - dir * pull * 0.05);
+
+  // Feuchter Glanz direkt auf der Front
+  float sheen = exp(-pow(d / 0.012, 2.0)) * sin(p * 3.14159);
+  return mix(ca, cb, mask) + (cb * 1.5 + 0.2) * sheen;
+}
+
+// Shatter
+const float CELLS = 6.0;
+
+// Nächster Zellkern; liefert Zell-ID (ganzzahlig) und Kernposition
+vec2 voronoi(vec2 x, out vec2 center) {
+  vec2 n = floor(x);
+  float best = 1e9;
+  vec2 id = vec2(0.0);
+  for (int j = -1; j <= 1; j++)
+  for (int i = -1; i <= 1; i++) {
+    vec2 g = n + vec2(float(i), float(j));
+    vec2 o = g + 0.15 + 0.7 * hash22(g);
+    float d = dot(x - o, x - o);
+    if (d < best) { best = d; id = g; center = o; }
+  }
+  return id;
+}
+
+vec3 shatter(vec2 uv, float p) {
+  vec2 aspect = vec2(uAspect, 1.0);
+  vec2 x = uv * aspect * CELLS;
+  vec2 center;
+  vec2 home = voronoi(x, center);
+  vec3 col = B(uv);
+  float crack = 0.0;
+
+  // Scherben können aus ihrer Zelle fliegen, daher Nachbarn prüfen
+  for (int j = -1; j <= 1; j++)
+  for (int i = -1; i <= 1; i++) {
+    vec2 cell = home + vec2(float(i), float(j));
+    vec2 c = cell + 0.15 + 0.7 * hash22(cell);
+    vec2 h = hash22(cell + 7.3);
+    // Scherben aus der Bildmitte brechen zuerst
+    float delay = clamp(length(c / CELLS / aspect - 0.5) * 0.7 + h.x * 0.2, 0.0, 0.55);
+    float q = clamp((p - delay) / 0.45, 0.0, 1.0);
+    if (q >= 1.0) continue;
+    float e = q * q;
+    vec2 away = normalize(c - 0.5 * aspect * CELLS + 1e-3) * e * 2.5 + vec2(0.0, -e * e * 4.0);
+    float ang = (h.y - 0.5) * 2.5 * e;
+    float scale = 1.0 - 0.35 * e;
+    // Pixel rückwärts in das Koordinatensystem der Scherbe transformieren
+    vec2 local = (x - c - away) / scale;
+    local = mat2(cos(ang), sin(ang), -sin(ang), cos(ang)) * local;
+    vec2 src = c + local;
+    vec2 srcCenter;
+    if (voronoi(src, srcCenter) == cell) {
+      vec2 suv = src / CELLS / aspect;
+      if (suv.x >= 0.0 && suv.x <= 1.0 && suv.y >= 0.0 && suv.y <= 1.0) {
+        // Leichte Abschattung je nach Kippwinkel, wie Licht auf Glas
+        col = A(suv) * (1.0 - e * 0.6) * (0.85 + 0.3 * h.x);
+        // Helle Bruchkante
+        vec2 cc;
+        voronoi(src + vec2(0.02, 0.0), cc);
+        crack = max(crack, step(0.001, length(cc - srcCenter)) * (1.0 - e));
+        break;
+      }
+    }
+  }
+  return col + vec3(1.0, 0.97, 0.94) * crack * sin(p * 3.14159) * 1.5;
+}
+
 void main() {
   float p = uProgress;
   if (p <= 0.0) { gl_FragColor = vec4(A(vUv), 1.0); return; }
   vec3 col;
   if (uType == 0) col = mix(A(vUv), B(vUv), p);
-  else col = dissolve(vUv, p);
+  else if (uType == 1) col = dissolve(vUv, p);
+  else if (uType == 2) col = zoomWarp(vUv, p);
+  else if (uType == 3) col = glitch(vUv, p);
+  else if (uType == 4) col = liquid(vUv, p);
+  else col = shatter(vUv, p);
   gl_FragColor = vec4(col, 1.0);
 }
 `;
