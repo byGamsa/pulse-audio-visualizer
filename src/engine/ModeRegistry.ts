@@ -20,6 +20,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/silk-ribbon').then((m) => m.default),
   ),
   mode(
+    { id: 'nebula-galaxy', name: 'Nebula Galaxy', category: 'particles', gpuCost: 2,
+      description: '300 000 Sterne in Spiralarmen. Beats schicken Dichtewellen durch die Scheibe.' },
+    () => import('../modes/nebula-galaxy').then((m) => m.default),
+  ),
+  mode(
     { id: 'neon-tunnel', name: 'Neon Tunnel', category: 'retro', gpuCost: 2,
       description: 'Flug durch einen endlosen Tunnel aus Neonringen, die das Spektrum nachzeichnen.' },
     () => import('../modes/neon-tunnel').then((m) => m.default),

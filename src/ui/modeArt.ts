@@ -17,6 +17,9 @@ const ART: Record<string, string> = {
   'dot-matrix':
     'radial-gradient(circle, rgba(247,244,239,0.75) 0.8px, transparent 1.3px) 0 0 / 5px 5px, ' +
     'linear-gradient(180deg, #0d0d0f 30%, #3a1d22 100%)',
+  'nebula-galaxy':
+    'radial-gradient(circle at 50% 50%, #f7e3c8 0%, #d4622a 10%, transparent 26%), ' +
+    'conic-gradient(from 30deg at 50% 50%, transparent, rgba(138,42,58,0.7), transparent 30%, rgba(138,42,58,0.6), transparent 62%, rgba(138,42,58,0.7), transparent), #0b0910',
   'neon-tunnel':
     'radial-gradient(circle at 50% 50%, transparent 0 10%, #fd8fc0 11% 12.5%, transparent 14% 24%, rgba(253,143,192,0.7) 25% 26.5%, transparent 28% 42%, rgba(253,143,192,0.4) 43% 45%, transparent 47%), #120a14',
   aurora:
