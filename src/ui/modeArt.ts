@@ -26,6 +26,10 @@ const ART: Record<string, string> = {
     'linear-gradient(180deg, transparent 55%, #0b0c10 56%), ' +
     'radial-gradient(ellipse 70% 45% at 40% 35%, rgba(120,220,170,0.75), transparent 70%), ' +
     'linear-gradient(180deg, #0a0f18, #101622)',
+  'liquid-silk':
+    'radial-gradient(ellipse 60% 40% at 30% 60%, #fd6fa8 0%, transparent 70%), ' +
+    'radial-gradient(ellipse 50% 60% at 70% 35%, #6a5cff 0%, transparent 70%), ' +
+    'radial-gradient(ellipse 40% 30% at 60% 80%, #ffb36b 0%, transparent 70%), #0d0a14',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {

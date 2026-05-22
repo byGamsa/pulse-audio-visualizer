@@ -40,6 +40,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/aurora').then((m) => m.default),
   ),
   mode(
+    { id: 'liquid-silk', name: 'Liquid Silk', category: 'organic', gpuCost: 2,
+      description: 'Echte Flüssigkeitssimulation. Drei Strömungen für Bass, Mitten und Höhen rühren Farbe.' },
+    () => import('../modes/liquid-silk').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
