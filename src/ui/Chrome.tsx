@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Maximize2, SlidersHorizontal } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutGrid, Maximize2, SlidersHorizontal } from 'lucide-react';
 import type { Engine } from '../engine/Engine';
 import { useSettings } from '../store/settings';
 import { CATEGORY_LABEL, modeArt } from './modeArt';
@@ -53,9 +53,11 @@ export function TopBar({ sourceLabel, settingsOpen, onPickSource, onToggleSettin
 
 interface PlayerProps {
   engine: Engine;
+  browserOpen: boolean;
+  onToggleBrowser: () => void;
 }
 
-export function PlayerBar({ engine }: PlayerProps) {
+export function PlayerBar({ engine, browserOpen, onToggleBrowser }: PlayerProps) {
   const modeId = useSettings((s) => s.playback.modeId);
   const meta = engine.modes.find((m) => m.id === modeId) ?? engine.modes[0];
   return (
@@ -80,6 +82,13 @@ export function PlayerBar({ engine }: PlayerProps) {
         </button>
         <button className={cn(ui.btn, ui.btnIcon)} onClick={() => engine.nextMode(1)} title="Nächster Modus (→)">
           <ChevronRight {...ICON} />
+        </button>
+        <button
+          className={cn(ui.btn, ui.btnIcon, browserOpen && ui.btnActive)}
+          onClick={onToggleBrowser}
+          title="Alle Modi (M)"
+        >
+          <LayoutGrid {...ICON} />
         </button>
       </div>
     </div>

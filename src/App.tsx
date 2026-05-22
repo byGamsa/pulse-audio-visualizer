@@ -3,6 +3,7 @@ import { Engine } from './engine/Engine';
 import { useSettings } from './store/settings';
 import { Hud } from './ui/Hud';
 import { PlayerBar, TopBar } from './ui/Chrome';
+import { ModeBrowser } from './ui/ModeBrowser';
 import { SettingsPanel } from './ui/SettingsPanel';
 import { StartScreen } from './ui/StartScreen';
 import { useIdle } from './ui/useIdle';
@@ -12,6 +13,7 @@ export function App() {
   const [engine, setEngine] = useState<Engine | null>(null);
   const [sourceLabel, setSourceLabel] = useState<string | null>(null);
   const [startOpen, setStartOpen] = useState(true);
+  const [browserOpen, setBrowserOpen] = useState(false);
   const ui = useSettings((s) => s.ui);
   const setUi = useSettings((s) => s.setUi);
   const idle = useIdle(3000);
@@ -38,7 +40,8 @@ export function App() {
         case 'f': case 'F': toggleFullscreen(); break;
         case 'h': case 'H': s.setUi({ showHud: !s.ui.showHud }); break;
         case 's': case 'S': s.setUi({ panelOpen: !s.ui.panelOpen }); break;
-        case 'Escape': s.setUi({ panelOpen: false }); break;
+        case 'm': case 'M': setBrowserOpen((o) => !o); break;
+        case 'Escape': setBrowserOpen(false); s.setUi({ panelOpen: false }); break;
         default: return;
       }
       ev.preventDefault();
@@ -47,7 +50,7 @@ export function App() {
     return () => window.removeEventListener('keydown', onKey);
   }, [engine, startOpen]);
 
-  const chromeIdle = idle && !ui.panelOpen && !startOpen;
+  const chromeIdle = idle && !ui.panelOpen && !browserOpen && !startOpen;
 
   return (
     <div className="group/app fixed inset-0 data-[idle=true]:cursor-none" data-idle={chromeIdle}>
@@ -75,7 +78,12 @@ export function App() {
             onToggleSettings={() => setUi({ panelOpen: !ui.panelOpen })}
             onToggleFullscreen={toggleFullscreen}
           />
-          <PlayerBar engine={engine} />
+          {browserOpen && <ModeBrowser engine={engine} onClose={() => setBrowserOpen(false)} />}
+          <PlayerBar
+            engine={engine}
+            browserOpen={browserOpen}
+            onToggleBrowser={() => setBrowserOpen((o) => !o)}
+          />
           {ui.panelOpen && <SettingsPanel onClose={() => setUi({ panelOpen: false })} />}
         </>
       )}
