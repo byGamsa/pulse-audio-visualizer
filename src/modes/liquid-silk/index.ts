@@ -5,7 +5,7 @@ import type { ModeContext, ModeDefinition, VisualMode } from '../../engine/types
 import { fullscreenVert } from '../../shared/glsl';
 
 // Stable Fluids (Jos Stam): Advektion, Vorticity, Jacobi-Druck
-const SIM_RES = 256;
+const SIM_RES = 192;
 const DYE_RES = 1024;
 const PRESSURE_ITERATIONS = 20;
 const SIM_DT = 1 / 60;
