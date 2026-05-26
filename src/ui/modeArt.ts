@@ -30,6 +30,10 @@ const ART: Record<string, string> = {
     'radial-gradient(ellipse 60% 40% at 30% 60%, #fd6fa8 0%, transparent 70%), ' +
     'radial-gradient(ellipse 50% 60% at 70% 35%, #6a5cff 0%, transparent 70%), ' +
     'radial-gradient(ellipse 40% 30% at 60% 80%, #ffb36b 0%, transparent 70%), #0d0a14',
+  ferrofluid:
+    'radial-gradient(circle at 38% 34%, #f7f4ef 0 3%, transparent 9%), ' +
+    'radial-gradient(circle at 50% 52%, #1d1d22 0 30%, #050506 31% 34%, transparent 35%), ' +
+    'conic-gradient(from 0deg at 50% 52%, #2a2a30, #0b0b0d, #2a2a30, #0b0b0d, #2a2a30, #0b0b0d, #2a2a30, #0b0b0d, #2a2a30), #0b0b0d',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {

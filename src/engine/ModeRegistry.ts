@@ -45,6 +45,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/liquid-silk').then((m) => m.default),
   ),
   mode(
+    { id: 'ferrofluid', name: 'Ferrofluid', category: 'organic', gpuCost: 3,
+      description: 'Schwarz glänzende Magnetflüssigkeit; jede Stachelreihe folgt einem Frequenzband.' },
+    () => import('../modes/ferrofluid').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
