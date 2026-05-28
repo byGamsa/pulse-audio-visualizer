@@ -50,6 +50,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/ferrofluid').then((m) => m.default),
   ),
   mode(
+    { id: 'organism', name: 'Organism', category: 'organic', gpuCost: 2,
+      description: 'Ein durchscheinender Zellkörper, der atmet und sich bei harten Kicks teilt.' },
+    () => import('../modes/organism').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
