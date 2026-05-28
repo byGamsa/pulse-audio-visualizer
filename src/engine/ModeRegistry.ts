@@ -55,6 +55,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/organism').then((m) => m.default),
   ),
   mode(
+    { id: 'outrun', name: 'Outrun', category: 'retro', gpuCost: 1,
+      description: 'Synthwave-Highway mit Streifensonne. Die vordere Bergkette ist das Spektrum.' },
+    () => import('../modes/outrun').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
