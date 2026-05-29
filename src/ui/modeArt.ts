@@ -38,6 +38,9 @@ const ART: Record<string, string> = {
     'linear-gradient(180deg, transparent 58%, #12061a 58%), ' +
     'radial-gradient(circle at 50% 50%, #ffd36b 0%, #ff4f9a 22%, transparent 23%), ' +
     'linear-gradient(180deg, #1a0633 0%, #6a1b6e 55%, #e8445a 58%)',
+  'particle-vortex':
+    'radial-gradient(circle at 50% 50%, #f7f4ef 0%, transparent 12%), ' +
+    'conic-gradient(from 0deg at 50% 50%, transparent, rgba(247,244,239,0.5), transparent 20%, rgba(247,244,239,0.4), transparent 40%, rgba(247,244,239,0.5), transparent 60%, rgba(247,244,239,0.4), transparent 80%, rgba(247,244,239,0.5)), #0b0a10',
   organism:
     'radial-gradient(circle at 42% 40%, rgba(255,255,255,0.7) 0 4%, transparent 10%), ' +
     'radial-gradient(circle at 50% 52%, #ff9ec4 0%, #c2366e 32%, rgba(90,20,60,0.9) 46%, transparent 50%), ' +

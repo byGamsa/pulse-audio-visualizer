@@ -60,6 +60,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/outrun').then((m) => m.default),
   ),
   mode(
+    { id: 'particle-vortex', name: 'Particle Vortex', category: 'particles', gpuCost: 2,
+      description: 'Ein Strudel aus 200 000 Partikeln in Rosenform. Kicks saugen ihn zusammen.' },
+    () => import('../modes/particle-vortex').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
