@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { ModeCategory } from '../engine/types';
 import type { TransitionChoice } from '../engine/transitions';
 
 export interface AudioSettings {
@@ -33,19 +34,31 @@ export interface VisualSettings {
   dynamicResolution: boolean;
 }
 
+// Woher der nächste Modus kommt
+export type PlaybackMode =
+  | { kind: 'playlist'; playlistId: string }
+  | { kind: 'shuffle'; categories: ModeCategory[] }
+  | { kind: 'single' };
+
 export interface PlaybackSettings {
   // Der gerade laufende Modus (wird von der Engine gesetzt)
   modeId: string;
-  autoSwitch: boolean;
-  // Sekunden bis zum nächsten Modus
-  switchInterval: number;
+  mode: PlaybackMode;
+  // Sekunden pro Modus im Shuffle über alle Modi
+  shuffleDuration: number;
   transitionDuration: number;
+  // Übergang für Shuffle, Single und Playlists ohne eigene Wahl
   transition: TransitionChoice;
+  // Wechsel auf den nächsten Beat verschieben (max. 4 s)
+  beatSync: boolean;
+  // Timer angehalten
+  hold: boolean;
 }
 
 export interface UiSettings {
   showHud: boolean;
   panelOpen: boolean;
+  playbackOpen: boolean;
 }
 
 export interface SettingsState {
@@ -87,14 +100,17 @@ const defaults = {
   } satisfies VisualSettings,
   playback: {
     modeId: 'halo',
-    autoSwitch: true,
-    switchInterval: 120,
+    mode: { kind: 'shuffle', categories: [] } as PlaybackMode,
+    shuffleDuration: 120,
     transitionDuration: 2.5,
     transition: 'auto' as TransitionChoice,
+    beatSync: true,
+    hold: false,
   } satisfies PlaybackSettings,
   ui: {
     showHud: true,
     panelOpen: false,
+    playbackOpen: false,
   } satisfies UiSettings,
 };
 
@@ -110,7 +126,13 @@ export const useSettings = create<SettingsState>()(
     }),
     {
       name: 'pulse-settings',
-      version: 1,
+      version: 2,
+      // v1 kannte nur „autoSwitch“
+      migrate: (persisted) => {
+        const p = (persisted ?? {}) as { playback?: Record<string, unknown> };
+        if (p.playback) delete p.playback.autoSwitch;
+        return p as unknown as SettingsState;
+      },
     },
   ),
 );

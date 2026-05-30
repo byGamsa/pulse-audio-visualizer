@@ -51,6 +51,8 @@ const SOURCES: { kind: AudioSourceKind; label: string; title: string; hint: stri
 const SHORTCUTS: [string[], string][] = [
   [['←', '→'], 'Modus wechseln'],
   [['M'], 'Alle Modi'],
+  [['P'], 'Playlists'],
+  [['Leertaste'], 'Modus halten'],
   [['S'], 'Einstellungen'],
   [['F'], 'Vollbild'],
   [['H'], 'HUD'],

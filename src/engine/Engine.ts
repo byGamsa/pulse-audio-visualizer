@@ -15,6 +15,7 @@ import { useSettings } from '../store/settings';
 import { CompositePass } from './CompositePass';
 import { MODES, findMode } from './ModeRegistry';
 import { PaletteTexture } from './palette';
+import { PlaybackController } from './PlaybackController';
 import { resolveTransition, type TransitionChoice, type TransitionType } from './transitions';
 import type { ModeContext, ModeMeta, VisualMode } from './types';
 
@@ -40,6 +41,7 @@ const MIN_DYNAMIC_SCALE = 0.5;
 
 export class Engine {
   readonly bus = new FeatureBus();
+  readonly playback = new PlaybackController(this);
   readonly stats: EngineStats = {
     fps: 0, frameMs: 0, renderScale: 1, width: 0, height: 0, modeName: '', bpm: 0, energy: 0,
   };
@@ -60,7 +62,7 @@ export class Engine {
   private transition = 0;
   private transitionDuration = 2.5;
   private loadingId: string | null = null;
-  private lastSwitch = 0;
+  private paletteOverride: string | null = null;
   private transitionType: TransitionType = 'dissolve';
 
   private raf = 0;
@@ -123,6 +125,11 @@ export class Engine {
     return MODES.map((m) => m.meta);
   }
 
+  // null = globale Palette
+  setPaletteOverride(id: string | null) {
+    this.paletteOverride = id;
+  }
+
   setSource(source: AudioSource | null) {
     this.bus.source?.dispose();
     this.bus.source = source;
@@ -157,15 +164,12 @@ export class Engine {
       this.transitionDuration = transitionSeconds;
       this.transitionType = resolveTransition(transition, def.meta.category);
     }
-    this.lastSwitch = this.time;
     this.stats.modeName = def.meta.name;
     useSettings.getState().setPlayback({ modeId: id });
   }
 
   nextMode(direction: 1 | -1 = 1) {
-    const ids = MODES.map((m) => m.meta.id);
-    const i = ids.indexOf(this.current?.meta.id ?? '');
-    void this.setMode(ids[(i + direction + ids.length) % ids.length]);
+    this.playback.next(direction);
   }
 
   start() {
@@ -198,7 +202,8 @@ export class Engine {
     const audio = this.bus.features;
 
     this.applyVisualSettings(dt);
-    this.updateAutoSwitch();
+    // Erst wenn der erste Modus steht
+    if (this.current) this.playback.update(dt, audio);
     this.updateDynamicResolution(dt);
 
     if (this.current) {
@@ -233,16 +238,10 @@ export class Engine {
     this.updateStats(dt);
   }
 
-  private updateAutoSwitch() {
-    const pb = useSettings.getState().playback;
-    if (!pb.autoSwitch || !this.current || this.next) return;
-    if (this.time - this.lastSwitch > pb.switchInterval) this.nextMode(1);
-  }
-
   private applyVisualSettings(dt: number) {
     const v = useSettings.getState().visual;
     const a = this.bus.features;
-    this.palette.set(v.paletteId);
+    this.palette.set(this.paletteOverride ?? v.paletteId);
     this.palette.update(dt);
     this.bloom.intensity = v.bloomIntensity * (1 + a.bassRaw * v.bloomReactive);
     this.bloom.luminanceMaterial.threshold = v.bloomThreshold;

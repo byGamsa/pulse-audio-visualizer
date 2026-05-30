@@ -1,4 +1,5 @@
-import { ChevronLeft, ChevronRight, LayoutGrid, Maximize2, SlidersHorizontal } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight, LayoutGrid, ListMusic, Maximize2, Pin, SlidersHorizontal } from 'lucide-react';
 import type { Engine } from '../engine/Engine';
 import { useSettings } from '../store/settings';
 import { CATEGORY_LABEL, modeArt } from './modeArt';
@@ -54,12 +55,39 @@ export function TopBar({ sourceLabel, settingsOpen, onPickSource, onToggleSettin
 interface PlayerProps {
   engine: Engine;
   browserOpen: boolean;
+  playbackOpen: boolean;
   onToggleBrowser: () => void;
+  onTogglePlayback: () => void;
 }
 
-export function PlayerBar({ engine, browserOpen, onToggleBrowser }: PlayerProps) {
+export function PlayerBar({ engine, browserOpen, playbackOpen, onToggleBrowser, onTogglePlayback }: PlayerProps) {
   const modeId = useSettings((s) => s.playback.modeId);
+  const hold = useSettings((s) => s.playback.hold);
+  const setPlayback = useSettings((s) => s.setPlayback);
   const meta = engine.modes.find((m) => m.id === modeId) ?? engine.modes[0];
+  const progressRef = useRef<HTMLElement>(null);
+  const [status, setStatus] = useState(() => engine.playback.status);
+
+  useEffect(() => {
+    const id = window.setInterval(() => setStatus(engine.playback.status), 250);
+    return () => clearInterval(id);
+  }, [engine]);
+
+  // Direkt am DOM statt per React-State
+  useEffect(() => {
+    let raf = 0;
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const p = engine.playback.status.progress;
+      const el = progressRef.current;
+      if (!el) return;
+      el.style.opacity = p === null ? '0' : '1';
+      el.style.transform = `scaleX(${p ?? 0})`;
+    };
+    tick();
+    return () => cancelAnimationFrame(raf);
+  }, [engine]);
+
   return (
     <div
       className={cn(
@@ -73,7 +101,9 @@ export function PlayerBar({ engine, browserOpen, onToggleBrowser }: PlayerProps)
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="text-body-sm leading-[1.3] font-normal">{meta.name}</span>
         <span className="truncate text-caption text-smoke" title={meta.description}>
-          {CATEGORY_LABEL[meta.category]}
+          {status.label}
+          {status.position && ` · ${status.position}`}
+          {status.hold ? ' · gehalten' : status.waitingForBeat ? ' · wartet auf den Beat' : ` · ${CATEGORY_LABEL[meta.category]}`}
         </span>
       </div>
       <div className="flex items-center gap-[2px]">
@@ -84,13 +114,31 @@ export function PlayerBar({ engine, browserOpen, onToggleBrowser }: PlayerProps)
           <ChevronRight {...ICON} />
         </button>
         <button
+          className={cn(ui.btn, ui.btnIcon, hold && ui.btnActive)}
+          onClick={() => setPlayback({ hold: !hold })}
+          title={hold ? 'Timer freigeben (Leertaste)' : 'Aktuellen Modus halten (Leertaste)'}
+          aria-pressed={hold}
+        >
+          <Pin {...ICON} />
+        </button>
+        <button
           className={cn(ui.btn, ui.btnIcon, browserOpen && ui.btnActive)}
           onClick={onToggleBrowser}
           title="Alle Modi (M)"
         >
           <LayoutGrid {...ICON} />
         </button>
+        <button
+          className={cn(ui.btn, ui.btnIcon, playbackOpen && ui.btnActive)}
+          onClick={onTogglePlayback}
+          title="Wiedergabe & Playlists (P)"
+        >
+          <ListMusic {...ICON} />
+        </button>
       </div>
+      <span className="absolute inset-x-12 -bottom-px h-px overflow-hidden">
+        <i ref={progressRef} className="block h-full origin-left bg-warm-cream/40" />
+      </span>
     </div>
   );
 }

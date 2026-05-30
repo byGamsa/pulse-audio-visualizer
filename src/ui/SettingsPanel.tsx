@@ -88,15 +88,8 @@ function AudioTab() {
 function LookTab() {
   const visual = useSettings((s) => s.visual);
   const set = useSettings((s) => s.setVisual);
-  const playback = useSettings((s) => s.playback);
-  const setPlayback = useSettings((s) => s.setPlayback);
   return (
     <>
-      <Group title="Moduswechsel">
-        <Switch label="Automatisch wechseln" value={playback.autoSwitch} onChange={(v) => setPlayback({ autoSwitch: v })} />
-        <Slider label="Intervall" value={playback.switchInterval} min={15} max={600} step={15} format={(v) => `${v.toFixed(0)} s`} onChange={(v) => setPlayback({ switchInterval: v })} />
-        <Slider label="Überblendung" value={playback.transitionDuration} min={0} max={10} step={0.1} format={(v) => (v === 0 ? 'Harter Schnitt' : `${v.toFixed(1)} s`)} onChange={(v) => setPlayback({ transitionDuration: v })} />
-      </Group>
       <Group title="Palette">
         <div className="mb-16 grid grid-cols-4 gap-8">
           {PALETTES.map((p) => (

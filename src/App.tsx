@@ -4,6 +4,7 @@ import { useSettings } from './store/settings';
 import { Hud } from './ui/Hud';
 import { PlayerBar, TopBar } from './ui/Chrome';
 import { ModeBrowser } from './ui/ModeBrowser';
+import { PlaybackPanel } from './ui/PlaybackPanel';
 import { SettingsPanel } from './ui/SettingsPanel';
 import { StartScreen } from './ui/StartScreen';
 import { useIdle } from './ui/useIdle';
@@ -41,7 +42,9 @@ export function App() {
         case 'h': case 'H': s.setUi({ showHud: !s.ui.showHud }); break;
         case 's': case 'S': s.setUi({ panelOpen: !s.ui.panelOpen }); break;
         case 'm': case 'M': setBrowserOpen((o) => !o); break;
-        case 'Escape': setBrowserOpen(false); s.setUi({ panelOpen: false }); break;
+        case 'p': case 'P': s.setUi({ playbackOpen: !s.ui.playbackOpen }); break;
+        case ' ': s.setPlayback({ hold: !s.playback.hold }); break;
+        case 'Escape': setBrowserOpen(false); s.setUi({ panelOpen: false, playbackOpen: false }); break;
         default: return;
       }
       ev.preventDefault();
@@ -50,7 +53,7 @@ export function App() {
     return () => window.removeEventListener('keydown', onKey);
   }, [engine, startOpen]);
 
-  const chromeIdle = idle && !ui.panelOpen && !browserOpen && !startOpen;
+  const chromeIdle = idle && !ui.panelOpen && !ui.playbackOpen && !browserOpen && !startOpen;
 
   return (
     <div className="group/app fixed inset-0 data-[idle=true]:cursor-none" data-idle={chromeIdle}>
@@ -82,8 +85,11 @@ export function App() {
           <PlayerBar
             engine={engine}
             browserOpen={browserOpen}
+            playbackOpen={ui.playbackOpen}
             onToggleBrowser={() => setBrowserOpen((o) => !o)}
+            onTogglePlayback={() => setUi({ playbackOpen: !ui.playbackOpen })}
           />
+          {ui.playbackOpen && <PlaybackPanel engine={engine} onClose={() => setUi({ playbackOpen: false })} />}
           {ui.panelOpen && <SettingsPanel onClose={() => setUi({ panelOpen: false })} />}
         </>
       )}

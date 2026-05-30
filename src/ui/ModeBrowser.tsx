@@ -50,7 +50,7 @@ export function ModeBrowser({ engine, onClose }: { engine: Engine; onClose: () =
                 'flex w-full items-center gap-12 rounded-md p-8 text-left transition-colors hover:bg-white/6',
                 m.id === modeId && 'bg-white/6',
               )}
-              onClick={() => void engine.setMode(m.id)}
+              onClick={() => engine.playback.select(m.id)}
             >
               <span className={cn(ui.art, 'h-[54px] w-[96px]')} style={modeArt(m.id)} />
               <span className="min-w-0 flex-1">
