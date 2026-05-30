@@ -127,11 +127,22 @@ export const useSettings = create<SettingsState>()(
     {
       name: 'pulse-settings',
       version: 2,
-      // v1 kannte nur „autoSwitch“
+      // v1 kannte nur „autoSwitch“; alles Übrige ergänzt merge() mit Defaults
       migrate: (persisted) => {
         const p = (persisted ?? {}) as { playback?: Record<string, unknown> };
         if (p.playback) delete p.playback.autoSwitch;
         return p as unknown as SettingsState;
+      },
+      // Neue Felder bekommen ihre Defaults
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<SettingsState>;
+        return {
+          ...current,
+          audio: { ...current.audio, ...p.audio },
+          visual: { ...current.visual, ...p.visual },
+          playback: { ...current.playback, ...p.playback },
+          ui: { ...current.ui, ...p.ui },
+        };
       },
     },
   ),
