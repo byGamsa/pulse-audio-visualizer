@@ -27,6 +27,9 @@ export interface PlaybackStatus {
   hold: boolean;
 }
 
+// Ohne Kick käme sonst nie ein Wechsel
+const MAX_BEAT_WAIT = 4;
+
 export class PlaybackController {
   private key = '';
   private index = -1;
@@ -66,7 +69,7 @@ export class PlaybackController {
     if (pb.beatSync) {
       this.waiting = true;
       this.waited += dt;
-      if (!audio.beat) return;
+      if (!audio.beat && this.waited < MAX_BEAT_WAIT) return;
     }
     this.advance(1);
   }
