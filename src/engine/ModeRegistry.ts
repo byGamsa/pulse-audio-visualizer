@@ -55,6 +55,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/organism').then((m) => m.default),
   ),
   mode(
+    { id: 'lava-lamp', name: 'Lava Lamp', category: 'organic', gpuCost: 1,
+      description: 'Warme Wachsblasen steigen und sinken; die Musik heizt die Lampe auf.' },
+    () => import('../modes/lava-lamp').then((m) => m.default),
+  ),
+  mode(
     { id: 'outrun', name: 'Outrun', category: 'retro', gpuCost: 1,
       description: 'Synthwave-Highway mit Streifensonne. Die vordere Bergkette ist das Spektrum.' },
     () => import('../modes/outrun').then((m) => m.default),
