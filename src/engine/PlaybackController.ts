@@ -200,6 +200,8 @@ export class PlaybackController {
       const j = Math.floor(Math.random() * (i + 1));
       [bag[i], bag[j]] = [bag[j], bag[i]];
     }
+    // Nie zweimal derselbe Modus hintereinander
+    if (n > 1 && bag[0] === this.index) [bag[0], bag[1]] = [bag[1], bag[0]];
     return bag;
   }
 
