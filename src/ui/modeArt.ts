@@ -45,6 +45,10 @@ const ART: Record<string, string> = {
     'radial-gradient(circle at 42% 40%, rgba(255,255,255,0.7) 0 4%, transparent 10%), ' +
     'radial-gradient(circle at 50% 52%, #ff9ec4 0%, #c2366e 32%, rgba(90,20,60,0.9) 46%, transparent 50%), ' +
     'radial-gradient(circle at 72% 30%, #ff9ec4 0 7%, transparent 9%), #12070e',
+  'midnight-ocean':
+    'radial-gradient(circle at 62% 26%, #f7f4ef 0 5%, rgba(247,244,239,0.2) 9%, transparent 16%), ' +
+    'linear-gradient(180deg, #0a1020 0 52%, #070b16 52%), ' +
+    'radial-gradient(ellipse 8% 40% at 62% 80%, rgba(247,244,239,0.5), transparent 70%)',
   'lava-lamp':
     'radial-gradient(circle at 38% 30%, #ffb36b 0 12%, transparent 13%), ' +
     'radial-gradient(circle at 62% 68%, #ff6a3d 0 16%, transparent 17%), ' +

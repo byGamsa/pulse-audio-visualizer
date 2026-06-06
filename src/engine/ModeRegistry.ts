@@ -55,6 +55,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/organism').then((m) => m.default),
   ),
   mode(
+    { id: 'midnight-ocean', name: 'Midnight Ocean', category: 'organic', gpuCost: 2,
+      description: 'Nächtliche See unter Mondlicht. Der Bass treibt die Dünung, die Höhen glitzern.' },
+    () => import('../modes/midnight-ocean').then((m) => m.default),
+  ),
+  mode(
     { id: 'lava-lamp', name: 'Lava Lamp', category: 'organic', gpuCost: 1,
       description: 'Warme Wachsblasen steigen und sinken; die Musik heizt die Lampe auf.' },
     () => import('../modes/lava-lamp').then((m) => m.default),
