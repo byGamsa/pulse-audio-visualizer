@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { TransitionChoice } from '../engine/transitions';
+import { isTransitionChoice, type TransitionChoice } from '../engine/transitions';
 
 export interface PlaylistItem {
   // Eindeutig pro Playlist, Modi dürfen doppelt vorkommen
@@ -33,6 +33,7 @@ interface PlaylistState {
   updateItem: (id: string, itemId: string, patch: Partial<Omit<PlaylistItem, 'id'>>) => void;
   removeItem: (id: string, itemId: string) => void;
   moveItem: (id: string, from: number, to: number) => void;
+  importJson: (json: string) => string;
 }
 
 export const uid = () => Math.random().toString(36).slice(2, 10);
@@ -106,7 +107,44 @@ export const usePlaylists = create<PlaylistState>()(
           items.splice(Math.max(0, Math.min(to, items.length)), 0, moved);
           return { ...p, items };
         })),
+
+      importJson: (json) => {
+        const raw = JSON.parse(json) as Partial<Playlist>;
+        if (!Array.isArray(raw.items)) throw new Error('Keine gültige Playlist-Datei.');
+        const playlist: Playlist = {
+          id: uid(),
+          name: String(raw.name ?? 'Importiert'),
+          defaultDuration: Number(raw.defaultDuration) > 0 ? Number(raw.defaultDuration) : 180,
+          order: raw.order === 'shuffle' ? 'shuffle' : 'sequential',
+          transition: isTransitionChoice(raw.transition) ? raw.transition : undefined,
+          items: raw.items
+            .filter((i): i is PlaylistItem => typeof i?.modeId === 'string')
+            .map((i) => ({
+              id: uid(),
+              modeId: i.modeId,
+              duration: Number(i.duration) > 0 ? Number(i.duration) : undefined,
+              paletteId: typeof i.paletteId === 'string' ? i.paletteId : undefined,
+            })),
+        };
+        set((s) => ({ playlists: [...s.playlists, playlist] }));
+        return playlist.id;
+      },
     }),
     { name: 'pulse-playlists', version: 1 },
   ),
 );
+
+// Ohne interne IDs
+export function exportPlaylist(p: Playlist): string {
+  return JSON.stringify(
+    {
+      name: p.name,
+      defaultDuration: p.defaultDuration,
+      order: p.order,
+      transition: p.transition,
+      items: p.items.map(({ modeId, duration, paletteId }) => ({ modeId, duration, paletteId })),
+    },
+    null,
+    2,
+  );
+}

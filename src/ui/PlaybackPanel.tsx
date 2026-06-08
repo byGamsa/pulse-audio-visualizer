@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { AudioLines, Copy, GripVertical, Plus, Trash2, X } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { AudioLines, Copy, Download, GripVertical, Plus, Trash2, Upload, X } from 'lucide-react';
 import type { Engine } from '../engine/Engine';
 import { PALETTES } from '../engine/palette';
 import type { ModeCategory } from '../engine/types';
 import { TRANSITION_CHOICES, TRANSITION_LABEL, type TransitionChoice } from '../engine/transitions';
-import { usePlaylists, type Playlist } from '../store/playlists';
+import { exportPlaylist, usePlaylists, type Playlist } from '../store/playlists';
 import { useSettings, type PlaybackMode } from '../store/settings';
 import { Group, Slider, Switch } from './controls';
 import { CATEGORY_LABEL, modeArt } from './modeArt';
@@ -98,6 +98,8 @@ function PlaylistView({ engine, activeId }: { engine: Engine; activeId: string }
   const playlists = usePlaylists((s) => s.playlists);
   const store = usePlaylists.getState();
   const setPlayback = useSettings((s) => s.setPlayback);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string | null>(null);
   const active = playlists.find((p) => p.id === activeId);
 
   const activate = (id: string) => setPlayback({ mode: { kind: 'playlist', playlistId: id } });
@@ -131,7 +133,28 @@ function PlaylistView({ engine, activeId }: { engine: Engine; activeId: string }
           <button className={ui.btn} onClick={() => activate(store.create())}>
             <Plus {...ICON} /> Neue Playlist
           </button>
+          <button className={ui.btn} onClick={() => fileRef.current?.click()}>
+            <Upload {...ICON} /> Importieren
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="application/json,.json"
+            hidden
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              e.target.value = '';
+              if (!file) return;
+              try {
+                activate(store.importJson(await file.text()));
+                setError(null);
+              } catch (err) {
+                setError(err instanceof Error ? err.message : 'Import fehlgeschlagen.');
+              }
+            }}
+          />
         </div>
+        {error && <p className="mb-12 text-caption text-smoke">{error}</p>}
       </Group>
 
       {active && <PlaylistEditor key={active.id} engine={engine} playlist={active} onActivate={activate} />}
@@ -148,6 +171,16 @@ function PlaylistEditor({ engine, playlist, onActivate }: { engine: Engine; play
   const [dragOver, setDragOver] = useState<number | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const modes = engine.modes;
+
+  const download = () => {
+    const blob = new Blob([exportPlaylist(playlist)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${playlist.name.replace(/[^\w\- ]+/g, '').trim() || 'playlist'}.pulse.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const remove = () => {
     if (!confirmDelete) {
@@ -311,6 +344,9 @@ function PlaylistEditor({ engine, playlist, onActivate }: { engine: Engine; play
       <div className="flex flex-wrap gap-4 border-t border-white/8 pt-12">
         <button className={ui.btn} onClick={() => { const id = store.duplicate(playlist.id); if (id) onActivate(id); }}>
           <Copy {...ICON} /> Duplizieren
+        </button>
+        <button className={ui.btn} onClick={download}>
+          <Download {...ICON} /> Exportieren
         </button>
         <button className={cn(ui.btn, confirmDelete && ui.btnActive)} onClick={remove} onBlur={() => setConfirmDelete(false)}>
           <Trash2 {...ICON} /> {confirmDelete ? 'Wirklich löschen?' : 'Löschen'}
