@@ -45,6 +45,10 @@ const ART: Record<string, string> = {
     'radial-gradient(circle at 42% 40%, rgba(255,255,255,0.7) 0 4%, transparent 10%), ' +
     'radial-gradient(circle at 50% 52%, #ff9ec4 0%, #c2366e 32%, rgba(90,20,60,0.9) 46%, transparent 50%), ' +
     'radial-gradient(circle at 72% 30%, #ff9ec4 0 7%, transparent 9%), #12070e',
+  jellyfish:
+    'radial-gradient(ellipse 34% 22% at 50% 34%, rgba(170,140,255,0.9) 0%, rgba(120,80,220,0.5) 60%, transparent 100%), ' +
+    'repeating-linear-gradient(90deg, transparent 0 7px, rgba(170,140,255,0.35) 7px 8px) 50% 100% / 46% 58% no-repeat, ' +
+    'linear-gradient(180deg, #0d1430, #04050c)',
   'midnight-ocean':
     'radial-gradient(circle at 62% 26%, #f7f4ef 0 5%, rgba(247,244,239,0.2) 9%, transparent 16%), ' +
     'linear-gradient(180deg, #0a1020 0 52%, #070b16 52%), ' +

@@ -55,6 +55,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/organism').then((m) => m.default),
   ),
   mode(
+    { id: 'jellyfish', name: 'Jellyfish', category: 'organic', gpuCost: 2,
+      description: 'Biolumineszente Quallen in der Tiefsee; jeder Beat lässt eine von ihnen pumpen.' },
+    () => import('../modes/jellyfish').then((m) => m.default),
+  ),
+  mode(
     { id: 'midnight-ocean', name: 'Midnight Ocean', category: 'organic', gpuCost: 2,
       description: 'Nächtliche See unter Mondlicht. Der Bass treibt die Dünung, die Höhen glitzern.' },
     () => import('../modes/midnight-ocean').then((m) => m.default),
