@@ -60,6 +60,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/jellyfish').then((m) => m.default),
   ),
   mode(
+    { id: 'mycelium', name: 'Mycelium', category: 'organic', gpuCost: 2,
+      description: 'Ein Pilzgeflecht wächst aus der Mitte. Jeder Stamm leuchtet mit seinem Frequenzband.' },
+    () => import('../modes/mycelium').then((m) => m.default),
+  ),
+  mode(
     { id: 'midnight-ocean', name: 'Midnight Ocean', category: 'organic', gpuCost: 2,
       description: 'Nächtliche See unter Mondlicht. Der Bass treibt die Dünung, die Höhen glitzern.' },
     () => import('../modes/midnight-ocean').then((m) => m.default),

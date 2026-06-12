@@ -49,6 +49,10 @@ const ART: Record<string, string> = {
     'radial-gradient(ellipse 34% 22% at 50% 34%, rgba(170,140,255,0.9) 0%, rgba(120,80,220,0.5) 60%, transparent 100%), ' +
     'repeating-linear-gradient(90deg, transparent 0 7px, rgba(170,140,255,0.35) 7px 8px) 50% 100% / 46% 58% no-repeat, ' +
     'linear-gradient(180deg, #0d1430, #04050c)',
+  mycelium:
+    'repeating-conic-gradient(from 0deg at 50% 50%, rgba(247,244,239,0.45) 0deg 1.5deg, transparent 1.5deg 14deg), ' +
+    'radial-gradient(circle at 50% 50%, #f7f4ef 0%, transparent 18%), ' +
+    'radial-gradient(circle at 50% 50%, #1a2a1c, #070a08 70%)',
   'midnight-ocean':
     'radial-gradient(circle at 62% 26%, #f7f4ef 0 5%, rgba(247,244,239,0.2) 9%, transparent 16%), ' +
     'linear-gradient(180deg, #0a1020 0 52%, #070b16 52%), ' +
