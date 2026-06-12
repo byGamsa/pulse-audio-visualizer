@@ -7,7 +7,7 @@ import type { ModeContext, ModeDefinition, VisualMode } from '../../engine/types
 import { palette } from '../../shared/glsl';
 
 const JELLIES = 3;
-const LINES_PER_JELLY = 400;
+const LINES_PER_JELLY = 300;
 
 // Linien pro Qualle: 35 % Glocke, 10 % Mundarme, 55 % Tentakel
 const glsl = `
