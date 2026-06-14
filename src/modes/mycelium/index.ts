@@ -4,7 +4,7 @@ import { LineSet } from '../../engine/field/primitives';
 import { findMode } from '../../engine/ModeRegistry';
 import type { ModeContext, ModeDefinition, VisualMode } from '../../engine/types';
 
-const LINES = 2400;
+const LINES = 1600;
 const POINTS = 120;
 const TRUNKS = 9;
 const MAX_PULSES = 4;
