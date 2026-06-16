@@ -152,6 +152,9 @@ export class Engine {
     await mode.init(this.ctx);
     const target = this.createTarget();
     mode.resize(target.width, target.height);
+    // Shader vorab kompilieren, damit der Übergang nicht ruckelt
+    mode.update(this.bus.features);
+    mode.render(this.renderer, target);
 
     const slot: Slot = { meta: def.meta, mode, target };
     if (!this.current || transitionSeconds <= 0) {
