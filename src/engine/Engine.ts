@@ -62,6 +62,7 @@ export class Engine {
   private transition = 0;
   private transitionDuration = 2.5;
   private loadingId: string | null = null;
+  private lastSwitch = 0;
   private paletteOverride: string | null = null;
   private transitionType: TransitionType = 'dissolve';
 
@@ -167,6 +168,7 @@ export class Engine {
       this.transitionDuration = transitionSeconds;
       this.transitionType = resolveTransition(transition, def.meta.category);
     }
+    this.lastSwitch = this.time;
     this.stats.modeName = def.meta.name;
     useSettings.getState().setPlayback({ modeId: id });
   }
@@ -262,9 +264,11 @@ export class Engine {
 
     let target = this.dynamicScale;
     const struggling = this.frameAvg > this.refreshInterval * 1.3;
+    // Nach einem Wechsel ruckelt es durch Shader-Kompilierung
+    const settling = this.time - this.lastSwitch < 2;
     if (!v.dynamicResolution) {
       target = 1;
-    } else if (struggling) {
+    } else if (struggling && !settling) {
       this.stableTime = 0;
       this.slowTime += dt;
       if (this.slowTime > 0.5) {
