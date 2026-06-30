@@ -62,6 +62,9 @@ const ART: Record<string, string> = {
     'radial-gradient(circle at 62% 68%, #ff6a3d 0 16%, transparent 17%), ' +
     'radial-gradient(circle at 46% 55%, #ff8a4d 0 7%, transparent 8%), ' +
     'linear-gradient(180deg, #2a0a1c, #6a1a2a)',
+  'neon-waves':
+    'repeating-linear-gradient(160deg, transparent 0 4px, rgba(255,90,220,0.75) 4px 5px, transparent 5px 9px), ' +
+    'linear-gradient(180deg, #1a0a3a, #0a0420)',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {

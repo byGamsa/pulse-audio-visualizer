@@ -85,6 +85,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/particle-vortex').then((m) => m.default),
   ),
   mode(
+    { id: 'neon-waves', name: 'Neon Waves', category: 'lineart', gpuCost: 2,
+      description: 'Dutzende Leuchtlinien formen eine wogende Fläche; vorn das Jetzt, hinten die letzten Sekunden.' },
+    () => import('../modes/neon-waves').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
