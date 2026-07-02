@@ -90,6 +90,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/neon-waves').then((m) => m.default),
   ),
   mode(
+    { id: 'waveform-weave', name: 'Waveform Weave', category: 'lineart', gpuCost: 1,
+      description: 'Die letzten Wellenformen schräg hintereinander, davor ein Kamm aus Spektrumlinien.' },
+    () => import('../modes/waveform-weave').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
