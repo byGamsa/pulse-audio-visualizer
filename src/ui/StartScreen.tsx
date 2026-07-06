@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, AudioLines, FileAudio, Mic, MonitorSpeaker, X } from 'lucide-react';
 import type { Engine } from '../engine/Engine';
 import type { AudioSource, AudioSourceKind } from '../audio/types';
@@ -8,7 +8,8 @@ import {
   createFileSource,
   createMicSource,
 } from '../audio/WebAudioSource';
-import { ICON, cn, ui } from './ui';
+import { createNativeSource, hasNativeAudio, listNativeDevices, type NativeDevice } from '../audio/NativeAudioSource';
+import { ICON, cn, select, ui } from './ui';
 
 interface Props {
   engine: Engine;
@@ -65,7 +66,16 @@ export function StartScreen({ engine, canClose, onClose, onConnected }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const selected = SOURCES.find((s) => s.kind === kind)!;
 
-  const hint = selected.hint;
+  // Desktop: WASAPI mit Geräteauswahl
+  const native = hasNativeAudio();
+  const [devices, setDevices] = useState<NativeDevice[]>([]);
+  const [device, setDevice] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (native) listNativeDevices().then(setDevices).catch(() => setDevices([]));
+  }, [native]);
+  const deviceKind = kind === 'display' ? 'output' : kind === 'mic' ? 'input' : null;
+  const deviceOptions = deviceKind ? devices.filter((d) => d.kind === deviceKind) : [];
+  const hint = native && kind === 'display' ? 'Direkt per WASAPI-Loopback, ohne Freigabe-Dialog.' : selected.hint;
 
   const connect = async (factory: () => Promise<AudioSource>) => {
     setBusy(true);
@@ -84,7 +94,9 @@ export function StartScreen({ engine, canClose, onClose, onConnected }: Props) {
 
   const start = () => {
     if (kind === 'file') fileRef.current?.click();
-    else if (kind === 'display') void connect(createDisplaySource);
+    else if (native && (kind === 'display' || kind === 'mic')) {
+      void connect(() => createNativeSource(device[kind] || undefined, kind === 'display'));
+    } else if (kind === 'display') void connect(createDisplaySource);
     else if (kind === 'mic') void connect(createMicSource);
     else void connect(createDemoSource);
   };
@@ -124,6 +136,21 @@ export function StartScreen({ engine, canClose, onClose, onConnected }: Props) {
               <strong className="block text-body font-normal">{selected.title}</strong>
               <small className="block text-[13px] text-smoke">{hint}</small>
             </span>
+            {native && deviceOptions.length > 0 && (
+              <select
+                className={cn(select, 'max-w-[220px] shrink-0')}
+                value={device[kind] ?? ''}
+                onChange={(e) => setDevice((d) => ({ ...d, [kind]: e.target.value }))}
+                title="Gerät"
+              >
+                <option value="">Standardgerät</option>
+                {deviceOptions.map((d) => (
+                  <option key={d.name} value={d.name}>
+                    {d.name}{d.isDefault ? ' (Standard)' : ''}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
           <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
             <div className="flex flex-1 flex-wrap gap-4" role="radiogroup" aria-label="Audioquelle">
