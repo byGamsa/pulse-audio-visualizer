@@ -205,3 +205,34 @@ impl Analyzer {
         out[FRAME_FLOATS - 1] = (sum / KICK_WINDOW as f32).sqrt();
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn sine_lands_in_the_right_band() {
+        let sr = 48000.0;
+        let mut a = Analyzer::new(sr);
+        let freq = 1000.0;
+        let samples: Vec<f32> = (0..LOW_FFT).map(|n| (2.0 * std::f32::consts::PI * freq * n as f32 / sr).sin() * 0.5).collect();
+        a.push(&samples, &samples);
+        let mut out = vec![0.0; FRAME_FLOATS];
+        a.frame(&mut out);
+        let loudest = (0..BAND_COUNT).max_by(|&x, &y| out[x].total_cmp(&out[y])).unwrap();
+        let center = (band_edge(loudest) * band_edge(loudest + 1)).sqrt();
+        assert!((center / freq - 1.0).abs() < 0.1, "Peak bei {center} Hz statt {freq} Hz");
+        // 0.5 · Blackman-Gewinn 0.42 / 2 ≈ −19.6 dB wie beim AnalyserNode
+        assert!(out[loudest] > -24.0 && out[loudest] < -18.0, "Peak bei {} dB", out[loudest]);
+    }
+
+    #[test]
+    fn silence_is_quiet() {
+        let mut a = Analyzer::new(48000.0);
+        a.push(&vec![0.0; 4096], &vec![0.0; 4096]);
+        let mut out = vec![0.0; FRAME_FLOATS];
+        a.frame(&mut out);
+        assert!(out[..BAND_COUNT].iter().all(|&d| d < -100.0));
+        assert_eq!(out[FRAME_FLOATS - 1], 0.0);
+    }
+}
