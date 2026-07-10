@@ -36,15 +36,21 @@ pub fn list_devices() -> Vec<DeviceInfo> {
     let host = cpal::default_host();
     let default_out = host.default_output_device().and_then(|d| d.name().ok());
     let default_in = host.default_input_device().and_then(|d| d.name().ok());
-    let mut list = Vec::new();
+    let mut list: Vec<DeviceInfo> = Vec::new();
+    // Virtuelle Kabel melden doppelte Namen, Auswahl läuft über den Namen
+    let mut add = |name: String, kind: &'static str, default: &Option<String>| {
+        if !list.iter().any(|d| d.kind == kind && d.name == name) {
+            list.push(DeviceInfo { is_default: Some(&name) == default.as_ref(), name, kind });
+        }
+    };
     if let Ok(devices) = host.output_devices() {
         for name in devices.filter_map(|d| d.name().ok()) {
-            list.push(DeviceInfo { is_default: Some(&name) == default_out.as_ref(), name, kind: "output" });
+            add(name, "output", &default_out);
         }
     }
     if let Ok(devices) = host.input_devices() {
         for name in devices.filter_map(|d| d.name().ok()) {
-            list.push(DeviceInfo { is_default: Some(&name) == default_in.as_ref(), name, kind: "input" });
+            add(name, "input", &default_in);
         }
     }
     list
