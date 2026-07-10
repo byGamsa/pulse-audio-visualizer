@@ -15,6 +15,8 @@ interface CaptureInfo {
   sampleRate: number;
   channels: number;
   loopback: boolean;
+  // Kennung dieser Aufnahme; beim Aufräumen wird nur genau sie gestoppt
+  id: number;
 }
 
 export const hasNativeAudio = isTauri;
@@ -32,6 +34,7 @@ class NativeAudioSource implements AudioSource {
     readonly kind: AudioSourceKind,
     readonly label: string,
     channel: Channel<ArrayBuffer>,
+    private readonly captureId: number,
   ) {
     channel.onmessage = (buf) => {
       if (this.disposed || buf.byteLength !== FRAME_FLOATS * 4) return;
@@ -54,7 +57,8 @@ class NativeAudioSource implements AudioSource {
 
   dispose() {
     this.disposed = true;
-    void invoke('audio_stop');
+    // Nur die eigene Aufnahme stoppen
+    void invoke('audio_stop', { id: this.captureId });
   }
 }
 
@@ -62,5 +66,5 @@ export async function createNativeSource(device: string | undefined, loopback: b
   const channel = new Channel<ArrayBuffer>();
   const info = await invoke<CaptureInfo>('audio_start', { device: device ?? null, loopback, onFrame: channel });
   const label = loopback ? `Systemaudio · ${info.name}` : info.name;
-  return new NativeAudioSource(loopback ? 'display' : 'mic', label, channel);
+  return new NativeAudioSource(loopback ? 'display' : 'mic', label, channel, info.id);
 }
