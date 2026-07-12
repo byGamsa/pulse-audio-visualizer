@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Engine } from './engine/Engine';
+import { stopStaleNativeCapture } from './audio/NativeAudioSource';
 import { useSettings } from './store/settings';
 import { Hud } from './ui/Hud';
 import { PlayerBar, TopBar } from './ui/Chrome';
@@ -20,6 +21,7 @@ export function App() {
   const idle = useIdle(3000);
 
   useEffect(() => {
+    stopStaleNativeCapture();
     const e = new Engine(canvasRef.current!);
     e.start();
     void e.setMode(useSettings.getState().playback.modeId, 0);

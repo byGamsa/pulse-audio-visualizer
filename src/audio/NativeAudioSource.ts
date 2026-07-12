@@ -21,6 +21,11 @@ interface CaptureInfo {
 
 export const hasNativeAudio = isTauri;
 
+// Nach einem WebView-Reload läuft die alte Aufnahme in Rust weiter
+export function stopStaleNativeCapture() {
+  if (hasNativeAudio()) void invoke('audio_stop').catch(() => {});
+}
+
 export function listNativeDevices(): Promise<NativeDevice[]> {
   return invoke<NativeDevice[]>('audio_devices');
 }
