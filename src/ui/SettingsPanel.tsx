@@ -1,11 +1,17 @@
 import { useState } from 'react';
 import { RotateCcw, X } from 'lucide-react';
-import { useSettings } from '../store/settings';
+import { useSettings, type NowPlayingMode } from '../store/settings';
 import { PALETTES } from '../engine/palette';
 import { ICON, cn, ui } from './ui';
 import { Group, Slider, Switch } from './controls';
 
 type Tab = 'audio' | 'look' | 'performance';
+
+const NOW_PLAYING_OPTIONS: { value: NowPlayingMode; label: string }[] = [
+  { value: 'always', label: 'Immer' },
+  { value: 'change', label: 'Bei Liedwechsel' },
+  { value: 'off', label: 'Aus' },
+];
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'audio', label: 'Audio' },
@@ -88,8 +94,23 @@ function AudioTab() {
 function LookTab() {
   const visual = useSettings((s) => s.visual);
   const set = useSettings((s) => s.setVisual);
+  const nowPlaying = useSettings((s) => s.ui.nowPlaying);
+  const setUi = useSettings((s) => s.setUi);
   return (
     <>
+      <Group title="Titelanzeige">
+        <div className="mb-16 flex gap-4">
+          {NOW_PLAYING_OPTIONS.map((o) => (
+            <button
+              key={o.value}
+              className={cn(ui.chip, nowPlaying === o.value && ui.chipOn)}
+              onClick={() => setUi({ nowPlaying: o.value })}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      </Group>
       <Group title="Palette">
         <div className="mb-16 grid grid-cols-4 gap-8">
           {PALETTES.map((p) => (

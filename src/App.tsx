@@ -9,16 +9,21 @@ import { PlaybackPanel } from './ui/PlaybackPanel';
 import { SettingsPanel } from './ui/SettingsPanel';
 import { StartScreen } from './ui/StartScreen';
 import { useIdle } from './ui/useIdle';
+import { NowPlaying } from './ui/NowPlaying';
+import { useNowPlaying } from './media/nowPlaying';
+import type { AudioSourceKind } from './audio/types';
 
 export function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [engine, setEngine] = useState<Engine | null>(null);
   const [sourceLabel, setSourceLabel] = useState<string | null>(null);
+  const [sourceKind, setSourceKind] = useState<AudioSourceKind | null>(null);
   const [startOpen, setStartOpen] = useState(true);
   const [browserOpen, setBrowserOpen] = useState(false);
   const ui = useSettings((s) => s.ui);
   const setUi = useSettings((s) => s.setUi);
   const idle = useIdle(3000);
+  const track = useNowPlaying(sourceKind, sourceLabel);
 
   useEffect(() => {
     stopStaleNativeCapture();
@@ -67,8 +72,9 @@ export function App() {
           engine={engine}
           canClose={sourceLabel !== null}
           onClose={() => setStartOpen(false)}
-          onConnected={(label) => {
+          onConnected={(label, kind) => {
             setSourceLabel(label);
+            setSourceKind(kind);
             setStartOpen(false);
           }}
         />
@@ -76,6 +82,7 @@ export function App() {
       {engine && !startOpen && (
         <>
           {ui.showHud && <Hud engine={engine} />}
+          <NowPlaying track={track} mode={ui.nowPlaying} chromeVisible={!chromeIdle} />
           <TopBar
             sourceLabel={sourceLabel}
             settingsOpen={ui.panelOpen}

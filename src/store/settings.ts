@@ -55,10 +55,14 @@ export interface PlaybackSettings {
   hold: boolean;
 }
 
+// Titelanzeige: dauerhaft, nur kurz bei Liedwechsel oder gar nicht
+export type NowPlayingMode = 'always' | 'change' | 'off';
+
 export interface UiSettings {
   showHud: boolean;
   panelOpen: boolean;
   playbackOpen: boolean;
+  nowPlaying: NowPlayingMode;
 }
 
 export interface SettingsState {
@@ -111,6 +115,7 @@ const defaults = {
     showHud: true,
     panelOpen: false,
     playbackOpen: false,
+    nowPlaying: 'change' as NowPlayingMode,
   } satisfies UiSettings,
 };
 

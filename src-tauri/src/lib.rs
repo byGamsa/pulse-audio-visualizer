@@ -1,4 +1,5 @@
 mod audio;
+mod media;
 
 use std::sync::Mutex;
 use tauri::ipc::{Channel, InvokeResponseBody};
@@ -63,11 +64,17 @@ fn audio_stop(state: State<'_, AudioState>, id: Option<u32>) {
     }
 }
 
+// WinRT blockiert, daher im Hintergrund-Thread
+#[tauri::command]
+async fn now_playing() -> Option<media::NowPlaying> {
+    tauri::async_runtime::spawn_blocking(media::now_playing).await.ok().flatten()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .manage(AudioState::default())
-        .invoke_handler(tauri::generate_handler![audio_devices, audio_start, audio_stop])
+        .invoke_handler(tauri::generate_handler![audio_devices, audio_start, audio_stop, now_playing])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
