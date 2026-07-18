@@ -17,6 +17,7 @@ pub struct NowPlaying {
 mod imp {
     use super::NowPlaying;
     use base64::Engine;
+    use std::sync::Mutex;
     use windows::Media::Control::{
         GlobalSystemMediaTransportControlsSessionManager as Manager,
         GlobalSystemMediaTransportControlsSessionMediaProperties as Properties,
@@ -24,6 +25,9 @@ mod imp {
     };
     use windows::Storage::Streams::DataReader;
     use windows::Win32::System::WinRT::{RoInitialize, RO_INIT_MULTITHREADED};
+
+    // Das Cover wird nur neu gelesen, wenn sich der Titel ändert
+    static ART_CACHE: Mutex<Option<(String, Option<String>)>> = Mutex::new(None);
 
     pub fn current() -> windows::core::Result<Option<NowPlaying>> {
         // Ohne Apartment schlagen WinRT-Aufrufe fehl
@@ -42,7 +46,16 @@ mod imp {
         let app = session.SourceAppUserModelId()?.to_string();
         let playing = session.GetPlaybackInfo()?.PlaybackStatus()? == Status::Playing;
 
-        let artwork = read_artwork(&props).ok().flatten();
+        let key = format!("{title}\u{1}{artist}\u{1}{album}");
+        let mut cache = ART_CACHE.lock().unwrap_or_else(|e| e.into_inner());
+        let artwork = match cache.as_ref() {
+            Some((k, art)) if *k == key => art.clone(),
+            _ => {
+                let art = read_artwork(&props).ok().flatten();
+                *cache = Some((key, art.clone()));
+                art
+            }
+        };
         Ok(Some(NowPlaying { title, artist, album, app, playing, artwork }))
     }
 
