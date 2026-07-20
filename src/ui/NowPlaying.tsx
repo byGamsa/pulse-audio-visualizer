@@ -26,9 +26,15 @@ export function NowPlaying({ track, mode, chromeVisible }: Props) {
       setVisible(false);
       return;
     }
-    setShown(track);
-    setVisible(true);
-    if (mode === 'change') hideTimer.current = window.setTimeout(() => setVisible(false), SHOW_MS);
+    // Erst ausblenden, dann die neue Karte zeigen
+    setVisible(false);
+    const swap = window.setTimeout(() => {
+      setShown(track);
+      setVisible(true);
+      if (mode === 'change') hideTimer.current = window.setTimeout(() => setVisible(false), SHOW_MS);
+    }, shown ? 450 : 0);
+    return () => clearTimeout(swap);
+    // shown absichtlich nicht als Abhängigkeit
   }, [key, mode]);
 
   // Cover oder Status ändern sich ohne Titelwechsel
