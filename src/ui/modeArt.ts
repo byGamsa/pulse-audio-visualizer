@@ -71,6 +71,9 @@ const ART: Record<string, string> = {
   lightspeed:
     'repeating-conic-gradient(from 0deg at 50% 50%, rgba(60,170,255,0.8) 0deg 2deg, transparent 2deg 9deg), ' +
     'radial-gradient(circle at 50% 50%, #02030a 0 12%, transparent 13%), #01020a',
+  'plasma-core':
+    'radial-gradient(circle at 50% 46%, #ffffff 0 7%, rgba(120,200,255,0.8) 10%, transparent 26%), ' +
+    'linear-gradient(180deg, transparent 44%, rgba(120,255,160,0.6) 46%, transparent 48%), #02050c',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {
