@@ -4,6 +4,7 @@ import {
   ChromaticAberrationEffect,
   EffectComposer,
   EffectPass,
+  HueSaturationEffect,
   NoiseEffect,
   ToneMappingEffect,
   ToneMappingMode,
@@ -53,6 +54,7 @@ export class Engine {
   private readonly chroma: ChromaticAberrationEffect;
   private readonly noise: NoiseEffect;
   private readonly vignette: VignetteEffect;
+  private readonly saturate: HueSaturationEffect;
   private readonly palette: PaletteTexture;
   private readonly ctx: ModeContext;
   private readonly resizeObserver: ResizeObserver;
@@ -113,9 +115,10 @@ export class Engine {
     this.noise = new NoiseEffect({ premultiply: true });
     this.vignette = new VignetteEffect({ offset: 0.25, darkness: v.vignette });
     const tonemap = new ToneMappingEffect({ mode: ToneMappingMode.AGX });
+    this.saturate = new HueSaturationEffect({ saturation: 0 });
     const camera = new THREE.OrthographicCamera();
     this.composer.addPass(this.composite);
-    this.composer.addPass(new EffectPass(camera, this.bloom, this.chroma, tonemap, this.vignette, this.noise));
+    this.composer.addPass(new EffectPass(camera, this.bloom, this.chroma, tonemap, this.saturate, this.vignette, this.noise));
 
     this.resizeObserver = new ResizeObserver(() => this.handleResize());
     this.resizeObserver.observe(canvas.parentElement ?? canvas);
@@ -237,6 +240,9 @@ export class Engine {
         this.cssWidth / this.cssHeight,
         this.transitionType,
       );
+      // vivid zwischen beiden Modi überblenden
+      const vivid = (this.current.meta.vivid ?? 0) * (1 - eased) + (this.next?.meta.vivid ?? this.current.meta.vivid ?? 0) * eased;
+      this.saturate.saturation += (vivid - this.saturate.saturation) * Math.min(dt * 6, 1);
       this.composer.render(dt);
     }
 

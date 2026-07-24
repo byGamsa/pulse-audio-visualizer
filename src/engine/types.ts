@@ -10,6 +10,8 @@ export interface ModeMeta {
   description: string;
   // 1 = gering, 3 = hoch. Hilft Dynamic Resolution bei Übergängen
   gpuCost: 1 | 2 | 3;
+  // Sättigungsschub nach AgX, 0 = keiner
+  vivid?: number;
 }
 
 export interface ModeContext {
