@@ -164,6 +164,79 @@ vec3 shatter(vec2 uv, float p) {
   return col + vec3(1.0, 0.97, 0.94) * crack * sin(p * 3.14159) * 1.5;
 }
 
+// Focus Pull
+const float GOLDEN = 2.39996323;
+
+vec3 bokeh(sampler2D tex, vec2 uv, float radius, vec2 aspect) {
+  if (radius < 0.0005) return textureLod(tex, uv, 0.0).rgb;
+  vec3 acc = vec3(0.0);
+  float wsum = 0.0;
+  for (int i = 0; i < 32; i++) {
+    float fi = float(i) + 0.5;
+    float r = sqrt(fi / 32.0) * radius;
+    vec2 o = vec2(cos(fi * GOLDEN), sin(fi * GOLDEN)) * r / aspect;
+    vec3 c = textureLod(tex, clamp(uv + o, 0.0, 1.0), 0.0).rgb;
+    // Helle Punkte stärker gewichten für echtes Bokeh
+    float w = 1.0 + dot(c, vec3(0.3)) * 2.0;
+    acc += c * w;
+    wsum += w;
+  }
+  return acc / wsum;
+}
+
+vec3 focusPull(vec2 uv, float p) {
+  vec2 aspect = vec2(uAspect, 1.0);
+  float ra = smoothstep(0.0, 0.55, p) * 0.035;
+  float rb = (1.0 - smoothstep(0.45, 1.0, p)) * 0.035;
+  // „Focus Breathing“: das Bild atmet minimal mit der Schärfeebene
+  vec2 uvA = (uv - 0.5) * (1.0 - 0.025 * p) + 0.5;
+  vec2 uvB = (uv - 0.5) * (1.0 + 0.025 * (1.0 - p)) + 0.5;
+  vec3 ca = bokeh(tA, uvA, ra, aspect);
+  vec3 cb = bokeh(tB, uvB, rb, aspect);
+  return mix(ca, cb, smoothstep(0.35, 0.65, p));
+}
+
+// Light Leak
+vec3 lightLeak(vec2 uv, float p) {
+  vec2 q = (uv - 0.5) * vec2(uAspect, 1.0);
+  float peak = sin(p * 3.14159);
+  // Zwei warme Lichtflecken wandern über das Bild
+  vec2 c1 = vec2(mix(-1.2, 0.9, p), 0.15 + 0.1 * sin(p * 4.0));
+  vec2 c2 = vec2(mix(1.0, -0.6, p), -0.25);
+  float l1 = exp(-dot(q - c1, q - c1) * 6.0);
+  float l2 = exp(-dot(q - c2, q - c2) * 9.0);
+  vec3 leak = vec3(1.0, 0.45, 0.15) * l1 + vec3(1.0, 0.25, 0.45) * l2 * 0.7;
+  float exposure = 1.0 + peak * peak * 0.7;
+  vec3 ca = A(uv) * exposure;
+  vec3 cb = B(uv) * exposure;
+  vec3 col = mix(ca, cb, smoothstep(0.4, 0.6, p));
+  col += leak * peak * 1.4;
+  // Kurz vor dem Schnitt brennt das Bild fast weiß aus
+  col += vec3(1.0, 0.9, 0.8) * pow(peak, 10.0) * 0.5;
+  return col;
+}
+
+// Singularity
+vec3 singularity(vec2 uv, float p) {
+  vec2 aspect = vec2(uAspect, 1.0);
+  vec2 q = (uv - 0.5) * aspect;
+  float r = length(q);
+  float ang = atan(q.y, q.x);
+  bool second = p > 0.5;
+  float k = second ? (1.0 - p) * 2.0 : p * 2.0;
+  float e = k * k;
+  // Je näher am Kern, desto stärker verdreht und hineingezogen
+  float swirl = e * 7.0 * exp(-r * 2.5) * (second ? -1.0 : 1.0);
+  float pull = 1.0 + e * 6.0 * exp(-r * 1.5);
+  vec2 src = vec2(cos(ang + swirl), sin(ang + swirl)) * r * pull;
+  vec3 col = second ? B(src / aspect + 0.5) : A(src / aspect + 0.5);
+  // Ereignishorizont und heller Photonenring
+  float horizon = 0.25 * e;
+  col *= smoothstep(horizon * 0.6, horizon, r);
+  col += vec3(1.0, 0.85, 0.7) * exp(-pow((r - horizon) / (0.008 + 0.02 * e), 2.0)) * e * 2.5;
+  return col;
+}
+
 void main() {
   float p = uProgress;
   if (p <= 0.0) { gl_FragColor = vec4(A(vUv), 1.0); return; }
@@ -173,7 +246,10 @@ void main() {
   else if (uType == 2) col = zoomWarp(vUv, p);
   else if (uType == 3) col = glitch(vUv, p);
   else if (uType == 4) col = liquid(vUv, p);
-  else col = shatter(vUv, p);
+  else if (uType == 5) col = shatter(vUv, p);
+  else if (uType == 6) col = focusPull(vUv, p);
+  else if (uType == 7) col = lightLeak(vUv, p);
+  else col = singularity(vUv, p);
   gl_FragColor = vec4(col, 1.0);
 }
 `;

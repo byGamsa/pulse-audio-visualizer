@@ -3,6 +3,7 @@ import type { ModeCategory } from './types';
 // Reihenfolge = Index im Composite-Shader (uType)
 export const TRANSITIONS = [
   'crossfade', 'dissolve', 'zoom', 'glitch', 'liquid', 'shatter',
+  'focus', 'leak', 'singularity',
 ] as const;
 export type TransitionType = (typeof TRANSITIONS)[number];
 // Was in Einstellungen und Playlists gespeichert wird
@@ -17,16 +18,19 @@ export const TRANSITION_LABEL: Record<TransitionChoice, string> = {
   glitch: 'Glitch Cut',
   liquid: 'Liquid Displace',
   shatter: 'Shatter',
+  focus: 'Focus Pull',
+  leak: 'Light Leak',
+  singularity: 'Singularity',
 };
 
 // Mehrere pro Kategorie, damit Automatisch variiert
 const BY_CATEGORY: Record<ModeCategory, TransitionType[]> = {
   retro: ['glitch'],
-  organic: ['liquid', 'dissolve'],
-  particles: ['zoom'],
-  ambient: ['dissolve', 'crossfade'],
-  lineart: ['crossfade', 'dissolve'],
-  experimental: ['shatter', 'glitch'],
+  organic: ['liquid', 'focus', 'dissolve'],
+  particles: ['zoom', 'singularity', 'focus'],
+  ambient: ['focus', 'dissolve', 'leak'],
+  lineart: ['focus', 'crossfade'],
+  experimental: ['leak', 'shatter', 'singularity'],
 };
 
 export function resolveTransition(choice: TransitionChoice, target: ModeCategory): TransitionType {
