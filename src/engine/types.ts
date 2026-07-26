@@ -12,12 +12,16 @@ export interface ModeMeta {
   gpuCost: 1 | 2 | 3;
   // Sättigungsschub nach AgX, 0 = keiner
   vivid?: number;
+  // Palette unter „Standard“, sonst synth
+  palette?: string;
 }
 
 export interface ModeContext {
   renderer: THREE.WebGLRenderer;
   // 256×1-LUT der aktiven Palette
   palette: THREE.Texture;
+  // 0 = Originalfarben, 1 = feste Farben per tint() auf die Palette
+  paletteMix: THREE.IUniform<number>;
 }
 
 export interface VisualMode {

@@ -91,7 +91,7 @@ const defaults = {
     beatThreshold: 1.4,
   } satisfies AudioSettings,
   visual: {
-    paletteId: 'synth',
+    paletteId: 'standard',
     bloomIntensity: 0.9,
     bloomThreshold: 0.6,
     bloomRadius: 0.65,

@@ -15,7 +15,7 @@ import type { AudioSource } from '../audio/types';
 import { useSettings } from '../store/settings';
 import { CompositePass } from './CompositePass';
 import { MODES, findMode } from './ModeRegistry';
-import { PaletteTexture } from './palette';
+import { PaletteTexture, STANDARD_PALETTE } from './palette';
 import { PlaybackController } from './PlaybackController';
 import { resolveTransition, type TransitionChoice, type TransitionType } from './transitions';
 import type { ModeContext, ModeMeta, VisualMode } from './types';
@@ -96,7 +96,7 @@ export class Engine {
 
     const v = useSettings.getState().visual;
     this.palette = new PaletteTexture(v.paletteId);
-    this.ctx = { renderer: this.renderer, palette: this.palette.texture };
+    this.ctx = { renderer: this.renderer, palette: this.palette.texture, paletteMix: { value: v.paletteId === STANDARD_PALETTE ? 0 : 1 } };
 
     this.composer = new EffectComposer(this.renderer, { frameBufferType: THREE.HalfFloatType });
     this.bloom = new BloomEffect({
@@ -252,7 +252,12 @@ export class Engine {
   private applyVisualSettings(dt: number) {
     const v = useSettings.getState().visual;
     const a = this.bus.features;
-    this.palette.set(this.paletteOverride ?? v.paletteId);
+    // Standard: Hauspalette des Modus bzw. Originalfarben
+    const standard = !this.paletteOverride && v.paletteId === STANDARD_PALETTE;
+    const shown = this.next ?? this.current;
+    this.palette.set(this.paletteOverride ?? (standard ? (shown?.meta.palette ?? 'synth') : v.paletteId));
+    const mix = this.ctx.paletteMix;
+    mix.value += ((standard ? 0 : 1) - mix.value) * Math.min(dt * 2.5, 1);
     this.palette.update(dt);
     this.bloom.intensity = v.bloomIntensity * (1 + a.bassRaw * v.bloomReactive);
     this.bloom.luminanceMaterial.threshold = v.bloomThreshold;

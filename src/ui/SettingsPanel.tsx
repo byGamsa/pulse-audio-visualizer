@@ -1,9 +1,16 @@
 import { useState } from 'react';
 import { RotateCcw, X } from 'lucide-react';
 import { useSettings, type NowPlayingMode } from '../store/settings';
-import { PALETTES } from '../engine/palette';
+import { PALETTES, STANDARD_PALETTE } from '../engine/palette';
 import { ICON, cn, ui } from './ui';
 import { Group, Slider, Switch } from './controls';
+
+// Standard = Originalfarben, Vorschau als bunte Streifen
+const STANDARD_ENTRY = {
+  id: STANDARD_PALETTE,
+  name: 'Standard',
+  stops: ['#ff3a5c 0 20%', '#ffb23a 20% 40%', '#3aff9a 40% 60%', '#3a9aff 60% 80%', '#b23aff 80%'],
+};
 
 type Tab = 'audio' | 'look' | 'performance';
 
@@ -113,7 +120,7 @@ function LookTab() {
       </Group>
       <Group title="Palette">
         <div className="mb-16 grid grid-cols-4 gap-8">
-          {PALETTES.map((p) => (
+          {[STANDARD_ENTRY, ...PALETTES].map((p) => (
             <button
               key={p.id}
               className={cn(

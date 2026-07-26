@@ -54,6 +54,24 @@ float fbm(vec2 p) {
 }
 `;
 
+// Bildet eine feste Farbe auf die Palette ab, braucht palette davor
+export const tint = `
+uniform float uPaletteMix;
+vec3 tint(vec3 own) {
+  float mx = max(own.r, max(own.g, own.b));
+  if (uPaletteMix <= 0.001 || mx <= 1e-5) return own;
+  float mn = min(own.r, min(own.g, own.b));
+  float sat = (mx - mn) / mx;
+  vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+  vec4 q = mix(vec4(own.bg, K.wz), vec4(own.gb, K.xy), step(own.b, own.g));
+  vec4 r = mix(vec4(q.xyw, own.r), vec4(own.r, q.yzx), step(q.x, own.r));
+  float hue = abs(r.z + (r.w - r.y) / (6.0 * (r.x - min(r.w, r.y)) + 1e-10));
+  vec3 p = pal(0.38 + 0.52 * fract(hue + 0.05));
+  p *= mx / max(max(p.r, max(p.g, p.b)), 1e-4);
+  return mix(own, mix(own, p, sat), uPaletteMix);
+}
+`;
+
 export const palette = `
 uniform sampler2D uPalette;
 vec3 pal(float t) { return texture(uPalette, vec2(clamp(t, 0.002, 0.998), 0.5)).rgb; }

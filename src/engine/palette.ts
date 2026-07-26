@@ -18,6 +18,9 @@ export const PALETTES: Palette[] = [
   { id: 'toxic', name: 'Toxic', stops: ['#050a02', '#1f4d0b', '#7dff1f', '#e4ff6b', '#ffffff'] },
 ];
 
+// Keine feste Palette: jeder Modus zeigt seine eigenen Originalfarben
+export const STANDARD_PALETTE = 'standard';
+
 export function getPalette(id: string): Palette {
   return PALETTES.find((p) => p.id === id) ?? PALETTES[0];
 }
