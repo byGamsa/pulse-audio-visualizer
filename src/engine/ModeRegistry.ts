@@ -90,6 +90,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/neon-waves').then((m) => m.default),
   ),
   mode(
+    { id: 'silk-light', name: 'Silk Light', category: 'lineart', gpuCost: 1, vivid: 0.3,
+      description: 'Ein Bündel weicher Lichtstränge mit wanderndem Farbton; der Bass spreizt es auf.' },
+    () => import('../modes/silk-light').then((m) => m.default),
+  ),
+  mode(
     { id: 'waveform-weave', name: 'Waveform Weave', category: 'lineart', gpuCost: 1, vivid: 0.25,
       description: 'Die letzten Wellenformen schräg hintereinander, davor ein Kamm aus Spektrumlinien.' },
     () => import('../modes/waveform-weave').then((m) => m.default),

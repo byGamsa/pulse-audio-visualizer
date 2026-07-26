@@ -65,6 +65,9 @@ const ART: Record<string, string> = {
   'neon-waves':
     'repeating-linear-gradient(160deg, transparent 0 4px, rgba(255,90,220,0.75) 4px 5px, transparent 5px 9px), ' +
     'linear-gradient(180deg, #1a0a3a, #0a0420)',
+  'silk-light':
+    'linear-gradient(160deg, transparent 40%, rgba(255,230,210,0.9) 48%, rgba(255,230,210,0.3) 54%, transparent 62%), ' +
+    'linear-gradient(200deg, transparent 42%, rgba(255,220,200,0.5) 50%, transparent 58%), #1a1412',
   'waveform-weave':
     'repeating-linear-gradient(175deg, transparent 0 5px, rgba(255,235,220,0.4) 5px 6px), ' +
     'linear-gradient(90deg, transparent 25%, rgba(255,235,220,0.5) 25% 26%, transparent 26% 30%, rgba(255,235,220,0.5) 30% 31%, transparent 31%), #0a0908',
