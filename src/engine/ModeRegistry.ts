@@ -105,6 +105,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/lightspeed').then((m) => m.default),
   ),
   mode(
+    { id: 'dot-vortex', name: 'Dot Vortex', category: 'particles', gpuCost: 2, vivid: 0.3,
+      description: 'Ein gewundener Tunnel aus Punkt-Ringen in Regenbogenfarben, vorn verformt vom Klang.' },
+    () => import('../modes/dot-vortex').then((m) => m.default),
+  ),
+  mode(
     { id: 'plasma-core', name: 'Plasma Core', category: 'experimental', gpuCost: 1, vivid: 0.2,
       description: 'Eine gleißende Energiekugel mit Wellenform-Saiten und Lichtbahnen am Boden.' },
     () => import('../modes/plasma-core').then((m) => m.default),
