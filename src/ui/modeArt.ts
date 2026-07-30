@@ -81,6 +81,10 @@ const ART: Record<string, string> = {
   'plasma-core':
     'radial-gradient(circle at 50% 46%, #ffffff 0 7%, rgba(120,200,255,0.8) 10%, transparent 26%), ' +
     'linear-gradient(180deg, transparent 44%, rgba(120,255,160,0.6) 46%, transparent 48%), #02050c',
+  'neon-stage':
+    'linear-gradient(180deg, transparent 72%, #050508 72%), ' +
+    'repeating-linear-gradient(90deg, transparent 0 2px, #050508 2px 4px), ' +
+    'linear-gradient(90deg, #3cff7a, #2bd4ff, #ff4fd8, #ffd23c, #2bd4ff)',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {

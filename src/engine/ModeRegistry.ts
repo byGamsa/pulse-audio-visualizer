@@ -115,6 +115,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/plasma-core').then((m) => m.default),
   ),
   mode(
+    { id: 'neon-stage', name: 'Neon Stage', category: 'experimental', gpuCost: 1, vivid: 0.25,
+      description: 'Feine Regenbogen-Spektrumlinien mit Lichtvorhängen auf einem Spiegelboden.' },
+    () => import('../modes/neon-stage').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
