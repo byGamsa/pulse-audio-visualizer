@@ -270,7 +270,8 @@ export class Engine {
 
   private updateDynamicResolution(dt: number) {
     const v = useSettings.getState().visual;
-    this.refreshInterval = Math.min(this.refreshInterval, Math.max(dt, 1 / 360));
+    // Kürzester Frame-Abstand ≈ Bildwiederholrate, driftet langsam nach oben
+    this.refreshInterval = Math.min(this.refreshInterval * 1.003, Math.max(dt, 1 / 360));
     this.frameAvg += (dt - this.frameAvg) * 0.05;
 
     let target = this.dynamicScale;
