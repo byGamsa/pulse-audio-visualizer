@@ -120,6 +120,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/neon-stage').then((m) => m.default),
   ),
   mode(
+    { id: 'rorschach', name: 'Rorschach', category: 'lineart', gpuCost: 1,
+      description: 'Gespiegelte Wellenform-Linien hinterlassen Tintenschlieren; Insekten, Masken, Flügel. Kippt im Takt.' },
+    () => import('../modes/rorschach').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
