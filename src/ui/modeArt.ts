@@ -38,6 +38,10 @@ const ART: Record<string, string> = {
     'linear-gradient(180deg, transparent 58%, #12061a 58%), ' +
     'radial-gradient(circle at 50% 50%, #ffd36b 0%, #ff4f9a 22%, transparent 23%), ' +
     'linear-gradient(180deg, #1a0633 0%, #6a1b6e 55%, #e8445a 58%)',
+  'phosphor-scope':
+    'radial-gradient(ellipse 34% 22% at 50% 50%, transparent 85%, rgba(110,255,150,0.85) 90%, transparent 97%), ' +
+    'linear-gradient(rgba(110,255,150,0.08) 1px, transparent 1px) 0 0 / 8px 8px, ' +
+    'linear-gradient(90deg, rgba(110,255,150,0.08) 1px, transparent 1px) 0 0 / 8px 8px, #050a06',
   'particle-vortex':
     'radial-gradient(circle at 50% 50%, #f7f4ef 0%, transparent 12%), ' +
     'conic-gradient(from 0deg at 50% 50%, transparent, rgba(247,244,239,0.5), transparent 20%, rgba(247,244,239,0.4), transparent 40%, rgba(247,244,239,0.5), transparent 60%, rgba(247,244,239,0.4), transparent 80%, rgba(247,244,239,0.5)), #0b0a10',

@@ -80,6 +80,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/outrun').then((m) => m.default),
   ),
   mode(
+    { id: 'phosphor-scope', name: 'Phosphor Scope', category: 'retro', gpuCost: 1,
+      description: 'Analoges XY-Oszilloskop mit Nachleuchten. Stereo zeichnet Lissajous-Figuren.' },
+    () => import('../modes/phosphor-scope').then((m) => m.default),
+  ),
+  mode(
     { id: 'particle-vortex', name: 'Particle Vortex', category: 'particles', gpuCost: 2, vivid: 0.25,
       description: 'Ein Strudel aus 200 000 Partikeln in Rosenform. Kicks saugen ihn zusammen.' },
     () => import('../modes/particle-vortex').then((m) => m.default),
