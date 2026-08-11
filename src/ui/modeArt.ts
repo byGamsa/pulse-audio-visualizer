@@ -93,6 +93,9 @@ const ART: Record<string, string> = {
     'radial-gradient(ellipse 18% 30% at 38% 50%, #050606 0 60%, transparent 62%), ' +
     'radial-gradient(ellipse 18% 30% at 62% 50%, #050606 0 60%, transparent 62%), ' +
     'radial-gradient(ellipse 6% 22% at 50% 50%, #050606 0 70%, transparent 72%), #19e0b4',
+  'mercury-pool':
+    'radial-gradient(ellipse 50% 14% at 50% 64%, transparent 60%, rgba(255,255,255,0.7) 64%, transparent 70%), ' +
+    'linear-gradient(180deg, #0a0a0c 0 45%, #6a6e78 50%, #1a1c20 60%, #4a4e58 80%, #0e0f12)',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {
