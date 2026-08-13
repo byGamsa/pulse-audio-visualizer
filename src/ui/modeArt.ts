@@ -96,6 +96,9 @@ const ART: Record<string, string> = {
   'mercury-pool':
     'radial-gradient(ellipse 50% 14% at 50% 64%, transparent 60%, rgba(255,255,255,0.7) 64%, transparent 70%), ' +
     'linear-gradient(180deg, #0a0a0c 0 45%, #6a6e78 50%, #1a1c20 60%, #4a4e58 80%, #0e0f12)',
+  'soap-bubble':
+    'radial-gradient(circle at 42% 38%, rgba(255,255,255,0.8) 0 4%, transparent 8%), ' +
+    'radial-gradient(circle at 50% 50%, transparent 0 40%, rgba(255,120,200,0.5) 44%, rgba(120,220,255,0.5) 47%, rgba(255,230,120,0.4) 49%, transparent 52%), #0a090e',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {
