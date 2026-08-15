@@ -99,6 +99,8 @@ const ART: Record<string, string> = {
   'soap-bubble':
     'radial-gradient(circle at 42% 38%, rgba(255,255,255,0.8) 0 4%, transparent 8%), ' +
     'radial-gradient(circle at 50% 50%, transparent 0 40%, rgba(255,120,200,0.5) 44%, rgba(120,220,255,0.5) 47%, rgba(255,230,120,0.4) 49%, transparent 52%), #0a090e',
+  crystal:
+    'conic-gradient(from 20deg at 50% 50%, #e8f0ff, #6a7aa0, #ffffff, #3a4a70, #ff9ad8, #a0f0ff, #ffffff, #4a5a80, #e8f0ff)',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {
