@@ -32,7 +32,13 @@ export function App() {
     void e.setMode(useSettings.getState().playback.modeId, 0);
     setEngine(e);
     // Zum Debuggen in der Konsole: __pulse.setMode('aurora')
-    if (import.meta.env.DEV) Object.assign(window, { __pulse: e });
+    if (import.meta.env.DEV) {
+      Object.assign(window, { __pulse: e });
+      // Vorschaubilder neu aufnehmen: await __captureThumbnails()
+      void import('./dev/captureThumbnails').then(({ captureThumbnails }) =>
+        Object.assign(window, { __captureThumbnails: (ids?: string[], settle?: number) => captureThumbnails(e, ids, settle) }),
+      );
+    }
     return () => e.dispose();
   }, []);
 

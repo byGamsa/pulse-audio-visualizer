@@ -112,6 +112,8 @@ export const CATEGORY_LABEL: Record<ModeCategory, string> = {
   experimental: 'Signature',
 };
 
+// Standbild aus public/thumbs, Verlauf als Fallback
 export function modeArt(id: string): CSSProperties {
-  return { background: ART[id] ?? 'linear-gradient(135deg, #2a2a2e, #17171a)' };
+  const fallback = ART[id] ?? 'linear-gradient(135deg, #2a2a2e, #17171a)';
+  return { background: `url(${import.meta.env.BASE_URL}thumbs/${id}.webp) center / cover no-repeat, ${fallback}` };
 }
