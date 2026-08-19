@@ -13,14 +13,21 @@ export async function captureThumbnails(engine: Engine, ids?: string[], settle =
   for (const id of ids ?? engine.modes.map((m) => m.id)) {
     await engine.setMode(id, 0);
     await new Promise((r) => setTimeout(r, settle));
-    await new Promise((r) => requestAnimationFrame(r));
-    const src = engine.canvas;
-    // Mittig auf 16:9 zuschneiden
-    const aspect = WIDTH / HEIGHT;
-    let sw = src.width, sh = src.width / aspect;
-    if (sh > src.height) { sh = src.height; sw = sh * aspect; }
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
-    ctx.drawImage(src, (src.width - sw) / 2, (src.height - sh) / 2, sw, sh, 0, 0, WIDTH, HEIGHT);
+    // WebGL-Puffer ist nicht immer gefüllt, dann erneut versuchen
+    for (let attempt = 0; attempt < 30; attempt++) {
+      await new Promise((r) => requestAnimationFrame(r));
+      const src = engine.canvas;
+      // Mittig auf 16:9 zuschneiden
+      const aspect = WIDTH / HEIGHT;
+      let sw = src.width, sh = src.width / aspect;
+      if (sh > src.height) { sh = src.height; sw = sh * aspect; }
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      ctx.drawImage(src, (src.width - sw) / 2, (src.height - sh) / 2, sw, sh, 0, 0, WIDTH, HEIGHT);
+      const px = ctx.getImageData(0, 0, WIDTH, HEIGHT).data;
+      let alpha = 0;
+      for (let i = 3; i < px.length; i += 4 * 97) alpha += px[i];
+      if (alpha > 0) break;
+    }
     const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/webp', 0.86));
     if (!blob) continue;
     await fetch(`/__thumbs/${id}`, { method: 'POST', body: blob });
