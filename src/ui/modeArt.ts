@@ -101,6 +101,10 @@ const ART: Record<string, string> = {
     'radial-gradient(circle at 50% 50%, transparent 0 40%, rgba(255,120,200,0.5) 44%, rgba(120,220,255,0.5) 47%, rgba(255,230,120,0.4) 49%, transparent 52%), #0a090e',
   crystal:
     'conic-gradient(from 20deg at 50% 50%, #e8f0ff, #6a7aa0, #ffffff, #3a4a70, #ff9ad8, #a0f0ff, #ffffff, #4a5a80, #e8f0ff)',
+  'bar-grid':
+    'linear-gradient(90deg, rgba(0,0,0,0.85) 0 2px, transparent 2px) 0 0 / 6px 6px, ' +
+    'linear-gradient(0deg, rgba(0,0,0,0.85) 0 2px, transparent 2px) 0 0 / 6px 6px, ' +
+    'linear-gradient(135deg, #ffd23c, #ff5a2b, #ff4fd8, #8a5cff, #2bd4ff)',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {

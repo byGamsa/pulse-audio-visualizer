@@ -145,6 +145,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/crystal').then((m) => m.default),
   ),
   mode(
+    { id: 'bar-grid', name: 'Bar Grid', category: 'retro', gpuCost: 1, vivid: 0.4,
+      description: 'Ein 3D-Raster aus Leuchtsäulen: quer die Frequenz, nach hinten die Zeit.' },
+    () => import('../modes/bar-grid').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
