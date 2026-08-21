@@ -7,7 +7,7 @@ import { palette, tint } from '../../shared/glsl';
 const COLS = 20;
 const ROWS = 20;
 // Neue Zeile alle x Sekunden: die Historie rollt von vorn nach hinten
-const ROW_INTERVAL = 0.06;
+const ROW_INTERVAL = 0.09;
 
 const vert = `
 ${palette}
