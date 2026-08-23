@@ -109,6 +109,10 @@ const ART: Record<string, string> = {
     'radial-gradient(circle at 50% 55%, #000 0 14%, transparent 15%), ' +
     'repeating-conic-gradient(from 0deg at 50% 55%, transparent 0 3deg, rgba(0,0,0,0.9) 3deg 6deg), ' +
     'conic-gradient(from 0deg at 50% 55%, #ff4040, #ffd23c, #3cff5a, #3cc8ff, #8a5cff, #ff4fd8, #ff4040)',
+  'laser-weave':
+    'linear-gradient(8deg, transparent 46%, rgba(255,80,60,0.9) 48%, transparent 50%), ' +
+    'linear-gradient(-6deg, transparent 60%, rgba(255,120,80,0.7) 61%, transparent 62%), ' +
+    'linear-gradient(84deg, transparent 30%, rgba(255,80,60,0.8) 31%, transparent 32%), #0a0303',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {

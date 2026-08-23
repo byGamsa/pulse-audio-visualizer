@@ -155,6 +155,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/spectrum-disc').then((m) => m.default),
   ),
   mode(
+    { id: 'laser-weave', name: 'Laser Weave', category: 'experimental', gpuCost: 1, vivid: 0.3,
+      description: 'Laserbündel kreuzen sich wie in einer Langzeitbelichtung, jedes Bündel ein Frequenzband.' },
+    () => import('../modes/laser-weave').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
