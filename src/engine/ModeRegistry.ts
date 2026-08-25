@@ -160,6 +160,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/laser-weave').then((m) => m.default),
   ),
   mode(
+    { id: 'oil-paint', name: 'Oil Paint', category: 'organic', gpuCost: 2, vivid: 0.4,
+      description: 'Dicke, glänzende Farbstriche spritzen auf jeden Beat aus der Mitte und zerfließen.' },
+    () => import('../modes/oil-paint').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),

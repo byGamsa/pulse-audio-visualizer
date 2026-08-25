@@ -113,6 +113,12 @@ const ART: Record<string, string> = {
     'linear-gradient(8deg, transparent 46%, rgba(255,80,60,0.9) 48%, transparent 50%), ' +
     'linear-gradient(-6deg, transparent 60%, rgba(255,120,80,0.7) 61%, transparent 62%), ' +
     'linear-gradient(84deg, transparent 30%, rgba(255,80,60,0.8) 31%, transparent 32%), #0a0303',
+  'oil-paint':
+    'radial-gradient(ellipse 18% 10% at 30% 32%, #e000ff 60%, transparent 75%), ' +
+    'radial-gradient(ellipse 20% 9% at 58% 30%, #1030ff 60%, transparent 75%), ' +
+    'radial-gradient(ellipse 7% 22% at 72% 45%, #00d010 60%, transparent 75%), ' +
+    'radial-gradient(ellipse 22% 11% at 42% 72%, #ff0000 60%, transparent 75%), ' +
+    'radial-gradient(ellipse 12% 14% at 80% 76%, #ffe800 60%, transparent 75%), #000',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {
