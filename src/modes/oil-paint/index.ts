@@ -5,7 +5,7 @@ import { findMode } from '../../engine/ModeRegistry';
 import type { ModeContext, ModeDefinition, VisualMode } from '../../engine/types';
 import { palette, tint } from '../../shared/glsl';
 
-const STROKES = 12;
+const STROKES = 8;
 const POINTS = 22;
 // Abstand der Spurpunkte in Sekunden
 const SAMPLE = 0.034;
