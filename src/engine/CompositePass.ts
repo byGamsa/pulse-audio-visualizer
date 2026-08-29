@@ -237,6 +237,64 @@ vec3 singularity(vec2 uv, float p) {
   return col;
 }
 
+// Pixel Melt
+vec3 pixelMelt(vec2 uv, float p) {
+  float colW = 3.0 / 1080.0;
+  float c = floor(uv.x / colW);
+  float h1 = hash12(vec2(c, 1.0));
+  float h2 = hash12(vec2(floor(c / 7.0), 2.0));
+  float delay = h2 * 0.35 + h1 * 0.15;
+  float q = clamp((p - delay) / (1.0 - delay * 0.9), 0.0, 1.0);
+  float drop = q * q * (1.4 + h1 * 0.6);
+  vec2 src = vec2(uv.x, uv.y + drop);
+  vec3 col;
+  if (src.y > 1.0) {
+    col = B(uv);
+  } else {
+    // Bewegungsunschärfe entlang der Fallrichtung
+    vec3 acc = vec3(0.0);
+    for (int i = 0; i < 6; i++) acc += A(vec2(src.x, src.y + float(i) * drop * 0.025));
+    col = acc / 6.0;
+    // Die nachlaufende Kante glüht leicht
+    col += A(src) * smoothstep(0.98, 1.0, src.y) * 2.0;
+  }
+  return col;
+}
+
+// Slit Scan
+vec3 slitScan(vec2 uv, float p) {
+  float rows = 70.0;
+  float row = floor(uv.y * rows);
+  float dist = abs((row + 0.5) / rows - 0.5) * 2.0;
+  float delay = dist * 0.45 + hash12(vec2(row, 3.0)) * 0.08;
+  float q = clamp((p - delay) / 0.5, 0.0, 1.0);
+  float e = q * q * (3.0 - 2.0 * q);
+  vec3 acc = vec3(0.0);
+  float stretch = sin(q * 3.14159) * 0.18;
+  for (int i = 0; i < 10; i++) {
+    float o = float(i) / 9.0 * stretch;
+    vec2 sa = vec2(uv.x - e * 1.1 - o, uv.y);
+    vec2 sb = vec2(uv.x + (1.0 - e) * 1.1 - o, uv.y);
+    // Was rechts aus A herausgeschoben ist, wird durch B ersetzt
+    acc += sa.x >= 0.0 ? A(sa) : B(sb);
+  }
+  return acc / 10.0;
+}
+
+// Stutter Cut
+vec3 stutter(vec2 uv, float p) {
+  float steps = floor(pow(p, 0.75) * 9.0);
+  bool showB = mod(steps, 2.0) == 1.0 || p > 0.92;
+  float local = fract(pow(p, 0.75) * 9.0);
+  float kick = exp(-local * 6.0) * (1.0 - p);
+  vec2 c = (uv - 0.5) * (1.0 - kick * 0.04) + 0.5;
+  vec2 off = vec2(kick * 0.006, 0.0);
+  vec3 col = showB
+    ? vec3(B(c + off).r, B(c).g, B(c - off).b)
+    : vec3(A(c + off).r, A(c).g, A(c - off).b);
+  return col * (1.0 + kick * 0.6);
+}
+
 void main() {
   float p = uProgress;
   if (p <= 0.0) { gl_FragColor = vec4(A(vUv), 1.0); return; }
@@ -249,7 +307,10 @@ void main() {
   else if (uType == 5) col = shatter(vUv, p);
   else if (uType == 6) col = focusPull(vUv, p);
   else if (uType == 7) col = lightLeak(vUv, p);
-  else col = singularity(vUv, p);
+  else if (uType == 8) col = singularity(vUv, p);
+  else if (uType == 9) col = pixelMelt(vUv, p);
+  else if (uType == 10) col = slitScan(vUv, p);
+  else col = stutter(vUv, p);
   gl_FragColor = vec4(col, 1.0);
 }
 `;
