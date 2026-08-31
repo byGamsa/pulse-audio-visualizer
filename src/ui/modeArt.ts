@@ -119,6 +119,10 @@ const ART: Record<string, string> = {
     'radial-gradient(ellipse 7% 22% at 72% 45%, #00d010 60%, transparent 75%), ' +
     'radial-gradient(ellipse 22% 11% at 42% 72%, #ff0000 60%, transparent 75%), ' +
     'radial-gradient(ellipse 12% 14% at 80% 76%, #ffe800 60%, transparent 75%), #000',
+  'cosmic-tunnel':
+    'radial-gradient(circle at 46% 46%, #000 0 9%, transparent 16%), ' +
+    'conic-gradient(from 40deg at 46% 46%, transparent 0 8%, rgba(220,40,200,0.85) 14%, transparent 26%, transparent 46%, rgba(220,40,200,0.7) 56%, transparent 70%), ' +
+    'radial-gradient(circle at 50% 50%, #1a1420, #050408)',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {
