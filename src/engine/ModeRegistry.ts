@@ -170,6 +170,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/cosmic-tunnel').then((m) => m.default),
   ),
   mode(
+    { id: 'neon-lasers', name: 'Neon Lasers', category: 'experimental', gpuCost: 1, vivid: 0.4,
+      description: 'Neonstrahlen kreuzen sich über das ganze Bild; wo sie sich treffen, glüht es weiß.' },
+    () => import('../modes/neon-lasers').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),

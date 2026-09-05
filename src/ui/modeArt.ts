@@ -123,6 +123,11 @@ const ART: Record<string, string> = {
     'radial-gradient(circle at 46% 46%, #000 0 9%, transparent 16%), ' +
     'conic-gradient(from 40deg at 46% 46%, transparent 0 8%, rgba(220,40,200,0.85) 14%, transparent 26%, transparent 46%, rgba(220,40,200,0.7) 56%, transparent 70%), ' +
     'radial-gradient(circle at 50% 50%, #1a1420, #050408)',
+  'neon-lasers':
+    'linear-gradient(28deg, transparent 47%, rgba(255,60,255,0.95) 50%, transparent 53%), ' +
+    'linear-gradient(-34deg, transparent 47%, rgba(170,70,255,0.9) 50%, transparent 53%), ' +
+    'linear-gradient(82deg, transparent 37%, rgba(150,110,255,0.8) 40%, transparent 43%), ' +
+    'linear-gradient(-80deg, transparent 57%, rgba(255,80,255,0.7) 60%, transparent 63%), #050008',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {
