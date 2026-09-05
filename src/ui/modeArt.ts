@@ -128,6 +128,10 @@ const ART: Record<string, string> = {
     'linear-gradient(-34deg, transparent 47%, rgba(170,70,255,0.9) 50%, transparent 53%), ' +
     'linear-gradient(82deg, transparent 37%, rgba(150,110,255,0.8) 40%, transparent 43%), ' +
     'linear-gradient(-80deg, transparent 57%, rgba(255,80,255,0.7) 60%, transparent 63%), #050008',
+  'tesla-waves':
+    'linear-gradient(180deg, transparent 18%, #e0b0ff 20%, transparent 22%, transparent 43%, #b0ffc8 45%, transparent 47%, ' +
+    'transparent 68%, #b8c0ff 70%, transparent 72%, transparent 88%, #ffb0b4 90%, transparent 92%), ' +
+    'linear-gradient(180deg, #2a1a40, #1a3028 45%, #22264a 70%, #3a1a22)',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {
