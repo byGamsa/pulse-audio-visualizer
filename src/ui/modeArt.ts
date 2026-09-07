@@ -132,6 +132,11 @@ const ART: Record<string, string> = {
     'linear-gradient(180deg, transparent 18%, #e0b0ff 20%, transparent 22%, transparent 43%, #b0ffc8 45%, transparent 47%, ' +
     'transparent 68%, #b8c0ff 70%, transparent 72%, transparent 88%, #ffb0b4 90%, transparent 92%), ' +
     'linear-gradient(180deg, #2a1a40, #1a3028 45%, #22264a 70%, #3a1a22)',
+  'red-lattice':
+    'linear-gradient(32deg, transparent 49%, rgba(255,30,20,0.95) 50%, transparent 51%), ' +
+    'linear-gradient(-58deg, transparent 39%, rgba(255,30,20,0.8) 40%, transparent 41%), ' +
+    'linear-gradient(100deg, transparent 64%, rgba(255,30,20,0.7) 65%, transparent 66%), ' +
+    'linear-gradient(-12deg, transparent 69%, rgba(255,30,20,0.4) 70%, transparent 71%), #070101',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {

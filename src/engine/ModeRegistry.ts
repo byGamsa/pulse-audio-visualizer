@@ -180,6 +180,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/tesla-waves').then((m) => m.default),
   ),
   mode(
+    { id: 'red-lattice', name: 'Red Lattice', category: 'lineart', gpuCost: 2, vivid: 0.3,
+      description: 'Ein rot glühendes Dreiecksnetz in mehreren Ebenen; jede Kante hängt an einem Frequenzband.' },
+    () => import('../modes/red-lattice').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
