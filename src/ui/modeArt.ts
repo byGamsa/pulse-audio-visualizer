@@ -137,6 +137,9 @@ const ART: Record<string, string> = {
     'linear-gradient(-58deg, transparent 39%, rgba(255,30,20,0.8) 40%, transparent 41%), ' +
     'linear-gradient(100deg, transparent 64%, rgba(255,30,20,0.7) 65%, transparent 66%), ' +
     'linear-gradient(-12deg, transparent 69%, rgba(255,30,20,0.4) 70%, transparent 71%), #070101',
+  'aurora-horizon':
+    'linear-gradient(180deg, transparent 72%, rgba(255,255,255,0.9) 74%, transparent 76%), ' +
+    'linear-gradient(90deg, #ff62c8, #e0347a 30%, #d8b8ff 50%, #5ab0ff 70%, #2a48ff), #120624',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {

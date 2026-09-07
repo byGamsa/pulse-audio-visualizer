@@ -185,6 +185,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/red-lattice').then((m) => m.default),
   ),
   mode(
+    { id: 'aurora-horizon', name: 'Aurora Horizon', category: 'ambient', gpuCost: 1,
+      description: 'Lichtvorhänge in Rosa und Blau über einem spiegelnden Horizont, jede Spalte ein Band.' },
+    () => import('../modes/aurora-horizon').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
