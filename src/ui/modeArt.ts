@@ -140,6 +140,9 @@ const ART: Record<string, string> = {
   'aurora-horizon':
     'linear-gradient(180deg, transparent 72%, rgba(255,255,255,0.9) 74%, transparent 76%), ' +
     'linear-gradient(90deg, #ff62c8, #e0347a 30%, #d8b8ff 50%, #5ab0ff 70%, #2a48ff), #120624',
+  'energy-tendrils':
+    'radial-gradient(circle at 50% 50%, #c8f4ff 0 3%, rgba(60,140,255,0.8) 10%, transparent 32%), ' +
+    'repeating-conic-gradient(from 0deg at 50% 50%, rgba(60,120,255,0.5) 0 2deg, transparent 2deg 11deg), #02030c',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {

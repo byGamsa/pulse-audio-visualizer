@@ -190,6 +190,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/aurora-horizon').then((m) => m.default),
   ),
   mode(
+    { id: 'energy-tendrils', name: 'Energy Tendrils', category: 'particles', gpuCost: 2, vivid: 0.3,
+      description: 'Hunderte Energiefäden schießen aus einem Kern; vorbeiziehende verschwimmen zu Schlieren.' },
+    () => import('../modes/energy-tendrils').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
