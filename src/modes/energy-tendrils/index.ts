@@ -5,7 +5,7 @@ import { findMode } from '../../engine/ModeRegistry';
 import type { ModeContext, ModeDefinition, VisualMode } from '../../engine/types';
 import { tint } from '../../shared/glsl';
 
-const LINES = 500;
+const LINES = 380;
 const POINTS = 220;
 const BANDS = 16;
 
