@@ -195,6 +195,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/energy-tendrils').then((m) => m.default),
   ),
   mode(
+    { id: 'neon-arches', name: 'Neon Arches', category: 'retro', gpuCost: 1, vivid: 0.3,
+      description: 'Flug durch einen Tunnel aus Neonbögen über spiegelndem Boden; Kicks treiben das Tempo.' },
+    () => import('../modes/neon-arches').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),

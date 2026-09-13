@@ -143,6 +143,9 @@ const ART: Record<string, string> = {
   'energy-tendrils':
     'radial-gradient(circle at 50% 50%, #c8f4ff 0 3%, rgba(60,140,255,0.8) 10%, transparent 32%), ' +
     'repeating-conic-gradient(from 0deg at 50% 50%, rgba(60,120,255,0.5) 0 2deg, transparent 2deg 11deg), #02030c',
+  'neon-arches':
+    'linear-gradient(180deg, transparent 70%, #3a1660 70%), ' +
+    'repeating-radial-gradient(circle at 50% 62%, transparent 0 9%, rgba(255,110,230,0.9) 10%, transparent 11.5%), #12051e',
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {
