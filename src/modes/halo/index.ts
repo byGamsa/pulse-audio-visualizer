@@ -4,7 +4,8 @@ import { findMode } from '../../engine/ModeRegistry';
 import type { ModeContext, ModeDefinition, VisualMode } from '../../engine/types';
 import { fullscreenVert, hash, palette } from '../../shared/glsl';
 
-const BANDS = 128;
+// Darüber ist der Ring meist flach
+const BANDS = 104;
 const MAX_SPARKS = 4096;
 const MAX_SHOCKS = 4;
 const BASE_RADIUS = 0.23;
