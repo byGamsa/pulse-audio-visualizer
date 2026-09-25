@@ -35,6 +35,8 @@ export function getGlyphAtlas(font: string, charset = DEFAULT_CHARSET): Promise<
 async function build(font: string, charset: string): Promise<GlyphAtlas> {
   const size = 64;
   const css = `${size}px ${font}`;
+  // Sonst zeichnet Canvas mit der Fallback-Schrift
+  await document.fonts.load(css, charset);
 
   const chars = [...charset];
   const measure = document.createElement('canvas').getContext('2d')!;
