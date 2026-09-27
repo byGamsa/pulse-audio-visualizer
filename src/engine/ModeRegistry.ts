@@ -205,6 +205,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/macrodata').then((m) => m.default),
   ),
   mode(
+    { id: 'terminal', name: 'Terminal', category: 'retro', gpuCost: 1,
+      description: 'Ein Coding-Terminal tippt den echten Quellcode von Pulse, im Tempo der Musik.' },
+    () => import('../modes/terminal').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
