@@ -72,6 +72,9 @@ const ART: Record<string, string> = {
   terminal:
     'repeating-linear-gradient(180deg, rgba(90,255,130,0.7) 0 2px, transparent 2px 6px) 6px 8px / 60% 70% no-repeat, ' +
     'linear-gradient(90deg, transparent 72%, rgba(90,255,130,0.25) 72% 73%, transparent 73%), #030a05',
+  'text-tetris':
+    'linear-gradient(90deg, rgba(140,255,110,0.85) 0 18%, transparent 18% 36%, rgba(140,255,110,0.85) 36% 54%, transparent 54%) 30% 75% / 40% 14% no-repeat, ' +
+    'linear-gradient(90deg, rgba(140,255,110,0.85) 0 50%, transparent 50%) 40% 40% / 30% 14% no-repeat, #050a04',
   'neon-waves':
     'repeating-linear-gradient(160deg, transparent 0 4px, rgba(255,90,220,0.75) 4px 5px, transparent 5px 9px), ' +
     'linear-gradient(180deg, #1a0a3a, #0a0420)',

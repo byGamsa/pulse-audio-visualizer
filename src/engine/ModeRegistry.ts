@@ -210,6 +210,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/terminal').then((m) => m.default),
   ),
   mode(
+    { id: 'text-tetris', name: 'Text Tetris', category: 'retro', gpuCost: 1,
+      description: 'Tetris im Textmodus wie 1984. Spielt sich selbst, die Steine fallen im Takt.' },
+    () => import('../modes/text-tetris').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
