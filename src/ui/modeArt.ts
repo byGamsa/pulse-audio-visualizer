@@ -75,6 +75,9 @@ const ART: Record<string, string> = {
   'text-tetris':
     'linear-gradient(90deg, rgba(140,255,110,0.85) 0 18%, transparent 18% 36%, rgba(140,255,110,0.85) 36% 54%, transparent 54%) 30% 75% / 40% 14% no-repeat, ' +
     'linear-gradient(90deg, rgba(140,255,110,0.85) 0 50%, transparent 50%) 40% 40% / 30% 14% no-repeat, #050a04',
+  'vfd-hifi':
+    'repeating-linear-gradient(90deg, rgba(80,255,220,0.8) 0 3px, transparent 3px 6px) 50% 100% / 80% 60% no-repeat, ' +
+    'repeating-linear-gradient(180deg, transparent 0 2px, #030707 2px 3px), #030707',
   'neon-waves':
     'repeating-linear-gradient(160deg, transparent 0 4px, rgba(255,90,220,0.75) 4px 5px, transparent 5px 9px), ' +
     'linear-gradient(180deg, #1a0a3a, #0a0420)',

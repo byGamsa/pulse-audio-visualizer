@@ -215,6 +215,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/text-tetris').then((m) => m.default),
   ),
   mode(
+    { id: 'vfd-hifi', name: 'VFD Hi-Fi', category: 'retro', gpuCost: 1,
+      description: 'Vakuum-Fluoreszenz-Display einer alten Stereoanlage: 32-Band-Analyzer und VU-Meter.' },
+    () => import('../modes/vfd-hifi').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
