@@ -81,6 +81,9 @@ const ART: Record<string, string> = {
   'spectrum-mirror':
     'repeating-linear-gradient(90deg, transparent 0 1px, #08080c 1px 3px), ' +
     'linear-gradient(90deg, #6a3cff, #2bd4ff, #3cff7a, #ffe23c, #ff5a2b, #ffe23c, #3cff7a, #2bd4ff, #6a3cff)',
+  'led-tubes':
+    'repeating-linear-gradient(90deg, transparent 0 5px, rgba(255,255,255,0.12) 5px 9px, transparent 9px 12px), ' +
+    'linear-gradient(0deg, #2bd4ff 0%, #ff4fd8 50%, #8a5cff 80%, #05060c 81%)',
   'neon-waves':
     'repeating-linear-gradient(160deg, transparent 0 4px, rgba(255,90,220,0.75) 4px 5px, transparent 5px 9px), ' +
     'linear-gradient(180deg, #1a0a3a, #0a0420)',
