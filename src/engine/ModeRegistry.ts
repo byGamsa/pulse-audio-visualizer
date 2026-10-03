@@ -220,6 +220,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/vfd-hifi').then((m) => m.default),
   ),
   mode(
+    { id: 'spectrum-mirror', name: 'Spectrum Mirror', category: 'retro', gpuCost: 1, vivid: 0.3,
+      description: 'Gespiegelte Regenbogen-LED-Säulen mit Echo-Ebenen, die in die Tiefe laufen.' },
+    () => import('../modes/spectrum-mirror').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),

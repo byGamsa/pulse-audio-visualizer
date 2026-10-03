@@ -78,6 +78,9 @@ const ART: Record<string, string> = {
   'vfd-hifi':
     'repeating-linear-gradient(90deg, rgba(80,255,220,0.8) 0 3px, transparent 3px 6px) 50% 100% / 80% 60% no-repeat, ' +
     'repeating-linear-gradient(180deg, transparent 0 2px, #030707 2px 3px), #030707',
+  'spectrum-mirror':
+    'repeating-linear-gradient(90deg, transparent 0 1px, #08080c 1px 3px), ' +
+    'linear-gradient(90deg, #6a3cff, #2bd4ff, #3cff7a, #ffe23c, #ff5a2b, #ffe23c, #3cff7a, #2bd4ff, #6a3cff)',
   'neon-waves':
     'repeating-linear-gradient(160deg, transparent 0 4px, rgba(255,90,220,0.75) 4px 5px, transparent 5px 9px), ' +
     'linear-gradient(180deg, #1a0a3a, #0a0420)',
