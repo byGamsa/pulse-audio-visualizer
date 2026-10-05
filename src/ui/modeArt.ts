@@ -84,6 +84,9 @@ const ART: Record<string, string> = {
   'led-tubes':
     'repeating-linear-gradient(90deg, transparent 0 5px, rgba(255,255,255,0.12) 5px 9px, transparent 9px 12px), ' +
     'linear-gradient(0deg, #2bd4ff 0%, #ff4fd8 50%, #8a5cff 80%, #05060c 81%)',
+  arcade:
+    'radial-gradient(circle, #7dff6a 1.4px, transparent 1.6px) 0 0 / 8px 7px, ' +
+    'linear-gradient(0deg, #ff4040 0 8%, #ffd23c 8% 14%, #3cff5a 14% 20%, #02020a 20%)',
   'neon-waves':
     'repeating-linear-gradient(160deg, transparent 0 4px, rgba(255,90,220,0.75) 4px 5px, transparent 5px 9px), ' +
     'linear-gradient(180deg, #1a0a3a, #0a0420)',

@@ -230,6 +230,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/led-tubes').then((m) => m.default),
   ),
   mode(
+    { id: 'arcade', name: '8-Bit Arcade', category: 'retro', gpuCost: 1,
+      description: 'Pixel-Aliens marschieren im Takt, jede Spalte hüpft mit ihrem Band. Das Schiff feuert auf Beats.' },
+    () => import('../modes/arcade').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
