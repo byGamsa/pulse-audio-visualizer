@@ -200,6 +200,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/neon-arches').then((m) => m.default),
   ),
   mode(
+    { id: 'saber-stage', name: 'Saber Stage', category: 'experimental', gpuCost: 1, vivid: 0.45,
+      description: 'Bühne im Stil von Beat Saber: Lichtringe, Laserfächer und taktgenau geschnittene Würfel.' },
+    () => import('../modes/saber-stage').then((m) => m.default),
+  ),
+  mode(
     { id: 'macrodata', name: 'Macrodata', category: 'retro', gpuCost: 1,
       description: 'Ein Zahlenraster auf alter Röhre; wo die Musik hinzieht, blähen sich die Ziffern auf.' },
     () => import('../modes/macrodata').then((m) => m.default),
