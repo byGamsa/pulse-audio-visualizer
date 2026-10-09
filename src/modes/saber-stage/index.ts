@@ -22,7 +22,7 @@ const TRAVEL_BEATS = 4;
 const WINDUP = 0.14;
 const STRIKE = 0.15;
 // Spiegelungen im Boden sind so viel dunkler als das Original
-const MIRROR = 0.35;
+const MIRROR = 0.22;
 
 const RED = new THREE.Color(1.0, 0.015, 0.05);
 const BLUE = new THREE.Color(0.0, 0.28, 1.0);
