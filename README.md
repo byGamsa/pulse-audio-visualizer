@@ -156,4 +156,4 @@ Releases follow [Semantic Versioning](https://semver.org). Every version gets a 
 
 ## License
 
-[MIT](LICENSE)
+Pulse is free for personal and other non-commercial use under the [Pulse Non-Commercial License](LICENSE). Commercial use, such as selling it, bundling it into a paid product or using it at paid events, requires written permission. Open an issue to ask for a commercial license.

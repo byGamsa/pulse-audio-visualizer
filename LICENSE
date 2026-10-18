@@ -1,21 +1,63 @@
-MIT License
+Pulse Non-Commercial License
 
-Copyright (c) 2026 byGamsa
+Copyright (c) 2026 byGamsa. All rights reserved except as granted below.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. Grant
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to use,
+   copy, modify, merge and distribute the Software, and to distribute modified
+   versions of it, for non-commercial purposes only, subject to the conditions
+   below.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+2. Non-commercial use
+
+   "Non-commercial" means any use that is not primarily intended for or directed
+   toward commercial advantage or monetary compensation. Personal use, private
+   study, research, teaching and use by non-profit organizations are
+   non-commercial.
+
+   Commercial use is not permitted without prior written permission from the
+   copyright holder. Commercial use includes, but is not limited to:
+
+   a. selling the Software or a modified version of it, or charging for access
+      to it;
+   b. using the Software as part of a paid product, service or subscription;
+   c. using the Software in paid performances, events, broadcasts, streams or
+      advertising, or in public venues operated for profit;
+   d. distributing the Software bundled with advertising or in-app purchases.
+
+   To request a commercial license, open an issue at
+   https://github.com/byGamsa/pulse-audio-visualizer or contact the copyright
+   holder directly.
+
+3. Conditions
+
+   a. The above copyright notice and this license must be included in all
+      copies or substantial portions of the Software.
+   b. Modified versions must be clearly marked as modified and must be
+      distributed under this same license.
+   c. The name "Pulse" and the name of the copyright holder may not be used to
+      endorse or promote derived products without prior written permission.
+
+4. Contributions
+
+   Unless stated otherwise, any contribution submitted to this project is
+   provided under this license, and the contributor grants the copyright holder
+   the right to also license the contribution under other terms, including
+   commercial licenses.
+
+5. Termination
+
+   Any use of the Software in violation of this license automatically
+   terminates the rights granted by it.
+
+6. No warranty
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.

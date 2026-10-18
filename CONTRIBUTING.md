@@ -44,3 +44,7 @@ A PR is only merged when all checks pass, all comments are resolved and a code o
 ## New modes
 
 See the [README](README.md#adding-a-new-mode). Please include a thumbnail at `public/thumbs/<id>.webp` and keep an eye on the FPS in the HUD on an average GPU.
+
+## License
+
+By contributing, you agree that your contribution is provided under the [Pulse Non-Commercial License](LICENSE), including the right of the maintainer to also license it under other terms.
