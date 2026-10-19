@@ -240,6 +240,21 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/arcade').then((m) => m.default),
   ),
   mode(
+    { id: 'ripple-field', name: 'Ripple Field', category: 'lineart', gpuCost: 2, vivid: 0.3,
+      description: 'A spiky wire field seen from above. Every moment of the music rolls out as a ring.' },
+    () => import('../modes/ripple-field').then((m) => m.default),
+  ),
+  mode(
+    { id: 'spore-field', name: 'Spore Field', category: 'particles', gpuCost: 2, vivid: 0.2,
+      description: 'A drifting sheet of glowing spores right in front of the lens, melting into bokeh.' },
+    () => import('../modes/spore-field').then((m) => m.default),
+  ),
+  mode(
+    { id: 'prism-ridge', name: 'Prism Ridge', category: 'lineart', gpuCost: 1, vivid: 0.3,
+      description: 'A rainbow ridge of wire triangles, with blurred echoes of the last bars above and below.' },
+    () => import('../modes/prism-ridge').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
