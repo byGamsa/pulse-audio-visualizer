@@ -255,6 +255,21 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/prism-ridge').then((m) => m.default),
   ),
   mode(
+    { id: 'infinity', name: 'Infinity', category: 'lineart', gpuCost: 1, vivid: 0.3,
+      description: 'A blazing band of light draws a figure eight. The bass inflates the loops.' },
+    () => import('../modes/infinity').then((m) => m.default),
+  ),
+  mode(
+    { id: 'gyroscope', name: 'Gyroscope', category: 'experimental', gpuCost: 1, vivid: 0.3,
+      description: 'Three tilting rings of light threads around a glowing core. Every kick nudges one.' },
+    () => import('../modes/gyroscope').then((m) => m.default),
+  ),
+  mode(
+    { id: 'chroma-urchin', name: 'Chroma Urchin', category: 'organic', gpuCost: 2, vivid: 0.3,
+      description: 'A sea urchin of hair-thin rainbow circles. Every spine dances with its band.' },
+    () => import('../modes/chroma-urchin').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
