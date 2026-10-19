@@ -270,6 +270,26 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/chroma-urchin').then((m) => m.default),
   ),
   mode(
+    { id: 'sepia-nova', name: 'Sepia Nova', category: 'experimental', gpuCost: 2,
+      description: 'A ball of 9,000 hairs bursts in sepia. Zoom streaks carry every kick outward.' },
+    () => import('../modes/sepia-nova').then((m) => m.default),
+  ),
+  mode(
+    { id: 'twin-vortex', name: 'Twin Vortex', category: 'particles', gpuCost: 2, vivid: 0.3,
+      description: 'Light trails fall through the center and curl into two vortices left and right.' },
+    () => import('../modes/twin-vortex').then((m) => m.default),
+  ),
+  mode(
+    { id: 'warp-ring', name: 'Warp Ring', category: 'particles', gpuCost: 1, vivid: 0.2,
+      description: 'A ring of white droplets. Every moment flies outward as an echo with a color fringe.' },
+    () => import('../modes/warp-ring').then((m) => m.default),
+  ),
+  mode(
+    { id: 'polar-arcs', name: 'Polar Arcs', category: 'lineart', gpuCost: 1, vivid: 0.3,
+      description: 'Ten rings of glowing arcs tumble through space, one ring per frequency band.' },
+    () => import('../modes/polar-arcs').then((m) => m.default),
+  ),
+  mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
       description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
