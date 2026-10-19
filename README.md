@@ -1,11 +1,31 @@
+<p align="center">
+  <img src=".github/assets/pulse-symbol.svg" width="120" alt="Pulse logo" />
+</p>
+
 # Pulse
 
-Real-time audio visualizer for desktop and browser. 47 modes, HDR rendering with bloom, playlists with seamless transitions and direct system audio capture on Windows.
+**Turn whatever your computer is playing into light.** Spotify, a YouTube video, a DJ set, your microphone or a file. Pulse listens to it and renders it in real time across 47 modes, from organic fields and particle storms to retro terminals, line art and neon tunnels. It runs in any browser or as a native desktop app on Windows.
 
-<p>
-  <img src="public/thumbs/halo.webp" width="32%" alt="Halo" />
-  <img src="public/thumbs/nebula-galaxy.webp" width="32%" alt="Nebula Galaxy" />
-  <img src="public/thumbs/saber-stage.webp" width="32%" alt="Saber Stage" />
+And it actually listens. A multi-resolution FFT with beat and BPM detection drives every frame, transitions land on the beat, and the now playing card picks up cover art from Spotify, browsers, Apple Music and VLC. An HDR pipeline with bloom, AgX tone mapping and film grain makes it feel like stage lighting, not a media player plugin.
+
+Everything runs **100% locally**: no cloud, no telemetry, no account, not a single network request. Audio is analysed on your machine and never leaves it.
+
+<p align="center">
+  <a href="#quick-start"><img src="https://img.shields.io/badge/platform-Windows_%7C_Browser-0078D4" alt="platform" /></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%E2%89%A5_22-44CC11" alt="node" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-non--commercial-0E7FC0" alt="license" /></a>
+  <a href="https://github.com/byGamsa/pulse-audio-visualizer/releases/latest"><img src="https://img.shields.io/github/v/release/byGamsa/pulse-audio-visualizer?label=version&color=0E7FC0" alt="version" /></a>
+  <a href="#features"><img src="https://img.shields.io/badge/modes-47-FF6A1F" alt="modes" /></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/byGamsa/pulse-audio-visualizer/releases/latest"><img src="https://img.shields.io/badge/DOWNLOAD_FOR_WINDOWS-PULSE__X64--SETUP.EXE-FF6A1F?style=for-the-badge&labelColor=555555" alt="Download for Windows" /></a>
+  &nbsp;
+  <a href="#quick-start"><img src="https://img.shields.io/badge/BROWSER_%C2%B7_ANY_OS-RUN_FROM_SOURCE-6E6E6E?style=for-the-badge&labelColor=444444" alt="Run in the browser" /></a>
+</p>
+
+<p align="center">
+  <img src=".github/assets/screenshot.webp" alt="Pulse rendering a neon tunnel mode" />
 </p>
 
 ## Features
