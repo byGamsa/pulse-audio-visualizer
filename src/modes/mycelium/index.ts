@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { AudioFeatures } from '../../audio/types';
 import { LineSet } from '../../engine/field/primitives';
+import { renderOver } from '../../engine/fullscreen';
 import { findMode } from '../../engine/ModeRegistry';
 import type { ModeContext, ModeDefinition, VisualMode } from '../../engine/types';
 
@@ -65,6 +66,10 @@ vec3 lineColor(float line, float t) {
 }
 `;
 
+// Unendlicher Zoom: mehrere Generationen ineinander, jede 2,6× größer als die nächste
+const LAYERS = 4;
+const STEP = Math.log(2.6);
+
 class Mycelium implements VisualMode {
   private readonly scene = new THREE.Scene();
   private readonly camera = new THREE.PerspectiveCamera(40, 1, 0.1, 50);
@@ -73,9 +78,8 @@ class Mycelium implements VisualMode {
   private readonly pulse = new Float32Array(MAX_PULSES).fill(-1);
   private readonly pulseAmp = new Float32Array(MAX_PULSES);
   private pulseIndex = 0;
-  private grow = 0.08;
-  private fade = 1;
-  private seed = Math.random() * 10;
+  private zoom = 0;
+  private spin = 0;
   private time = 0;
 
   init(ctx: ModeContext) {
@@ -88,7 +92,7 @@ class Mycelium implements VisualMode {
       uniforms: {
         uGrow: { value: 0 },
         uFade: { value: 1 },
-        uSeed: { value: this.seed },
+        uSeed: { value: 0 },
         uTrunk: { value: this.trunk },
         uPulse: { value: this.pulse },
         uPulseAmp: { value: this.pulseAmp },
@@ -108,18 +112,9 @@ class Mycelium implements VisualMode {
   update(a: AudioFeatures) {
     const dt = a.dt;
     this.time += dt;
-
-    // Wachsen mit der Energie; ausgewachsen → verblassen → neu keimen
-    if (this.grow < 1.3) {
-      this.grow += dt * (0.06 + a.energy * 0.12);
-      this.fade = Math.min(this.fade + dt * 0.8, 1);
-    } else {
-      this.fade -= dt * 0.35;
-      if (this.fade <= 0) {
-        this.grow = 0.08;
-        this.seed = Math.random() * 10;
-      }
-    }
+    // Immer tiefer hinein; Energie und Kicks geben Tempo
+    this.zoom += dt * (0.09 + a.energy * 0.22) + (a.beat ? 0.012 : 0);
+    this.spin += dt * (0.02 + a.mid * 0.05);
 
     // 9 Stämme ↔ 9 Frequenzbereiche von Bass bis Höhen
     for (let k = 0; k < TRUNKS; k++) {
@@ -135,21 +130,36 @@ class Mycelium implements VisualMode {
       this.pulseIndex = (this.pulseIndex + 1) % MAX_PULSES;
     }
 
-    const u = this.lines.uniforms;
-    u.uTime.value = this.time;
-    u.uGrow.value = this.grow;
-    u.uFade.value = Math.max(this.fade, 0);
-    u.uSeed.value = this.seed;
-
+    this.lines.uniforms.uTime.value = this.time;
     const t = this.time * 0.04;
-    this.camera.position.set(Math.sin(t) * 1.2, Math.cos(t * 0.8) * 0.8, 5.6);
+    this.camera.position.set(Math.sin(t) * 0.6, Math.cos(t * 0.8) * 0.4, 5.6);
     this.camera.lookAt(0, 0, 0);
   }
 
   render(renderer: THREE.WebGLRenderer, target: THREE.WebGLRenderTarget) {
     renderer.setRenderTarget(target);
     renderer.clear();
-    renderer.render(this.scene, this.camera);
+    const u = this.lines.uniforms;
+    const mesh = this.lines.mesh;
+    const pos = this.zoom / STEP;
+    for (let i = 0; i < LAYERS; i++) {
+      // p läuft von 0 (winzig in der Mitte) bis LAYERS (riesig, aus dem Bild)
+      const k = pos + i;
+      const gen = Math.floor(k / LAYERS);
+      const p = k - gen * LAYERS;
+      const scale = Math.exp((p - LAYERS + 1.6) * STEP);
+      // Jede neue Generation bekommt ein eigenes Geflecht und wächst, während sie näher kommt
+      const seed = ((gen * LAYERS + ((i % LAYERS) + LAYERS) % LAYERS) * 7.31) % 10;
+      const grow = Math.min(0.08 + p * 0.42, 1.3);
+      const fade = Math.min(p / 0.6, 1) * Math.min((LAYERS - p) / 0.9, 1);
+      u.uSeed.value = seed;
+      u.uGrow.value = grow;
+      u.uFade.value = Math.max(fade, 0);
+      mesh.scale.setScalar(scale);
+      mesh.rotation.z = this.spin + gen * 1.37 + i * 2.1;
+      renderOver(renderer, target, this.scene, this.camera);
+    }
+    mesh.scale.setScalar(1);
   }
 
   dispose() {
