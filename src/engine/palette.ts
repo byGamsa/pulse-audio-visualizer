@@ -16,6 +16,13 @@ export const PALETTES: Palette[] = [
   { id: 'mono', name: 'Mono', stops: ['#08080a', '#4a4a55', '#b8b8c8', '#ffffff'] },
   { id: 'sunset', name: 'Sunset', stops: ['#1a0533', '#6a1b6e', '#e8445a', '#ffa64d', '#fff2c4'] },
   { id: 'toxic', name: 'Toxic', stops: ['#050a02', '#1f4d0b', '#7dff1f', '#e4ff6b', '#ffffff'] },
+  // Voller Regenbogen wie bei Prism Ridge; tint() verteilt die Farbtöne der Modi über den ganzen Bogen
+  {
+    id: 'neon',
+    name: 'Neon',
+    // Dunkler Einstieg für Hintergründe, ab 0.38 der ganze Bogen von Rot bis Violett
+    stops: ['#0c0322', '#3a0a6e', '#c01aa8', '#ff2e3b', '#ffd21a', '#3dff4a', '#1fe3ff', '#5a3dff', '#ff2bd6'],
+  },
 ];
 
 // Keine feste Palette: jeder Modus zeigt seine eigenen Originalfarben
