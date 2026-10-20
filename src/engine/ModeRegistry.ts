@@ -141,7 +141,7 @@ export const MODES: RegistryEntry[] = [
   ),
   mode(
     { id: 'crystal', name: 'Crystal', category: 'experimental', gpuCost: 2,
-      description: 'Ein geschliffener Kristall mit Lichtbrechung und Dispersion; Kicks geben ihm Schwung.' },
+      description: 'A double-ended quartz crystal with a glowing phantom inside. Kicks set it spinning.' },
     () => import('../modes/crystal').then((m) => m.default),
   ),
   mode(
