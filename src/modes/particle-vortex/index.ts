@@ -1,131 +1,180 @@
 import * as THREE from 'three';
 import type { AudioFeatures } from '../../audio/types';
-import { DotGrid } from '../../engine/field/primitives';
+import { SpectrumHistory, spectrumHistoryGlsl } from '../../engine/field/SpectrumHistory';
+import { Starfield } from '../../engine/field/Starfield';
+import { Streaks } from '../../engine/field/Streaks';
+import { FullscreenPass, renderOver } from '../../engine/fullscreen';
 import { findMode } from '../../engine/ModeRegistry';
 import type { ModeContext, ModeDefinition, VisualMode } from '../../engine/types';
+import { hue, palette, tint } from '../../shared/glsl';
 
-// Fünf Blütenblätter modulieren den Radius
+const ROWS = 60;
+const ARMS = 3;
+
+// Kometenspuren strömen auf Spiralarmen in einen glühenden Trichter
 const glsl = `
-#define DOT_SIZE_FN
-uniform float uSpin;
+${spectrumHistoryGlsl(ROWS)}
+uniform float uFlow;
 uniform float uSuck;
-uniform float uPetal;
-uniform float uTreble;
-uniform float uFlash;
-
+uniform float uSpin;
+uniform float uHue;
 const float TAU = 6.2831853;
-float h21(vec2 p, float k) { return fract(sin(dot(p, vec2(127.1, 311.7)) + k * 74.7) * 43758.5453); }
+const float R_OUT = 3.4;
+const float R_IN = 0.12;
 
-struct P { vec3 pos; float r0; float glitter; };
+float radiusAt(float s) { return mix(R_OUT, R_IN, pow(clamp(s, 0.0, 1.0), 0.75)); }
 
-P particle(vec2 g) {
-  float h1 = h21(g, 1.0), h2 = h21(g, 2.0), h3 = h21(g, 3.0), h4 = h21(g, 4.0);
-  P p;
-  p.r0 = 0.12 + pow(h2, 0.7) * 2.3;
-  float theta = h1 * TAU;
-  // Partikel bündeln sich in fünf Armen, leicht gestreut
-  theta = floor(theta / TAU * 5.0) / 5.0 * TAU + (h4 - 0.5) * (0.5 + 0.4 / p.r0);
-  theta += log(p.r0) * 1.6 + uSpin / pow(0.25 + p.r0, 1.25);
-  float r = p.r0 * (1.0 + 0.16 * sin(5.0 * theta + uPetal));
-  // Bass saugt das Innere ein und lässt es zurückfedern
-  r *= 1.0 - uSuck * 0.28 * exp(-p.r0 * 0.6);
-  float y = -0.6 / (r + 0.3) + 0.35 + (h3 - 0.5) * (0.04 + 0.05 * r);
-  p.pos = vec3(cos(theta) * r, y, sin(theta) * r);
-  p.glitter = h21(g, 5.0) > 0.975 ? 1.0 : 0.0;
-  return p;
+vec3 streakPath(vec4 seed, float s) {
+  float r = radiusAt(s) * (1.0 - uSuck * 0.22 * (1.0 - s));
+  // Drei Arme, ein Teil der Spuren streut frei dazwischen
+  float arm = floor(seed.x * ${ARMS}.0);
+  float free = step(0.72, seed.y);
+  float spread = mix(0.35, 3.14159, free) * (seed.z - 0.5);
+  float th = arm / ${ARMS}.0 * TAU + spread - log(r) * 2.1 + uSpin;
+  // Trichter: je näher am Kern, desto tiefer
+  float y = -0.55 / (r + 0.18) + 0.2 + (seed.w - 0.5) * 0.06 * r;
+  return vec3(cos(th) * r, y, sin(th) * r);
 }
 
-vec3 dotPos(vec2 g) { return particle(g).pos; }
-
-float dotIntensity(vec2 g) {
-  P p = particle(g);
-  float core = exp(-p.r0 * 1.3) * (1.6 + uFlash * 2.5);
-  float tw = p.glitter * (1.5 + 3.0 * uTreble) * (0.5 + 0.5 * sin(uTime * (6.0 + 14.0 * h21(g, 6.0)) + h21(g, 7.0) * 60.0));
-  float edge = smoothstep(2.5, 1.6, p.r0);
-  return (0.55 + core * 1.3 + tw) * edge;
+vec2 streakSpan(vec4 seed) {
+  float len = 0.02 + seed.w * 0.035;
+  float speed = 0.035 + seed.z * 0.03;
+  return vec2(fract(seed.y * 9.7 + seed.x * 3.1 + uFlow * speed) * (1.0 + len), len);
 }
 
-float dotSize(vec2 g) { return particle(g).glitter > 0.5 ? 2.2 : 1.0; }
+float streakWidth(vec4 seed, float s) {
+  return (0.006 + seed.w * 0.01) * (0.5 + radiusAt(s) * 0.35);
+}
 
-vec3 dotColor(vec2 g) {
-  P p = particle(g);
-  vec3 c = pal(clamp(0.28 + 0.52 * exp(-p.r0 * 0.9), 0.0, 1.0));
-  return mix(c, vec3(1.0, 0.97, 0.94), p.glitter * 0.7 + 0.15);
+vec3 streakColor(vec4 seed, float u, float s) {
+  float r = radiusAt(s);
+  float k = clamp(1.0 - r / R_OUT, 0.0, 1.0);
+  // Außen Violett, Mitte Pink, innen Gold bis Weiß
+  vec3 outer = hue2rgb(fract(uHue + 0.7));
+  vec3 mid = hue2rgb(fract(uHue + 0.9));
+  vec3 inner = vec3(1.0, 0.82, 0.55);
+  vec3 c = mix(outer, mid, smoothstep(0.1, 0.55, k));
+  c = mix(c, inner, smoothstep(0.55, 0.9, k));
+  c = mix(c, vec3(1.0), smoothstep(0.9, 1.0, k) * 0.7);
+  float e = specAt(1.0 - k, 0.0);
+  float head = pow(u, 1.4);
+  float fade = smoothstep(0.0, 0.06, s);
+  return tint(c) * (0.08 + e * 0.5 + k * k * 0.6) * head * fade;
+}
+`;
+
+const coreFrag = `
+precision highp float;
+in vec2 vUv;
+uniform vec2 uRes;
+uniform vec2 uCore;
+uniform float uGlow;
+uniform float uHue;
+${palette}
+${tint}
+${hue}
+void main() {
+  vec2 p = (vUv - uCore) * vec2(uRes.x / uRes.y, 1.0);
+  float r = length(p);
+  vec3 col = vec3(1.0, 0.85, 0.6) * exp(-r * r * 900.0) * (1.2 + uGlow * 2.0);
+  col += hue2rgb(fract(uHue + 0.9)) * exp(-r * 9.0) * (0.06 + uGlow * 0.12);
+  col += hue2rgb(fract(uHue + 0.7)) * exp(-r * 2.2) * 0.012;
+  gl_FragColor = vec4(tint(col), 1.0);
 }
 `;
 
 class ParticleVortex implements VisualMode {
   private readonly scene = new THREE.Scene();
-  private readonly camera = new THREE.PerspectiveCamera(42, 1, 0.05, 60);
-  private dots!: DotGrid;
+  private readonly camera = new THREE.PerspectiveCamera(46, 1, 0.05, 100);
+  private history!: SpectrumHistory;
+  private streaks!: Streaks;
+  private stars!: Starfield;
+  private core!: FullscreenPass;
+  private readonly probe = new THREE.Vector3();
+  private height = 1080;
+  private time = 0;
+  private flow = 0;
   private spin = 0;
-  private petal = 0;
   private suck = 0;
   private suckVel = 0;
   private flash = 0;
-  private time = 0;
+  private hue = 0;
 
   init(ctx: ModeContext) {
-    this.dots = new DotGrid({
-      columns: 520,
-      rows: 400,
-      size: 2.2,
+    this.history = new SpectrumHistory(ROWS);
+    this.streaks = new Streaks({
+      count: 12000,
+      segments: 6,
       palette: ctx.palette,
+      paletteMix: ctx.paletteMix,
       glsl,
       uniforms: {
-        uSpin: { value: 0 },
-        uSuck: { value: 0 },
-        uPetal: { value: 0 },
-        uTreble: { value: 0 },
-        uFlash: { value: 0 },
+        uSpecHist: { value: this.history.texture },
+        uFlow: { value: 0 }, uSuck: { value: 0 }, uSpin: { value: 0 }, uHue: { value: 0 },
       },
     });
-    this.dots.uniforms.uFocus.value = 4.2;
-    this.dots.uniforms.uDof.value = 1.6;
-    this.scene.add(this.dots.points);
+    this.core = new FullscreenPass(coreFrag, {
+      uCore: { value: new THREE.Vector2(0.5, 0.5) }, uGlow: { value: 0 }, uHue: { value: 0 },
+      uPalette: { value: ctx.palette }, uPaletteMix: ctx.paletteMix,
+    });
+    this.stars = new Starfield(2500, 80, 0.6);
+    this.scene.add(this.stars.points, this.streaks.mesh);
   }
 
   resize(width: number, height: number) {
+    this.height = height;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
-    this.dots.uniforms.uRes.value.set(width, height);
+    this.core.resize(width, height);
   }
 
   update(a: AudioFeatures) {
     const dt = a.dt;
     this.time += dt;
-    this.spin += dt * (0.5 + a.mid * 1.8);
-    this.petal += dt * (0.3 + a.treble * 1.2);
-    // Feder-Dämpfer
+    this.history.update(a);
+    // Feder-Dämpfer: Kicks ziehen den Strudel zusammen
     if (a.beat) {
-      this.suckVel += 3 + a.bassRaw * 5;
+      this.suckVel += 2.5 + a.bassRaw * 4;
       this.flash = 1;
     }
-    this.suckVel += (-this.suck * 60 - this.suckVel * 9) * dt;
+    this.suckVel += (-this.suck * 40 - this.suckVel * 8) * dt;
     this.suck += this.suckVel * dt;
     this.flash *= Math.exp(-dt * 5);
+    this.flow += dt * (1 + a.energy * 2.5 + this.flash * 2);
+    this.spin += dt * (0.15 + a.mid * 0.4);
+    this.hue = (this.hue + dt * 0.005) % 1;
 
-    const u = this.dots.uniforms;
+    const u = this.streaks.uniforms;
     u.uTime.value = this.time;
+    u.uFlow.value = this.flow;
+    u.uSuck.value = this.suck + a.bass * 0.4;
     u.uSpin.value = this.spin;
-    u.uSuck.value = this.suck + a.bass * 0.3;
-    u.uPetal.value = this.petal;
-    u.uTreble.value = a.treble;
-    u.uFlash.value = this.flash;
+    u.uHue.value = this.hue;
 
-    const t = this.time * 0.05;
-    this.camera.position.set(Math.cos(t) * 3.2, 2.7 + Math.sin(this.time * 0.07) * 0.3, Math.sin(t) * 3.2);
-    this.camera.lookAt(0, -0.35, 0);
+    const t = this.time * 0.04;
+    this.camera.position.set(Math.cos(t) * 3.6, 2.9 + Math.sin(this.time * 0.07) * 0.3, Math.sin(t) * 3.6);
+    this.camera.lookAt(0, -0.6, 0);
+    this.camera.updateMatrixWorld();
+    this.stars.update(this.time, this.height);
+
+    // Kernleuchten dort, wo der Trichter endet
+    this.probe.set(0, -1.6, 0).project(this.camera);
+    const c = this.core.uniforms;
+    c.uCore.value.set(this.probe.x * 0.5 + 0.5, this.probe.y * 0.5 + 0.5);
+    c.uGlow.value = this.flash + a.bass * 0.5;
+    c.uHue.value = this.hue;
   }
 
   render(renderer: THREE.WebGLRenderer, target: THREE.WebGLRenderTarget) {
-    renderer.setRenderTarget(target);
-    renderer.clear();
-    renderer.render(this.scene, this.camera);
+    this.core.render(renderer, target);
+    renderOver(renderer, target, this.scene, this.camera);
   }
 
   dispose() {
-    this.dots.dispose();
+    this.history.dispose();
+    this.streaks.dispose();
+    this.stars.dispose();
+    this.core.dispose();
   }
 }
 

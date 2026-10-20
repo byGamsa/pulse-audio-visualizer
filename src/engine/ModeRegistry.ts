@@ -86,7 +86,7 @@ export const MODES: RegistryEntry[] = [
   ),
   mode(
     { id: 'particle-vortex', name: 'Particle Vortex', category: 'particles', gpuCost: 2, vivid: 0.25,
-      description: 'Ein Strudel aus 200 000 Partikeln in Rosenform. Kicks saugen ihn zusammen.' },
+      description: '12,000 comet trails spiral into a glowing funnel. Kicks pull the vortex tight.' },
     () => import('../modes/particle-vortex').then((m) => m.default),
   ),
   mode(
