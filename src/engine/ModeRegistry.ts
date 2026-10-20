@@ -100,11 +100,6 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/silk-light').then((m) => m.default),
   ),
   mode(
-    { id: 'waveform-weave', name: 'Waveform Weave', category: 'lineart', gpuCost: 1, vivid: 0.25,
-      description: 'Die letzten Wellenformen schräg hintereinander, davor ein Kamm aus Spektrumlinien.' },
-    () => import('../modes/waveform-weave').then((m) => m.default),
-  ),
-  mode(
     { id: 'lightspeed', name: 'Lightspeed', category: 'particles', gpuCost: 2, vivid: 0.25,
       description: 'Lichtstrahlen und Punktströme schießen auf dich zu; Beats geben Schub.' },
     () => import('../modes/lightspeed').then((m) => m.default),

@@ -93,9 +93,6 @@ const ART: Record<string, string> = {
   'silk-light':
     'linear-gradient(160deg, transparent 40%, rgba(255,230,210,0.9) 48%, rgba(255,230,210,0.3) 54%, transparent 62%), ' +
     'linear-gradient(200deg, transparent 42%, rgba(255,220,200,0.5) 50%, transparent 58%), #1a1412',
-  'waveform-weave':
-    'repeating-linear-gradient(175deg, transparent 0 5px, rgba(255,235,220,0.4) 5px 6px), ' +
-    'linear-gradient(90deg, transparent 25%, rgba(255,235,220,0.5) 25% 26%, transparent 26% 30%, rgba(255,235,220,0.5) 30% 31%, transparent 31%), #0a0908',
   lightspeed:
     'repeating-conic-gradient(from 0deg at 50% 50%, rgba(60,170,255,0.8) 0deg 2deg, transparent 2deg 9deg), ' +
     'radial-gradient(circle at 50% 50%, #02030a 0 12%, transparent 13%), #01020a',
