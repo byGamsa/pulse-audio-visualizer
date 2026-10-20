@@ -51,7 +51,7 @@ export const MODES: RegistryEntry[] = [
   ),
   mode(
     { id: 'organism', name: 'Organism', category: 'organic', gpuCost: 2, vivid: 0.25,
-      description: 'Ein durchscheinender Zellkörper, der atmet und sich bei harten Kicks teilt.' },
+      description: 'A glowing cell under the microscope. Cilia beat with the highs, kicks make it bud.' },
     () => import('../modes/organism').then((m) => m.default),
   ),
   mode(
