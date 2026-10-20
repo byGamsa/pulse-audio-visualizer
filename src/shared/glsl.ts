@@ -119,7 +119,13 @@ vec3 tint(vec3 own) {
   vec4 q = mix(vec4(own.bg, K.wz), vec4(own.gb, K.xy), step(own.b, own.g));
   vec4 r = mix(vec4(q.xyw, own.r), vec4(own.r, q.yzx), step(q.x, own.r));
   float hue = abs(r.z + (r.w - r.y) / (6.0 * (r.x - min(r.w, r.y)) + 1e-10));
-  vec3 p = pal(0.38 + 0.52 * fract(hue + 0.05));
+  // Gespiegelt statt umgebrochen: Farbton 1 und 0 landen an derselben Stelle, kein harter Schnitt
+  float h = fract(hue + 0.05);
+  float pos = 0.38 + 0.52 * (1.0 - abs(h * 2.0 - 1.0));
+  // Dunkle Töne (Hintergründe, Dunst) nehmen das dunkle Ende der Palette statt eines Mitteltons,
+  // sonst wird aus Indigo-Nacht bei bunten Paletten grüner oder oliver Matsch
+  pos = mix(0.13, pos, smoothstep(0.015, 0.22, mx));
+  vec3 p = pal(pos);
   p *= mx / max(max(p.r, max(p.g, p.b)), 1e-4);
   return mix(own, mix(own, p, sat), uPaletteMix);
 }
