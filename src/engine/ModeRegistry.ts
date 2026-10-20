@@ -240,6 +240,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/arcade').then((m) => m.default),
   ),
   mode(
+    { id: 'horizon-grid', name: 'Horizon Grid', category: 'lineart', gpuCost: 2, vivid: 0.3,
+      description: 'A wireframe planet with the spectrum rising from its center as a crater of spikes.' },
+    () => import('../modes/horizon-grid').then((m) => m.default),
+  ),
+  mode(
     { id: 'ripple-field', name: 'Ripple Field', category: 'lineart', gpuCost: 2, vivid: 0.3,
       description: 'A spiky wire field seen from above. Every moment of the music rolls out as a ring.' },
     () => import('../modes/ripple-field').then((m) => m.default),
@@ -273,6 +278,16 @@ export const MODES: RegistryEntry[] = [
     { id: 'sepia-nova', name: 'Sepia Nova', category: 'experimental', gpuCost: 2,
       description: 'A ball of 9,000 hairs bursts in sepia. Zoom streaks carry every kick outward.' },
     () => import('../modes/sepia-nova').then((m) => m.default),
+  ),
+  mode(
+    { id: 'moire-moon', name: 'Moiré Moon', category: 'organic', gpuCost: 2, vivid: 0.2,
+      description: 'A moon of 400,000 dots. The bass presses in craters with magenta rims.' },
+    () => import('../modes/moire-moon').then((m) => m.default),
+  ),
+  mode(
+    { id: 'lightfall', name: 'Lightfall', category: 'particles', gpuCost: 1, vivid: 0.35,
+      description: 'A waterfall of 2,600 neon trails plunges down and fans out toward you.' },
+    () => import('../modes/lightfall').then((m) => m.default),
   ),
   mode(
     { id: 'twin-vortex', name: 'Twin Vortex', category: 'particles', gpuCost: 2, vivid: 0.3,
