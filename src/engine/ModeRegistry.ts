@@ -115,8 +115,8 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/dot-vortex').then((m) => m.default),
   ),
   mode(
-    { id: 'plasma-core', name: 'Plasma Core', category: 'experimental', gpuCost: 1, vivid: 0.2,
-      description: 'Eine gleißende Energiekugel mit Wellenform-Saiten und Lichtbahnen am Boden.' },
+    { id: 'plasma-core', name: 'Plasma Core', category: 'experimental', gpuCost: 2, vivid: 0.25,
+      description: 'A plasma sphere full of swirling filaments. The corona flares, kicks throw lightning.' },
     () => import('../modes/plasma-core').then((m) => m.default),
   ),
   mode(
