@@ -275,6 +275,11 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/chroma-urchin').then((m) => m.default),
   ),
   mode(
+    { id: 'low-tide', name: 'Low Tide', category: 'organic', gpuCost: 2, vivid: 0.25,
+      description: 'A glowing urchin half out of the night water, its reflection trembling below.' },
+    () => import('../modes/low-tide').then((m) => m.default),
+  ),
+  mode(
     { id: 'sepia-nova', name: 'Sepia Nova', category: 'experimental', gpuCost: 2,
       description: 'A ball of 9,000 hairs bursts in sepia. Zoom streaks carry every kick outward.' },
     () => import('../modes/sepia-nova').then((m) => m.default),
