@@ -18,6 +18,7 @@ uniform float uRipple;
 uniform vec4 uDrops[${DROPS}];
 uniform vec4 uFall;
 ${palette}
+uniform float uPaletteMix;
 ${studioGlsl}
 
 float height(vec2 p) {
@@ -91,6 +92,11 @@ void main() {
       col *= exp(-max(t - 4.0, 0.0) * 0.12);
     }
   }
+  // Chrom ist farblos: mit gewählter Palette die Helligkeit entlang ihres Verlaufs tonen
+  float lum = dot(col, vec3(0.3, 0.55, 0.15));
+  vec3 ramp = pal(clamp(0.18 + sqrt(lum) * 0.72, 0.0, 0.97));
+  ramp *= lum * 1.25 / max(max(ramp.r, max(ramp.g, ramp.b)), 1e-3);
+  col = mix(col, mix(col, ramp, 0.75), uPaletteMix);
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -112,6 +118,7 @@ class MercuryPool implements VisualMode {
       uFall: { value: this.fall },
       uStudioSpin: { value: 0 },
       uPalette: { value: ctx.palette },
+      uPaletteMix: ctx.paletteMix,
     });
   }
 
