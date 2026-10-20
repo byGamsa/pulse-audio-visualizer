@@ -30,31 +30,55 @@ float spec(float x) {
   return mix(uSpec[i], uSpec[min(i + 1, ${SPEC - 1})], fract(f));
 }
 
-// Nur die 3×3 Nachbarzellen prüfen, hält die SDF billig
-float spikes(vec3 n) {
+// Exakter Abstand zu einem Kegelstumpf (Inigo Quilez), q = (Abstand zur Achse, Höhe um die Mitte)
+float sdCappedCone(vec2 q, float h, float r1, float r2) {
+  vec2 k1 = vec2(r2, h);
+  vec2 k2 = vec2(r2 - r1, 2.0 * h);
+  vec2 ca = vec2(q.x - min(q.x, (q.y < 0.0) ? r1 : r2), abs(q.y) - h);
+  vec2 cb = q - k1 + k2 * clamp(dot(k1 - q, k2) / dot(k2, k2), 0.0, 1.0);
+  float s = (cb.x < 0.0 && ca.y < 0.0) ? -1.0 : 1.0;
+  return s * sqrt(min(dot(ca, ca), dot(cb, cb)));
+}
+
+float smin(float a, float b, float k) {
+  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+  return mix(b, a, h) - k * h * (1.0 - h);
+}
+
+// Jede Stachel ist ein echter Kegel; nur die 3×3 Nachbarzellen zählen, das hält es billig
+float spikes(vec3 q, float radius) {
+  float r = length(q);
+  vec3 n = q / max(r, 1e-4);
   float lat = acos(clamp(n.y, -1.0, 1.0));
   float lon = atan(n.z, n.x);
   float row = lat / PI * ROWS;
-  float best = 0.0;
+  float best = 1e3;
   for (int dr = -1; dr <= 1; dr++) {
-    float r = floor(row) + float(dr);
-    if (r < 0.0 || r >= ROWS) continue;
-    float latc = (r + 0.5) / ROWS * PI;
+    float rw = floor(row) + float(dr);
+    if (rw < 0.0 || rw >= ROWS) continue;
+    float latc = (rw + 0.5) / ROWS * PI;
     float count = max(1.0, floor(2.0 * ROWS * sin(latc)));
-    float stagger = r * 0.5;
+    float stagger = rw * 0.5;
     float cell = (lon / (2.0 * PI)) * count - stagger;
     for (int dc = -1; dc <= 1; dc++) {
       float c = floor(cell) + float(dc);
       float lonc = (c + 0.5 + stagger) / count * 2.0 * PI;
       vec3 cd = vec3(sin(latc) * cos(lonc), cos(latc), sin(latc) * sin(lonc));
-      float ang = acos(clamp(dot(n, cd), -1.0, 1.0));
       // Äquator = Bass, Pole = Höhen
       float band = abs(latc - PI * 0.5) / (PI * 0.5);
-      float rnd = h21(vec2(r, mod(c, count)));
+      float rnd = h21(vec2(rw, mod(c, count)));
       float jitter = 1.0 + uTreble * 0.25 * sin(uTime * 30.0 + rnd * 50.0);
       float h = (0.04 + spec(band) * 0.55 * (0.6 + 0.7 * rnd)) * (0.6 + uBass * 0.7) * jitter;
-      float w = PI / ROWS * 0.62;
-      best = max(best, h * pow(max(0.0, 1.0 - ang / w), 2.4));
+      // Weiche Obergrenze statt endlos langer Nadeln
+      h = 1.05 * (1.0 - exp(-h / 1.05));
+      // Kegel vom Inneren der Kugel bis zur Spitze, Breite wächst etwas mit der Höhe
+      float y0 = radius * 0.86;
+      float y1 = radius + h;
+      float half_ = (y1 - y0) * 0.5;
+      float along = dot(q, cd);
+      float perp = length(q - cd * along);
+      float base = 0.075 + h * 0.05;
+      best = min(best, sdCappedCone(vec2(perp, along - (y0 + half_)), half_, base, 0.004));
     }
   }
   return best;
@@ -67,10 +91,12 @@ mat3 rotation() {
 
 float map(vec3 p, mat3 rot) {
   vec3 q = rot * p;
-  float r = length(q);
-  vec3 n = q / max(r, 1e-4);
   float radius = 1.0 + uBass * 0.04;
-  return (r - radius - spikes(n)) * 0.55;
+  float sphere = length(q) - radius;
+  // Weiche Kehle zwischen Kugel und Stacheln, wie bei echtem Ferrofluid
+  float d = smin(sphere, spikes(q, radius), 0.09);
+  // Nie weiter als eine halbe Zelle springen, sonst könnte eine Nachbarstachel übersprungen werden
+  return min(d, max(length(q) * 0.11, 0.02));
 }
 
 // Softboxen, Bodenlicht und farbige Kantenlichter
@@ -93,11 +119,12 @@ void main() {
   // Weicher Lichthof hinter der Kugel, atmet mit dem Bass
   col += pal(0.6) * exp(-length(uv) * 2.4) * (0.08 + uBass * 0.25);
 
-  float t = 2.6;
+  // Ab der Kamera marschieren: lange Spitzen ragen weit nach vorn
+  float t = 0.6;
   bool hit = false;
-  for (int i = 0; i < 110; i++) {
+  for (int i = 0; i < 220; i++) {
     float d = map(ro + rd * t, rot);
-    if (d < 0.0006 * t) { hit = true; break; }
+    if (d < 0.0004 * t) { hit = true; break; }
     t += d;
     if (t > 7.0) break;
   }
