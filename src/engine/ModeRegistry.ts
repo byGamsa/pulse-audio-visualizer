@@ -135,9 +135,9 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/mercury-pool').then((m) => m.default),
   ),
   mode(
-    { id: 'soap-bubble', name: 'Soap Bubble', category: 'organic', gpuCost: 2, vivid: 0.15,
-      description: 'Eine Seifenblase mit echter Dünnschicht-Interferenz; der Bass lässt sie wabbeln.' },
-    () => import('../modes/soap-bubble').then((m) => m.default),
+    { id: 'liquid-pearl', name: 'Liquid Pearl', category: 'organic', gpuCost: 2, vivid: 0.15,
+      description: 'Iridescent pearls made of dots drift around each other. The bass bends them.' },
+    () => import('../modes/liquid-pearl').then((m) => m.default),
   ),
   mode(
     { id: 'crystal', name: 'Crystal', category: 'experimental', gpuCost: 2,

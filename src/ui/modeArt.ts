@@ -117,9 +117,9 @@ const ART: Record<string, string> = {
   'mercury-pool':
     'radial-gradient(ellipse 50% 14% at 50% 64%, transparent 60%, rgba(255,255,255,0.7) 64%, transparent 70%), ' +
     'linear-gradient(180deg, #0a0a0c 0 45%, #6a6e78 50%, #1a1c20 60%, #4a4e58 80%, #0e0f12)',
-  'soap-bubble':
-    'radial-gradient(circle at 42% 38%, rgba(255,255,255,0.8) 0 4%, transparent 8%), ' +
-    'radial-gradient(circle at 50% 50%, transparent 0 40%, rgba(255,120,200,0.5) 44%, rgba(120,220,255,0.5) 47%, rgba(255,230,120,0.4) 49%, transparent 52%), #0a090e',
+  'liquid-pearl':
+    'radial-gradient(circle at 60% 58%, #0b0a08 0 9%, transparent 11%), ' +
+    'radial-gradient(circle at 44% 40%, #fff6dc 0 18%, #9ff5e6 32%, #f4ead0 44%, transparent 46%), #050505',
   crystal:
     'conic-gradient(from 20deg at 50% 50%, #e8f0ff, #6a7aa0, #ffffff, #3a4a70, #ff9ad8, #a0f0ff, #ffffff, #4a5a80, #e8f0ff)',
   'bar-grid':
