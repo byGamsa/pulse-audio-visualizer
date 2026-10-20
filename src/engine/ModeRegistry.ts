@@ -71,7 +71,7 @@ export const MODES: RegistryEntry[] = [
   ),
   mode(
     { id: 'lava-lamp', name: 'Lava Lamp', category: 'organic', gpuCost: 1, vivid: 0.15,
-      description: 'Warme Wachsblasen steigen und sinken; die Musik heizt die Lampe auf.' },
+      description: 'Inside a lava lamp: glowing wax drifts through violet liquid as the music heats it up.' },
     () => import('../modes/lava-lamp').then((m) => m.default),
   ),
   mode(
