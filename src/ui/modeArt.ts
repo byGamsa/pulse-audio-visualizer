@@ -110,10 +110,10 @@ const ART: Record<string, string> = {
     'linear-gradient(180deg, transparent 72%, #050508 72%), ' +
     'repeating-linear-gradient(90deg, transparent 0 2px, #050508 2px 4px), ' +
     'linear-gradient(90deg, #3cff7a, #2bd4ff, #ff4fd8, #ffd23c, #2bd4ff)',
-  rorschach:
-    'radial-gradient(ellipse 18% 30% at 38% 50%, #050606 0 60%, transparent 62%), ' +
-    'radial-gradient(ellipse 18% 30% at 62% 50%, #050606 0 60%, transparent 62%), ' +
-    'radial-gradient(ellipse 6% 22% at 50% 50%, #050606 0 70%, transparent 72%), #19e0b4',
+  'ink-bloom':
+    'radial-gradient(ellipse 20% 28% at 36% 48%, rgba(255,60,170,0.85), transparent 70%), ' +
+    'radial-gradient(ellipse 20% 28% at 64% 48%, rgba(255,60,170,0.85), transparent 70%), ' +
+    'radial-gradient(ellipse 10% 34% at 50% 52%, rgba(60,220,255,0.8), transparent 72%), #050309',
   'mercury-pool':
     'radial-gradient(ellipse 50% 14% at 50% 64%, transparent 60%, rgba(255,255,255,0.7) 64%, transparent 70%), ' +
     'linear-gradient(180deg, #0a0a0c 0 45%, #6a6e78 50%, #1a1c20 60%, #4a4e58 80%, #0e0f12)',

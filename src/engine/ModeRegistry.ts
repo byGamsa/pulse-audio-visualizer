@@ -125,9 +125,9 @@ export const MODES: RegistryEntry[] = [
     () => import('../modes/neon-stage').then((m) => m.default),
   ),
   mode(
-    { id: 'rorschach', name: 'Rorschach', category: 'lineart', gpuCost: 1,
-      description: 'Gespiegelte Wellenform-Linien hinterlassen Tintenschlieren; Insekten, Masken, Flügel. Kippt im Takt.' },
-    () => import('../modes/rorschach').then((m) => m.default),
+    { id: 'ink-bloom', name: 'Ink Bloom', category: 'organic', gpuCost: 1, vivid: 0.25,
+      description: 'Glowing ink in dark water, mirrored like a Rorschach test. Each kick blooms a new color.' },
+    () => import('../modes/ink-bloom').then((m) => m.default),
   ),
   mode(
     { id: 'mercury-pool', name: 'Mercury Pool', category: 'organic', gpuCost: 2,
