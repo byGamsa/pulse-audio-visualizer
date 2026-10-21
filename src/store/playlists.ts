@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { MODES } from '../engine/ModeRegistry';
 import { isTransitionChoice, type TransitionChoice } from '../engine/transitions';
 
 export interface PlaylistItem {
@@ -54,6 +55,65 @@ const SEED: Playlist[] = [
     defaultDuration: 90,
     order: 'shuffle',
     items: [item('neon-tunnel'), item('halo'), item('nebula-galaxy'), item('dot-matrix', 60)],
+  },
+  {
+    id: 'neon-rave',
+    name: 'Neon Rave',
+    defaultDuration: 60,
+    order: 'shuffle',
+    transition: 'random',
+    items: ['lightfall', 'prism-ridge', 'gyroscope', 'infinity', 'warp-ring', 'neon-lasers', 'laser-weave', 'saber-stage', 'neon-tunnel', 'polar-arcs'].map((m) => item(m)),
+  },
+  {
+    id: 'club-peak',
+    name: 'Club Peak',
+    defaultDuration: 45,
+    order: 'shuffle',
+    transition: 'random',
+    items: ['sepia-nova', 'twin-vortex', 'warp-ring', 'tesla-waves', 'energy-tendrils', 'lightspeed', 'plasma-core', 'halo', 'chroma-urchin'].map((m) => item(m)),
+  },
+  {
+    id: 'deep-space',
+    name: 'Deep Space',
+    defaultDuration: 120,
+    order: 'sequential',
+    items: ['horizon-grid', 'nebula-galaxy', 'plasma-core', 'cosmic-tunnel', 'polar-arcs', 'low-tide', 'particle-vortex', 'dot-vortex'].map((m) => item(m)),
+  },
+  {
+    id: 'organic-flow',
+    name: 'Organic Flow',
+    defaultDuration: 120,
+    order: 'shuffle',
+    items: ['liquid-pearl', 'moire-moon', 'chroma-urchin', 'ferrofluid', 'jellyfish', 'mycelium', 'organism', 'mercury-pool', 'lava-lamp', 'oil-paint', 'ink-bloom'].map((m) => item(m)),
+  },
+  {
+    id: 'wireframe',
+    name: 'Wireframe',
+    defaultDuration: 90,
+    order: 'shuffle',
+    items: ['horizon-grid', 'ripple-field', 'prism-ridge', 'red-lattice', 'neon-waves', 'silk-ribbon', 'spectrum-disc', 'dot-matrix'].map((m) => item(m)),
+  },
+  {
+    id: 'chill',
+    name: 'Chill',
+    defaultDuration: 180,
+    order: 'sequential',
+    transition: 'crossfade',
+    items: ['aurora', 'spore-field', 'liquid-gradient', 'midnight-ocean', 'aurora-horizon', 'silk-light', 'liquid-silk', 'low-tide'].map((m) => item(m)),
+  },
+  {
+    id: 'retro-arcade',
+    name: 'Retro Arcade',
+    defaultDuration: 90,
+    order: 'sequential',
+    items: ['outrun', 'arcade', 'text-tetris', 'vfd-hifi', 'phosphor-scope', 'macrodata', 'terminal', 'led-tubes', 'spectrum-mirror', 'bar-grid', 'neon-arches'].map((m) => item(m)),
+  },
+  {
+    id: 'showcase',
+    name: 'Showcase',
+    defaultDuration: 40,
+    order: 'sequential',
+    items: ['horizon-grid', 'ripple-field', 'spore-field', 'prism-ridge', 'infinity', 'gyroscope', 'chroma-urchin', 'sepia-nova', 'moire-moon', 'liquid-pearl', 'low-tide', 'warp-ring', 'polar-arcs', 'lightfall', 'twin-vortex', 'plasma-core'].map((m) => item(m)),
   },
 ];
 
@@ -130,7 +190,29 @@ export const usePlaylists = create<PlaylistState>()(
         return playlist.id;
       },
     }),
-    { name: 'pulse-playlists', version: 1 },
+    {
+      name: 'pulse-playlists',
+      version: 3,
+      // Neue Vorlagen ergänzen, Verweise auf entfernte Modi streichen
+      migrate: (persisted, version) => {
+        const state = persisted as { playlists?: Playlist[] };
+        let playlists = state.playlists ?? [];
+        if (version < 2) {
+          const have = new Set(playlists.map((p) => p.id));
+          playlists = [...playlists, ...SEED.filter((p) => !have.has(p.id))];
+        }
+        // Umbenannte und ersetzte Modi übernehmen statt verlieren
+        const renamed: Record<string, string> = { rorschach: 'ink-bloom', 'soap-bubble': 'liquid-pearl' };
+        const known = new Set(MODES.map((m) => m.meta.id));
+        playlists = playlists.map((p) => ({
+          ...p,
+          items: p.items
+            .map((i) => (renamed[i.modeId] ? { ...i, modeId: renamed[i.modeId] } : i))
+            .filter((i) => known.has(i.modeId)),
+        }));
+        return { ...state, playlists } as PlaylistState;
+      },
+    },
   ),
 );
 
