@@ -66,7 +66,7 @@ export function StartScreen({ engine, canClose, onClose, onConnected }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const selected = SOURCES.find((s) => s.kind === kind)!;
 
-  // Desktop: WASAPI mit Geräteauswahl
+  // Desktop: natives Loopback (WASAPI, ScreenCaptureKit, PulseAudio) mit Geräteauswahl
   const native = hasNativeAudio();
   const [devices, setDevices] = useState<NativeDevice[]>([]);
   const [device, setDevice] = useState<Record<string, string>>({});
@@ -75,7 +75,7 @@ export function StartScreen({ engine, canClose, onClose, onConnected }: Props) {
   }, [native]);
   const deviceKind = kind === 'display' ? 'output' : kind === 'mic' ? 'input' : null;
   const deviceOptions = deviceKind ? devices.filter((d) => d.kind === deviceKind) : [];
-  const hint = native && kind === 'display' ? 'Straight through WASAPI loopback, no sharing dialog.' : selected.hint;
+  const hint = native && kind === 'display' ? 'Captured directly by the app, no sharing dialog.' : selected.hint;
 
   const connect = async (factory: () => Promise<AudioSource>) => {
     setBusy(true);

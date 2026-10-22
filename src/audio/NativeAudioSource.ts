@@ -30,7 +30,7 @@ export function listNativeDevices(): Promise<NativeDevice[]> {
   return invoke<NativeDevice[]>('audio_devices');
 }
 
-// Fertige Frames aus Rust (WASAPI), ca. 120 Hz
+// Fertige Frames aus Rust, ca. 120 Hz
 class NativeAudioSource implements AudioSource {
   private latest = new Float32Array(FRAME_FLOATS).fill(-200);
   private disposed = false;

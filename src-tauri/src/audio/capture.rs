@@ -1,4 +1,5 @@
-// WASAPI: Input-Stream auf Output-Gerät = Loopback
+// Windows: WASAPI-Input-Stream auf Output-Gerät = Loopback
+// macOS/Linux: Loopback über das jeweilige System-Modul
 
 use super::analysis::{Analyzer, FRAME_FLOATS};
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
@@ -43,9 +44,18 @@ pub fn list_devices() -> Vec<DeviceInfo> {
             list.push(DeviceInfo { is_default: Some(&name) == default.as_ref(), name, kind });
         }
     };
+    #[cfg(windows)]
     if let Ok(devices) = host.output_devices() {
         for name in devices.filter_map(|d| d.name().ok()) {
             add(name, "output", &default_out);
+        }
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = default_out;
+        let (outputs, default) = super::system::output_devices();
+        for name in outputs {
+            add(name, "output", &default);
         }
     }
     if let Ok(devices) = host.input_devices() {
@@ -72,7 +82,16 @@ fn find_device(host: &cpal::Host, name: Option<&str>, loopback: bool) -> Result<
     found.ok_or_else(|| format!("Audiogerät nicht gefunden: {}", name.unwrap_or("Standard")))
 }
 
-type SharedBuffer = Arc<Mutex<VecDeque<[f32; 2]>>>;
+pub(super) type SharedBuffer = Arc<Mutex<VecDeque<[f32; 2]>>>;
+
+// Höchstens 1 s puffern, älteste Samples verwerfen
+pub(super) fn push_frames(buffer: &SharedBuffer, cap: usize, frames: impl Iterator<Item = [f32; 2]>) {
+    let Ok(mut buf) = buffer.lock() else { return };
+    buf.extend(frames);
+    while buf.len() > cap {
+        buf.pop_front();
+    }
+}
 
 pub struct Capture {
     pub info: CaptureInfo,
@@ -93,6 +112,10 @@ impl Capture {
         let stream_thread = std::thread::Builder::new()
             .name("pulse-audio-capture".into())
             .spawn(move || {
+                #[cfg(not(windows))]
+                if loopback {
+                    return super::system::run(device.as_deref(), stream_buffer, ready_tx, stop_rx);
+                }
                 let built = (|| {
                     let host = cpal::default_host();
                     let dev = find_device(&host, device.as_deref(), loopback)?;
@@ -155,21 +178,17 @@ where
     f32: FromSample<T>,
 {
     let channels = config.channels as usize;
-    // Höchstens 1 s puffern, älteste Samples verwerfen
     let cap = config.sample_rate.0 as usize;
     device
         .build_input_stream(
             config,
             move |data: &[T], _: &cpal::InputCallbackInfo| {
-                let Ok(mut buf) = buffer.lock() else { return };
-                for frame in data.chunks(channels) {
+                let frames = data.chunks(channels).map(|frame| {
                     let l: f32 = frame[0].to_sample::<f32>();
                     let r: f32 = if channels > 1 { frame[1].to_sample::<f32>() } else { l };
-                    buf.push_back([l, r]);
-                }
-                while buf.len() > cap {
-                    buf.pop_front();
-                }
+                    [l, r]
+                });
+                push_frames(&buffer, cap, frames);
             },
             |err| eprintln!("Audio-Stream-Fehler: {err}"),
             None,
