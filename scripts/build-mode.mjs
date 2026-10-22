@@ -1,11 +1,26 @@
-// Baut einen Modus-Ordner (index.ts, manifest.json, thumb.webp) zu einem installierbaren Paket
+// Baut einen Modus-Ordner (index.ts, manifest.json, thumb.webp) zu einem Paketordner und einer signierten .pulsemode-Datei
 // node scripts/build-mode.mjs <ordner> [--out <ziel>]
+import { createHash, createPrivateKey, sign } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { basename, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'vite';
 
 const SDK_VERSION = 1;
+const KEY_PATH = process.env.PULSE_MODE_KEY ?? resolve(homedir(), '.pulse', 'mode-signing.key');
+const key = existsSync(KEY_PATH) ? createPrivateKey(readFileSync(KEY_PATH)) : null;
+if (!key) console.warn(`no signing key at ${KEY_PATH}, only unsigned folders are built (node scripts/mode-key.mjs)`);
+
+// Muss zu signed_message() in src-tauri/src/modes.rs passen
+function signedMessage(files) {
+  const lines = Object.keys(files)
+    .sort()
+    .map((name) => `${name}	${createHash('sha256').update(files[name]).digest('hex')}
+`);
+  return Buffer.from(`pulse-mode-v1
+${lines.join('')}`);
+}
 const root = fileURLToPath(new URL('..', import.meta.url));
 const args = process.argv.slice(2);
 let outRoot = resolve(root, '.mode-packages');
@@ -54,4 +69,18 @@ for (const dir of dirs.map((d) => resolve(d))) {
   if (existsSync(resolve(dir, 'thumb.webp'))) copyFileSync(resolve(dir, 'thumb.webp'), resolve(out, 'thumb.webp'));
   else console.warn(`${manifest.id}: no thumb.webp`);
   console.log(`${manifest.id} ${manifest.version} -> ${out}`);
+
+  if (!key) continue;
+  const files = {};
+  for (const name of ['manifest.json', 'mode.js', 'thumb.webp']) {
+    if (existsSync(resolve(out, name))) files[name] = readFileSync(resolve(out, name));
+  }
+  const envelope = {
+    format: 1,
+    files: Object.fromEntries(Object.entries(files).map(([name, data]) => [name, data.toString('base64')])),
+    signature: sign(null, signedMessage(files), key).toString('base64'),
+  };
+  const file = resolve(outRoot, `${manifest.id}-${manifest.version}.pulsemode`);
+  writeFileSync(file, JSON.stringify(envelope));
+  console.log(`signed -> ${file}`);
 }

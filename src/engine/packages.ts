@@ -1,3 +1,4 @@
+import { convertFileSrc, invoke, isTauri } from '@tauri-apps/api/core';
 import * as THREE from 'three';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -71,9 +72,51 @@ export const useInstalledModes = create<InstalledState>()(
   persist((set) => ({ modes: [], setModes: (modes) => set({ modes }) }), { name: 'pulse-installed-modes', version: 1 }),
 );
 
-export async function syncInstalledModes(source: PackageSource, builtinIds: ReadonlySet<string>) {
-  const modes = (await source.list()).filter((m) => !builtinIds.has(m.manifest.id));
+let active: { source: PackageSource | null; builtinIds: ReadonlySet<string> } | null = null;
+
+// Ohne Quelle (Web-App) gibt es keine installierten Modi
+export async function syncInstalledModes(source: PackageSource | null, builtinIds: ReadonlySet<string>) {
+  active = { source, builtinIds };
+  const modes = source ? (await source.list()).filter((m) => !builtinIds.has(m.manifest.id)) : [];
   useInstalledModes.getState().setModes(modes);
+}
+
+function refresh() {
+  return active ? syncInstalledModes(active.source, active.builtinIds) : Promise.resolve();
+}
+
+function toInstalled(raw: unknown[], baseUrl: (id: string) => string): InstalledMode[] {
+  return raw.flatMap((r) => {
+    const manifest = parseManifest(r);
+    return manifest ? [{ manifest, baseUrl: baseUrl(manifest.id) }] : [];
+  });
+}
+
+// Nur Desktop: Rust prüft die Signatur, speichert im App-Datenordner und liefert per pulsemode:// aus
+export const canInstallModes = isTauri();
+
+export const tauriPackageSource: PackageSource = {
+  async list() {
+    return toInstalled(await invoke<unknown[]>('modes_list'), (id) => convertFileSrc(id, 'pulsemode'));
+  },
+};
+
+// Inhalt einer .pulsemode-Datei
+export async function installPackage(data: ArrayBuffer | Uint8Array): Promise<ModeManifest> {
+  const manifest = parseManifest(await invoke('modes_install', data));
+  await refresh();
+  if (!manifest) throw new Error('This package needs a newer version of Pulse');
+  return manifest;
+}
+
+export async function installPackageFile(path: string) {
+  await invoke('modes_install_file', { path });
+  await refresh();
+}
+
+export async function uninstallPackage(id: string) {
+  await invoke('modes_uninstall', { id });
+  await refresh();
 }
 
 // Nur im Dev-Server: gebaute Pakete aus .mode-packages (node scripts/build-mode.mjs)
@@ -81,11 +124,7 @@ export const devPackageSource: PackageSource = {
   async list() {
     const res = await fetch('/__modes/index.json');
     if (!res.ok) return [];
-    const raw = (await res.json()) as unknown[];
-    return raw.flatMap((r) => {
-      const manifest = parseManifest(r);
-      return manifest ? [{ manifest, baseUrl: `/__modes/${manifest.id}` }] : [];
-    });
+    return toInstalled((await res.json()) as unknown[], (id) => `/__modes/${id}`);
   },
 };
 

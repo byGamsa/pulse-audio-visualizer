@@ -21,7 +21,21 @@
         "backgroundColor": "#000000"
       }
     ],
-    "security": { "csp": null }
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self' pulsemode: http://pulsemode.localhost",
+        "style-src": "'self' 'unsafe-inline'",
+        "img-src": "'self' data: blob: pulsemode: http://pulsemode.localhost",
+        "font-src": "'self' data:",
+        "media-src": "'self' blob: mediastream:",
+        "connect-src": "'self' ipc: http://ipc.localhost",
+        "worker-src": "'self' blob:",
+        "object-src": "'none'",
+        "base-uri": "'self'"
+      },
+      "devCsp": null
+    }
   },
   "bundle": {
     "active": true,

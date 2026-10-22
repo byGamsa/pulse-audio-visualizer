@@ -1,10 +1,13 @@
 mod audio;
 mod display;
 mod media;
+mod modes;
 
+use std::path::PathBuf;
 use std::sync::Mutex;
-use tauri::ipc::{Channel, InvokeResponseBody};
-use tauri::State;
+use tauri::http::{Response, StatusCode};
+use tauri::ipc::{Channel, InvokeBody, InvokeResponseBody, Request};
+use tauri::{AppHandle, Manager, Runtime, State};
 
 // Höchstens eine Aufnahme gleichzeitig
 #[derive(Default)]
@@ -71,6 +74,50 @@ async fn now_playing() -> Option<media::NowPlaying> {
     tauri::async_runtime::spawn_blocking(media::now_playing).await.ok().flatten()
 }
 
+fn modes_dir<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
+    let dir = app.path().app_data_dir().map_err(|e| e.to_string())?.join("modes");
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    Ok(dir)
+}
+
+#[tauri::command]
+async fn modes_list(app: AppHandle) -> Result<Vec<serde_json::Value>, String> {
+    Ok(modes::list(&modes_dir(&app)?))
+}
+
+// Das .pulsemode-Paket kommt als rohe Bytes
+#[tauri::command]
+async fn modes_install(app: AppHandle, request: Request<'_>) -> Result<serde_json::Value, String> {
+    let InvokeBody::Raw(bytes) = request.body() else { return Err("expected raw package bytes".into()) };
+    modes::install(&modes_dir(&app)?, bytes)
+}
+
+#[tauri::command]
+async fn modes_install_file(app: AppHandle, path: String) -> Result<serde_json::Value, String> {
+    let bytes = std::fs::read(&path).map_err(|e| e.to_string())?;
+    modes::install(&modes_dir(&app)?, &bytes)
+}
+
+#[tauri::command]
+async fn modes_uninstall(app: AppHandle, id: String) -> Result<(), String> {
+    modes::uninstall(&modes_dir(&app)?, &id)
+}
+
+// pulsemode://localhost/<id>/<datei>, unter Windows http://pulsemode.localhost/<id>/<datei>
+fn serve_mode_file<R: Runtime>(app: &AppHandle<R>, path: &str) -> Response<Vec<u8>> {
+    let mut parts = path.trim_start_matches('/').splitn(2, '/');
+    let (id, name) = (parts.next().unwrap_or_default(), parts.next().unwrap_or_default());
+    let file = modes_dir(app).ok().and_then(|root| modes::read_file(&root, id, name));
+    match (file, modes::content_type(name)) {
+        (Some(data), Some(mime)) => Response::builder()
+            .header("Content-Type", mime)
+            .header("Cache-Control", "no-store")
+            .body(data),
+        _ => Response::builder().status(StatusCode::NOT_FOUND).body(Vec::new()),
+    }
+    .unwrap_or_default()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -78,13 +125,18 @@ pub fn run() {
         .plugin(tauri_plugin_process::init())
         .manage(AudioState::default())
         .on_window_event(display::on_window_event)
+        .register_uri_scheme_protocol("pulsemode", |ctx, request| serve_mode_file(ctx.app_handle(), request.uri().path()))
         .invoke_handler(tauri::generate_handler![
             audio_devices,
             audio_start,
             audio_stop,
             now_playing,
             display::monitors,
-            display::display_set
+            display::display_set,
+            modes_list,
+            modes_install,
+            modes_install_file,
+            modes_uninstall
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Engine } from './engine/Engine';
 import { BUILTIN_IDS } from './engine/ModeRegistry';
-import { devPackageSource, syncInstalledModes } from './engine/packages';
+import {
+  canInstallModes,
+  devPackageSource,
+  installPackageFile,
+  syncInstalledModes,
+  tauriPackageSource,
+  uninstallPackage,
+} from './engine/packages';
 import { stopStaleNativeCapture } from './audio/NativeAudioSource';
 import { useSettings } from './store/settings';
 import { Hud } from './ui/Hud';
@@ -17,6 +24,9 @@ import type { AudioSourceKind } from './audio/types';
 import { startUpdateChecks } from './update/updater';
 import { UpdateNotice } from './ui/UpdateNotice';
 import { useDisplayOutput } from './display/output';
+
+// Desktop: App-Datenordner, Dev-Server im Browser: .mode-packages, Web-App: keine
+const packageSource = canInstallModes ? tauriPackageSource : import.meta.env.DEV ? devPackageSource : null;
 
 export function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -35,6 +45,7 @@ export function App() {
 
   useEffect(() => {
     stopStaleNativeCapture();
+    void syncInstalledModes(packageSource, BUILTIN_IDS);
     const e = new Engine(canvasRef.current!);
     e.start();
     void e.setMode(useSettings.getState().playback.modeId, 0);
@@ -43,9 +54,12 @@ export function App() {
     if (import.meta.env.DEV) {
       Object.assign(window, { __pulse: e });
       // Pakete neu einlesen nach node scripts/build-mode.mjs: await __syncModes()
-      const syncModes = () => syncInstalledModes(devPackageSource, BUILTIN_IDS);
-      void syncModes();
-      Object.assign(window, { __syncModes: syncModes });
+      // In der Desktop-App ein signiertes Paket installieren: await __installModeFile('C:/…/x.pulsemode')
+      Object.assign(window, {
+        __syncModes: () => syncInstalledModes(packageSource, BUILTIN_IDS),
+        __installModeFile: installPackageFile,
+        __uninstallMode: uninstallPackage,
+      });
       // Vorschaubilder neu aufnehmen: await __captureThumbnails()
       void import('./dev/captureThumbnails').then(({ captureThumbnails }) =>
         Object.assign(window, { __captureThumbnails: (ids?: string[], settle?: number) => captureThumbnails(e, ids, settle) }),

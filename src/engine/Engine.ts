@@ -15,11 +15,11 @@ import type { AudioFeatures, AudioSource } from '../audio/types';
 import type { SendToDisplay } from '../display/link';
 import { useSettings } from '../store/settings';
 import { CompositePass } from './CompositePass';
-import { allModes, findMode } from './ModeRegistry';
+import { BUILTIN_MODES, allModes, findMode } from './ModeRegistry';
 import { PaletteTexture, STANDARD_PALETTE } from './palette';
 import { PlaybackController } from './PlaybackController';
 import { resolveTransition, type TransitionChoice, type TransitionType } from './transitions';
-import type { ModeContext, ModeMeta, VisualMode } from './types';
+import type { ModeContext, ModeDefinition, ModeMeta, VisualMode } from './types';
 
 interface Slot {
   meta: ModeMeta;
@@ -208,7 +208,16 @@ export class Engine {
     if (this.loadingId === id || this.next?.meta.id === id) return;
     this.loadingId = id;
     const entry = findMode(id);
-    const def = await entry.load();
+    let def: ModeDefinition;
+    try {
+      def = await entry.load();
+    } catch (err) {
+      // Entferntes oder kaputtes Paket: auf den ersten eingebauten Modus ausweichen
+      console.error(err);
+      if (this.loadingId === id) this.loadingId = null;
+      if (!this.current && id !== BUILTIN_MODES[0].meta.id) await this.setMode(BUILTIN_MODES[0].meta.id, 0);
+      return;
+    }
     if (this.loadingId !== id) return; // inzwischen wurde ein anderer Modus angefordert
     this.loadingId = null;
 
