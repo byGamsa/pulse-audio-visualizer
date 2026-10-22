@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { RotateCcw, X } from 'lucide-react';
+import { RefreshCw, RotateCcw, X } from 'lucide-react';
 import { useSettings, type NowPlayingMode } from '../store/settings';
 import { PALETTES, STANDARD_PALETTE } from '../engine/palette';
 import { ICON, cn, ui } from './ui';
 import { Group, Slider, Switch } from './controls';
+import { canUpdate, useUpdater, type UpdateStatus } from '../update/updater';
 
 // Standard = Originalfarben, Vorschau als bunte Streifen
 const STANDARD_ENTRY = {
@@ -12,7 +13,7 @@ const STANDARD_ENTRY = {
   stops: ['#ff3a5c 0 20%', '#ffb23a 20% 40%', '#3aff9a 40% 60%', '#3a9aff 60% 80%', '#b23aff 80%'],
 };
 
-type Tab = 'audio' | 'look' | 'performance';
+type Tab = 'audio' | 'look' | 'performance' | 'about';
 
 const NOW_PLAYING_OPTIONS: { value: NowPlayingMode; label: string }[] = [
   { value: 'always', label: 'Always' },
@@ -24,11 +25,13 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'audio', label: 'Audio' },
   { id: 'look', label: 'Look' },
   { id: 'performance', label: 'Performance' },
+  { id: 'about', label: 'About' },
 ];
 
 export function SettingsPanel({ onClose }: { onClose: () => void }) {
   const [tab, setTab] = useState<Tab>('audio');
   const reset = useSettings((s) => s.reset);
+  const updateReady = useUpdater((s) => s.status.kind === 'available');
 
   return (
     <aside
@@ -55,6 +58,7 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
             onClick={() => setTab(t.id)}
           >
             {t.label}
+            {t.id === 'about' && updateReady && <i className="size-[6px] rounded-full bg-ember-coral" aria-label="Update available" />}
           </button>
         ))}
       </nav>
@@ -62,6 +66,7 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
         {tab === 'audio' && <AudioTab />}
         {tab === 'look' && <LookTab />}
         {tab === 'performance' && <PerformanceTab />}
+        {tab === 'about' && <AboutTab />}
       </div>
       <footer className="flex items-center justify-between border-t border-white/8 px-16 py-12">
         <small className="text-caption text-smoke">Changes apply instantly</small>
@@ -170,6 +175,57 @@ function PerformanceTab() {
       <Switch label="Show HUD" value={ui.showHud} onChange={(v) => setUi({ showHud: v })} />
     </Group>
   );
+}
+
+function AboutTab() {
+  const status = useUpdater((s) => s.status);
+  const check = useUpdater((s) => s.check);
+  const install = useUpdater((s) => s.install);
+  const version = useUpdater((s) => s.version);
+  const autoUpdate = useSettings((s) => s.ui.autoUpdate);
+  const setUi = useSettings((s) => s.setUi);
+  const busy = status.kind === 'checking' || status.kind === 'downloading' || status.kind === 'restarting';
+  return (
+    <Group title="Version">
+      <p className="mb-16 flex items-baseline justify-between text-[13px] font-normal">
+        Pulse
+        <span className="text-caption font-light text-smoke tabular-nums">{version}</span>
+      </p>
+      {canUpdate() ? (
+        <>
+          <p className="mb-12 text-caption text-smoke" aria-live="polite">
+            {updateText(status)}
+          </p>
+          <div className="mb-16 flex gap-8">
+            {status.kind === 'available' ? (
+              <button className={cn(ui.create, 'h-32 px-16 text-[13px]')} onClick={() => void install()}>
+                Update to {status.version}
+              </button>
+            ) : (
+              <button className={cn(ui.btn, ui.btnOutlined)} disabled={busy} onClick={() => void check(true)}>
+                <RefreshCw size={14} strokeWidth={1.5} className={cn(status.kind === 'checking' && 'animate-spin')} /> Check for updates
+              </button>
+            )}
+          </div>
+          <Switch label="Check automatically" value={autoUpdate} onChange={(v) => setUi({ autoUpdate: v })} />
+        </>
+      ) : (
+        <p className="mb-16 text-caption text-smoke">The web app is always up to date.</p>
+      )}
+    </Group>
+  );
+}
+
+function updateText(status: UpdateStatus) {
+  switch (status.kind) {
+    case 'checking': return 'Checking for updates…';
+    case 'current': return 'You are on the latest version.';
+    case 'available': return status.error ? `Update failed: ${status.error}` : `Version ${status.version} is ready to install.`;
+    case 'downloading': return status.progress === null ? 'Downloading…' : `Downloading… ${Math.round(status.progress * 100)} %`;
+    case 'restarting': return 'Installing and restarting…';
+    case 'error': return `Could not check for updates: ${status.message}`;
+    default: return 'Updates install in the background and Pulse restarts.';
+  }
 }
 
 const times = (v: number) => `${v.toFixed(2)}×`;

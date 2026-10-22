@@ -73,6 +73,8 @@ async fn now_playing() -> Option<media::NowPlaying> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .manage(AudioState::default())
         .invoke_handler(tauri::generate_handler![audio_devices, audio_start, audio_stop, now_playing])
         .run(tauri::generate_context!())

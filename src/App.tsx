@@ -12,6 +12,8 @@ import { useIdle } from './ui/useIdle';
 import { NowPlaying } from './ui/NowPlaying';
 import { useNowPlaying } from './media/nowPlaying';
 import type { AudioSourceKind } from './audio/types';
+import { startUpdateChecks } from './update/updater';
+import { UpdateNotice } from './ui/UpdateNotice';
 
 export function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -24,6 +26,8 @@ export function App() {
   const setUi = useSettings((s) => s.setUi);
   const idle = useIdle(3000);
   const track = useNowPlaying(sourceKind, sourceLabel);
+
+  useEffect(() => (ui.autoUpdate ? startUpdateChecks() : undefined), [ui.autoUpdate]);
 
   useEffect(() => {
     stopStaleNativeCapture();
@@ -108,6 +112,7 @@ export function App() {
           {ui.panelOpen && <SettingsPanel onClose={() => setUi({ panelOpen: false })} />}
         </>
       )}
+      <UpdateNotice hidden={ui.panelOpen && !startOpen} />
     </div>
   );
 }

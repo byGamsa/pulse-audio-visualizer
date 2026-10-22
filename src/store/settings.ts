@@ -63,6 +63,8 @@ export interface UiSettings {
   panelOpen: boolean;
   playbackOpen: boolean;
   nowPlaying: NowPlayingMode;
+  // Desktop: beim Start und alle 6 h nach neuen Versionen sehen
+  autoUpdate: boolean;
 }
 
 export interface SettingsState {
@@ -116,6 +118,7 @@ const defaults = {
     panelOpen: false,
     playbackOpen: false,
     nowPlaying: 'change' as NowPlayingMode,
+    autoUpdate: true,
   } satisfies UiSettings,
 };
 
