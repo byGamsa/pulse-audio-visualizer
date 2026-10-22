@@ -184,6 +184,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details. Please report bugs and ideas
 
 Releases follow [Semantic Versioning](https://semver.org). Every version gets a `vX.Y.Z` tag and a GitHub release with changelog and, from v0.3.0 on, Windows installers.
 
+Pushing a `vX.Y.Z` tag runs the release workflow: it builds Windows, macOS and Linux packages, attaches them under fixed names (`Pulse_x64-setup.exe`, `Pulse_aarch64.dmg`, …) and publishes the release. From v0.6.0 on it also writes `latest.json`, which the in-app updater reads (Settings → About). Updates are signed. The private key lives in the repository secrets `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`, the public key in `src-tauri/tauri.conf.json`. Without the key, `pnpm tauri build` stops at signing, so local builds need both variables set. Never lose the key: installed apps only accept updates signed with it.
+
 ## `/11/` License
 
 Pulse is free for personal and other non-commercial use under the [Pulse Non-Commercial License](LICENSE). Commercial use, such as selling it, bundling it into a paid product or using it at paid events, requires written permission. Open an issue to ask for a commercial license.

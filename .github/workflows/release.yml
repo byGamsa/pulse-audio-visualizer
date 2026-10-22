@@ -2,6 +2,7 @@ name: Release
 
 # Ein Tag vX.Y.Z baut alle Desktop-Pakete und hängt sie an das GitHub-Release.
 # Die Dateinamen tragen keine Version, damit releases/latest/download/<Datei> stabil bleibt.
+# latest.json sagt dem In-App-Updater, welche signierte Datei er pro System laden soll.
 
 on:
   push:
@@ -60,9 +61,11 @@ jobs:
           - os: macos-latest
             target: aarch64-apple-darwin
             bundles: app,dmg
+            arch: aarch64
           - os: macos-latest
             target: x86_64-apple-darwin
             bundles: app,dmg
+            arch: x64
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             bundles: deb,rpm,appimage
@@ -92,25 +95,75 @@ jobs:
           key: ${{ matrix.target }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm tauri build --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
       - name: Upload to release
         shell: bash
         run: |
           v="${TAG#v}"
           dir="src-tauri/target/${{ matrix.target }}/release/bundle"
-          mkdir out
-          for f in "$dir"/nsis/*.exe "$dir"/msi/*.msi "$dir"/dmg/*.dmg "$dir"/appimage/*.AppImage "$dir"/deb/*.deb "$dir"/rpm/*.rpm; do
+          mkdir out sigs
+          for f in "$dir"/nsis/*.exe "$dir"/msi/*.msi "$dir"/dmg/*.dmg "$dir"/macos/*.app.tar.gz "$dir"/appimage/*.AppImage "$dir"/deb/*.deb "$dir"/rpm/*.rpm; do
             [ -f "$f" ] || continue
             n="$(basename "$f")"
             n="${n/_${v}_/_}"    # Pulse_0.6.0_x64-setup.exe -> Pulse_x64-setup.exe
             n="${n/-${v}-1./.}"  # Pulse-0.6.0-1.x86_64.rpm  -> Pulse.x86_64.rpm
+            n="${n/Pulse.app/Pulse_${{ matrix.arch }}.app}"  # Pulse.app.tar.gz -> Pulse_aarch64.app.tar.gz
             cp "$f" "out/$n"
+            if [ -f "$f.sig" ]; then cp "$f.sig" "sigs/$n.sig"; fi
           done
-          ls -l out
+          ls -l out sigs
           gh release upload "$TAG" out/* --clobber
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sigs-${{ matrix.target }}
+          path: sigs/*.sig
+          if-no-files-found: error
 
   publish:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: sigs-*
+          path: sigs
+          merge-multiple: true
+      - name: Updater manifest
+        shell: python
+        run: |
+          import json, os, pathlib
+          from datetime import datetime, timezone
+          tag, repo = os.environ['TAG'], os.environ['GITHUB_REPOSITORY']
+          # Datei -> Updater-Ziele ({os}-{arch}[-{installer}])
+          targets = {
+              'Pulse_x64-setup.exe': ['windows-x86_64', 'windows-x86_64-nsis'],
+              'Pulse_x64_en-US.msi': ['windows-x86_64-msi'],
+              'Pulse_arm64-setup.exe': ['windows-aarch64', 'windows-aarch64-nsis'],
+              'Pulse_aarch64.app.tar.gz': ['darwin-aarch64', 'darwin-aarch64-app'],
+              'Pulse_x64.app.tar.gz': ['darwin-x86_64', 'darwin-x86_64-app'],
+              'Pulse_amd64.AppImage': ['linux-x86_64', 'linux-x86_64-appimage'],
+              'Pulse_amd64.deb': ['linux-x86_64-deb'],
+              'Pulse.x86_64.rpm': ['linux-x86_64-rpm'],
+          }
+          platforms = {}
+          for file, keys in targets.items():
+              sig = pathlib.Path('sigs', file + '.sig')
+              if not sig.exists():
+                  print(f'::warning::no signature for {file}')
+                  continue
+              entry = {'signature': sig.read_text().strip(), 'url': f'https://github.com/{repo}/releases/download/{tag}/{file}'}
+              for key in keys:
+                  platforms[key] = entry
+          manifest = {
+              'version': tag.removeprefix('v'),
+              'notes': f'https://github.com/{repo}/releases/tag/{tag}',
+              'pub_date': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+              'platforms': platforms,
+          }
+          pathlib.Path('latest.json').write_text(json.dumps(manifest, indent=2))
+          print(json.dumps(manifest, indent=2))
+      - run: gh release upload "$TAG" latest.json --clobber --repo "$GITHUB_REPOSITORY"
       - name: Publish release
         run: gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
