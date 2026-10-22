@@ -14,6 +14,8 @@ export interface ModeMeta {
   vivid?: number;
   // Palette unter „Standard“, sonst synth
   palette?: string;
+  // Nur bei installierten Paketen
+  package?: { version: string; author: string };
 }
 
 export interface ModeContext {

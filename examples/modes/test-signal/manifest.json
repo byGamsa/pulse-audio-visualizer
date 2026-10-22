@@ -1,0 +1,10 @@
+{
+  "id": "test-signal",
+  "name": "Test Signal",
+  "version": "1.0.0",
+  "sdk": 1,
+  "author": "Pulse Studio",
+  "category": "lineart",
+  "description": "A single ring that traces the spectrum. Example package for the mode SDK.",
+  "gpuCost": 1
+}

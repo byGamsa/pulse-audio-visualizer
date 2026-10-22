@@ -1,7 +1,7 @@
 import type { AudioFeatures } from '../audio/types';
 import { usePlaylists } from '../store/playlists';
 import { useSettings, type PlaybackMode } from '../store/settings';
-import { MODES } from './ModeRegistry';
+import { allModes } from './ModeRegistry';
 import type { TransitionChoice } from './transitions';
 
 export interface PlaybackTarget {
@@ -79,7 +79,7 @@ export class PlaybackController {
     const pb = useSettings.getState().playback;
     if (pb.mode.kind === 'single') {
       // Single bleibt Single, man blättert nur durch alle Modi
-      const ids = MODES.map((m) => m.meta.id);
+      const ids = allModes().map((m) => m.meta.id);
       const i = ids.indexOf(pb.modeId);
       void this.target.setMode(ids[(i + direction + ids.length) % ids.length]);
       return;
@@ -129,12 +129,13 @@ export class PlaybackController {
     if (mode.kind === 'playlist') {
       const p = usePlaylists.getState().playlists.find((x) => x.id === mode.playlistId);
       if (!p) return [];
+      const modes = allModes();
       return p.items
-        .filter((i) => MODES.some((m) => m.meta.id === i.modeId))
+        .filter((i) => modes.some((m) => m.meta.id === i.modeId))
         .map((i) => ({ modeId: i.modeId, duration: i.duration ?? p.defaultDuration, paletteId: i.paletteId }));
     }
     if (mode.kind === 'shuffle') {
-      return MODES.filter((m) => mode.categories.length === 0 || mode.categories.includes(m.meta.category)).map(
+      return allModes().filter((m) => mode.categories.length === 0 || mode.categories.includes(m.meta.category)).map(
         (m) => ({ modeId: m.meta.id, duration: pb.shuffleDuration }),
       );
     }

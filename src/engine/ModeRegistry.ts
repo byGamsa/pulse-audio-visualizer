@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
+import { loadPackage, packageMeta, useInstalledModes } from './packages';
 import type { ModeDefinition, ModeMeta } from './types';
 
-interface RegistryEntry {
+export interface RegistryEntry {
   meta: ModeMeta;
   load: () => Promise<ModeDefinition>;
 }
@@ -8,7 +10,7 @@ interface RegistryEntry {
 const mode = (meta: ModeMeta, load: RegistryEntry['load']): RegistryEntry => ({ meta, load });
 
 // Metadaten hier, damit die UI keine Shader laden muss
-export const MODES: RegistryEntry[] = [
+export const BUILTIN_MODES: RegistryEntry[] = [
   mode(
     { id: 'halo', name: 'Halo', category: 'experimental', gpuCost: 1, vivid: 0.25,
       description: 'The spectrum as a ring of light. Beats send out shockwaves and showers of sparks.' },
@@ -311,6 +313,26 @@ export const MODES: RegistryEntry[] = [
   ),
 ];
 
+export const BUILTIN_IDS: ReadonlySet<string> = new Set(BUILTIN_MODES.map((m) => m.meta.id));
+
+function withInstalled(installed = useInstalledModes.getState().modes): RegistryEntry[] {
+  const extra = installed
+    .filter((p) => !BUILTIN_IDS.has(p.manifest.id))
+    .map((p) => mode(packageMeta(p), () => loadPackage(p)));
+  return extra.length ? [...BUILTIN_MODES, ...extra] : BUILTIN_MODES;
+}
+
+// Eingebaute und installierte Modi
+export function allModes(): RegistryEntry[] {
+  return withInstalled();
+}
+
 export function findMode(id: string): RegistryEntry {
-  return MODES.find((m) => m.meta.id === id) ?? MODES[0];
+  const modes = allModes();
+  return modes.find((m) => m.meta.id === id) ?? modes[0];
+}
+
+export function useModes(): ModeMeta[] {
+  const installed = useInstalledModes((s) => s.modes);
+  return useMemo(() => withInstalled(installed).map((m) => m.meta), [installed]);
 }

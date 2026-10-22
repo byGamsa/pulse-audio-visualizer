@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { AudioLines, Copy, Download, GripVertical, Plus, Trash2, Upload, X } from 'lucide-react';
 import type { Engine } from '../engine/Engine';
+import { useModes } from '../engine/ModeRegistry';
 import { PALETTES } from '../engine/palette';
 import type { ModeCategory } from '../engine/types';
 import { TRANSITION_CHOICES, TRANSITION_LABEL, type TransitionChoice } from '../engine/transitions';
@@ -67,7 +68,7 @@ export function PlaybackPanel({ engine, onClose }: { engine: Engine; onClose: ()
 
       <div className="flex-1 overflow-y-auto px-16 pt-8 pb-16 [scrollbar-width:thin]">
         {playback.mode.kind === 'playlist' && <PlaylistView engine={engine} activeId={playback.mode.playlistId} />}
-        {playback.mode.kind === 'shuffle' && <ShuffleView engine={engine} categories={playback.mode.categories} />}
+        {playback.mode.kind === 'shuffle' && <ShuffleView categories={playback.mode.categories} />}
         {playback.mode.kind === 'single' && <SingleView engine={engine} />}
 
         <Group title="Transitions">
@@ -170,7 +171,7 @@ function PlaylistEditor({ engine, playlist, onActivate }: { engine: Engine; play
   const [dragFrom, setDragFrom] = useState<number | null>(null);
   const [dragOver, setDragOver] = useState<number | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const modes = engine.modes;
+  const modes = useModes();
 
   const download = () => {
     const blob = new Blob([exportPlaylist(playlist)], { type: 'application/json' });
@@ -372,11 +373,12 @@ function PlaylistArt({ playlist }: { playlist: Playlist }) {
   );
 }
 
-function ShuffleView({ engine, categories }: { engine: Engine; categories: ModeCategory[] }) {
+function ShuffleView({ categories }: { categories: ModeCategory[] }) {
   const duration = useSettings((s) => s.playback.shuffleDuration);
   const setPlayback = useSettings((s) => s.setPlayback);
-  const all = [...new Set(engine.modes.map((m) => m.category))];
-  const pool = engine.modes.filter((m) => categories.length === 0 || categories.includes(m.category));
+  const modes = useModes();
+  const all = [...new Set(modes.map((m) => m.category))];
+  const pool = modes.filter((m) => categories.length === 0 || categories.includes(m.category));
 
   const toggle = (c: ModeCategory) => {
     const next = categories.includes(c) ? categories.filter((x) => x !== c) : [...categories, c];
@@ -406,11 +408,12 @@ function ShuffleView({ engine, categories }: { engine: Engine; categories: ModeC
 
 function SingleView({ engine }: { engine: Engine }) {
   const modeId = useSettings((s) => s.playback.modeId);
+  const modes = useModes();
   return (
     <Group title="One mode, for good">
       <p className="mb-12 text-caption text-smoke">No timer. The mode stays until you change it.</p>
       <div className="mb-12 flex flex-col gap-[2px]">
-        {engine.modes.map((m) => (
+        {modes.map((m) => (
           <button
             key={m.id}
             className={cn(

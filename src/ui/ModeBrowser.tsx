@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AudioLines, X } from 'lucide-react';
 import type { Engine } from '../engine/Engine';
+import { useModes } from '../engine/ModeRegistry';
 import type { ModeCategory } from '../engine/types';
 import { useSettings } from '../store/settings';
 import { CATEGORY_LABEL, modeArt } from './modeArt';
@@ -9,7 +10,7 @@ import { ICON, cn, ui } from './ui';
 export function ModeBrowser({ engine, onClose }: { engine: Engine; onClose: () => void }) {
   const modeId = useSettings((s) => s.playback.modeId);
   const [filter, setFilter] = useState<ModeCategory | 'all'>('all');
-  const modes = engine.modes;
+  const modes = useModes();
   const categories = [...new Set(modes.map((m) => m.category))];
   const visible = filter === 'all' ? modes : modes.filter((m) => m.category === filter);
 

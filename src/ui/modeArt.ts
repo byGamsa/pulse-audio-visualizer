@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import type { ModeCategory } from '../engine/types';
+import { useInstalledModes } from '../engine/packages';
 
 // Fallback-Cover pro Modus
 const ART: Record<string, string> = {
@@ -179,8 +180,10 @@ export const CATEGORY_LABEL: Record<ModeCategory, string> = {
   experimental: 'Signature',
 };
 
-// Standbild aus public/thumbs, Verlauf als Fallback
+// Standbild aus public/thumbs oder dem Paket, Verlauf als Fallback
 export function modeArt(id: string): CSSProperties {
   const fallback = ART[id] ?? 'linear-gradient(135deg, #2a2a2e, #17171a)';
-  return { background: `url(${import.meta.env.BASE_URL}thumbs/${id}.webp) center / cover no-repeat, ${fallback}` };
+  const pkg = useInstalledModes.getState().modes.find((p) => p.manifest.id === id);
+  const thumb = pkg ? `${pkg.baseUrl}/thumb.webp` : `${import.meta.env.BASE_URL}thumbs/${id}.webp`;
+  return { background: `url(${thumb}) center / cover no-repeat, ${fallback}` };
 }

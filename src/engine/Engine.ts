@@ -15,7 +15,7 @@ import type { AudioFeatures, AudioSource } from '../audio/types';
 import type { SendToDisplay } from '../display/link';
 import { useSettings } from '../store/settings';
 import { CompositePass } from './CompositePass';
-import { MODES, findMode } from './ModeRegistry';
+import { allModes, findMode } from './ModeRegistry';
 import { PaletteTexture, STANDARD_PALETTE } from './palette';
 import { PlaybackController } from './PlaybackController';
 import { resolveTransition, type TransitionChoice, type TransitionType } from './transitions';
@@ -139,7 +139,7 @@ export class Engine {
   }
 
   get modes() {
-    return MODES.map((m) => m.meta);
+    return allModes().map((m) => m.meta);
   }
 
   // null = globale Palette

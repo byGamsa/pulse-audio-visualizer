@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, LayoutGrid, ListMusic, Maximize2, Pin, SlidersHorizontal } from 'lucide-react';
 import type { Engine } from '../engine/Engine';
+import { useModes } from '../engine/ModeRegistry';
 import { useSettings } from '../store/settings';
 import { CATEGORY_LABEL, modeArt } from './modeArt';
 import { ICON, cn, ui } from './ui';
@@ -64,7 +65,8 @@ export function PlayerBar({ engine, browserOpen, playbackOpen, onToggleBrowser, 
   const modeId = useSettings((s) => s.playback.modeId);
   const hold = useSettings((s) => s.playback.hold);
   const setPlayback = useSettings((s) => s.setPlayback);
-  const meta = engine.modes.find((m) => m.id === modeId) ?? engine.modes[0];
+  const modes = useModes();
+  const meta = modes.find((m) => m.id === modeId) ?? modes[0];
   const progressRef = useRef<HTMLElement>(null);
   const [status, setStatus] = useState(() => engine.playback.status);
 

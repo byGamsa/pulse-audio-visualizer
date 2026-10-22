@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { MODES } from '../engine/ModeRegistry';
+import { allModes } from '../engine/ModeRegistry';
 import { isTransitionChoice, type TransitionChoice } from '../engine/transitions';
 
 export interface PlaylistItem {
@@ -203,7 +203,7 @@ export const usePlaylists = create<PlaylistState>()(
         }
         // Umbenannte und ersetzte Modi übernehmen statt verlieren
         const renamed: Record<string, string> = { rorschach: 'ink-bloom', 'soap-bubble': 'liquid-pearl' };
-        const known = new Set(MODES.map((m) => m.meta.id));
+        const known = new Set(allModes().map((m) => m.meta.id));
         playlists = playlists.map((p) => ({
           ...p,
           items: p.items

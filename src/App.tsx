@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Engine } from './engine/Engine';
+import { BUILTIN_IDS } from './engine/ModeRegistry';
+import { devPackageSource, syncInstalledModes } from './engine/packages';
 import { stopStaleNativeCapture } from './audio/NativeAudioSource';
 import { useSettings } from './store/settings';
 import { Hud } from './ui/Hud';
@@ -40,6 +42,10 @@ export function App() {
     // Zum Debuggen in der Konsole: __pulse.setMode('aurora')
     if (import.meta.env.DEV) {
       Object.assign(window, { __pulse: e });
+      // Pakete neu einlesen nach node scripts/build-mode.mjs: await __syncModes()
+      const syncModes = () => syncInstalledModes(devPackageSource, BUILTIN_IDS);
+      void syncModes();
+      Object.assign(window, { __syncModes: syncModes });
       // Vorschaubilder neu aufnehmen: await __captureThumbnails()
       void import('./dev/captureThumbnails').then(({ captureThumbnails }) =>
         Object.assign(window, { __captureThumbnails: (ids?: string[], settle?: number) => captureThumbnails(e, ids, settle) }),
