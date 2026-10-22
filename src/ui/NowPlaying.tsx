@@ -71,7 +71,7 @@ export function NowPlaying({ track, mode, chromeVisible }: Props) {
       <div className="min-w-0 pb-4">
         <div className="mb-8 flex items-center gap-8 text-[11px] font-normal uppercase tracking-[0.16em] text-warm-cream/60">
           <Bars playing={shown.playing} />
-          <span>{shown.playing ? 'Läuft gerade' : 'Pausiert'}</span>
+          <span>{shown.playing ? 'Now playing' : 'Paused'}</span>
           {shown.app && <span className="text-warm-cream/40">· {shown.app}</span>}
         </div>
         <div className="line-clamp-2 font-editorial-new text-[clamp(28px,3.2vw,44px)] leading-[1.02] font-normal tracking-[-0.02em] text-warm-cream italic [text-shadow:0_2px_24px_rgb(0_0_0/0.5)]">

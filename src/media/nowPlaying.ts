@@ -81,7 +81,7 @@ export function useNowPlaying(sourceKind: AudioSourceKind | null, sourceLabel: s
 
   if (native) return native;
   if (sourceKind === 'demo') return { title: 'Demo-Beat', artist: 'Pulse', album: '124 BPM', app: 'Pulse', playing: true, artwork: null };
-  if (sourceKind === 'file' && sourceLabel) return { ...fromFileName(sourceLabel), album: '', app: 'Datei', playing: true, artwork: null };
+  if (sourceKind === 'file' && sourceLabel) return { ...fromFileName(sourceLabel), album: '', app: 'File', playing: true, artwork: null };
   return null;
 }
 

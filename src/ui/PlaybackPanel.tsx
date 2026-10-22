@@ -43,11 +43,11 @@ export function PlaybackPanel({ engine, onClose }: { engine: Engine; onClose: ()
         ui.surface,
         'bg-deep-anvil/92!',
       )}
-      aria-label="Wiedergabe"
+      aria-label="Playback"
     >
       <header className="flex items-center justify-between pt-12 pr-12 pl-16">
-        <h2 className="text-[13px] font-medium">Wiedergabe</h2>
-        <button className={cn(ui.btn, ui.btnIcon)} onClick={onClose} title="Schließen (P)">
+        <h2 className="text-[13px] font-medium">Playback</h2>
+        <button className={cn(ui.btn, ui.btnIcon)} onClick={onClose} title="Close (P)">
           <X {...ICON} />
         </button>
       </header>
@@ -70,24 +70,24 @@ export function PlaybackPanel({ engine, onClose }: { engine: Engine; onClose: ()
         {playback.mode.kind === 'shuffle' && <ShuffleView engine={engine} categories={playback.mode.categories} />}
         {playback.mode.kind === 'single' && <SingleView engine={engine} />}
 
-        <Group title="Übergänge">
+        <Group title="Transitions">
           <SelectRow
-            label={playback.mode.kind === 'playlist' ? 'Übergang (Standard)' : 'Übergang'}
+            label={playback.mode.kind === 'playlist' ? 'Transition (default)' : 'Transition'}
             value={playback.transition}
             options={TRANSITION_CHOICES.map((c) => ({ value: c, label: TRANSITION_LABEL[c] }))}
             onChange={(v) => setPlayback({ transition: v as TransitionChoice })}
           />
           <Slider
-            label="Überblendung"
+            label="Blend time"
             value={playback.transitionDuration}
             min={0}
             max={10}
             step={0.1}
-            format={(v) => (v === 0 ? 'Harter Schnitt' : `${v.toFixed(1)} s`)}
+            format={(v) => (v === 0 ? 'Hard cut' : `${v.toFixed(1)} s`)}
             onChange={(v) => setPlayback({ transitionDuration: v })}
           />
-          <Switch label="Auf den Beat wechseln" value={playback.beatSync} onChange={(v) => setPlayback({ beatSync: v })} />
-          <Switch label="Aktuellen Modus halten" value={playback.hold} onChange={(v) => setPlayback({ hold: v })} />
+          <Switch label="Switch on the beat" value={playback.beatSync} onChange={(v) => setPlayback({ beatSync: v })} />
+          <Switch label="Hold the current mode" value={playback.hold} onChange={(v) => setPlayback({ hold: v })} />
         </Group>
       </div>
     </aside>
@@ -121,8 +121,8 @@ function PlaylistView({ engine, activeId }: { engine: Engine; activeId: string }
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[13px] font-normal">{p.name}</span>
                 <span className="block text-caption text-smoke">
-                  {p.items.length} Modi · {fmtDuration(totalDuration(p))}
-                  {p.order === 'shuffle' && ' · gemischt'}
+                  {p.items.length} modes · {fmtDuration(totalDuration(p))}
+                  {p.order === 'shuffle' && ' · shuffled'}
                 </span>
               </span>
               {p.id === activeId && <AudioLines className="shrink-0 text-warm-cream/60" {...ICON} />}
@@ -131,10 +131,10 @@ function PlaylistView({ engine, activeId }: { engine: Engine; activeId: string }
         </div>
         <div className="mt-8 mb-12 flex gap-4">
           <button className={ui.btn} onClick={() => activate(store.create())}>
-            <Plus {...ICON} /> Neue Playlist
+            <Plus {...ICON} /> New playlist
           </button>
           <button className={ui.btn} onClick={() => fileRef.current?.click()}>
-            <Upload {...ICON} /> Importieren
+            <Upload {...ICON} /> Import
           </button>
           <input
             ref={fileRef}
@@ -149,7 +149,7 @@ function PlaylistView({ engine, activeId }: { engine: Engine; activeId: string }
                 activate(store.importJson(await file.text()));
                 setError(null);
               } catch (err) {
-                setError(err instanceof Error ? err.message : 'Import fehlgeschlagen.');
+                setError(err instanceof Error ? err.message : 'Import failed.');
               }
             }}
           />
@@ -194,11 +194,11 @@ function PlaylistEditor({ engine, playlist, onActivate }: { engine: Engine; play
   };
 
   return (
-    <Group title="Bearbeiten">
+    <Group title="Edit">
       <input
         className="mb-12 h-40 w-full rounded-xl border border-transparent bg-white/6 px-12 text-body font-normal outline-none transition-colors placeholder:text-smoke/60 focus:border-ember-coral/40"
         value={playlist.name}
-        placeholder="Name der Playlist"
+        placeholder="Playlist name"
         onChange={(e) => store.update(playlist.id, { name: e.target.value })}
       />
 
@@ -207,28 +207,28 @@ function PlaylistEditor({ engine, playlist, onActivate }: { engine: Engine; play
           className={cn(ui.chip, playlist.order === 'sequential' && ui.chipOn)}
           onClick={() => store.update(playlist.id, { order: 'sequential' })}
         >
-          Der Reihe nach
+          In order
         </button>
         <button
           className={cn(ui.chip, playlist.order === 'shuffle' && ui.chipOn)}
           onClick={() => store.update(playlist.id, { order: 'shuffle' })}
         >
-          Gemischt
+          Shuffled
         </button>
       </div>
 
       <SelectRow
-        label="Übergang"
+        label="Transition"
         value={playlist.transition ?? ''}
         options={[
-          { value: '', label: 'Wie Standard' },
+          { value: '', label: 'Default' },
           ...TRANSITION_CHOICES.map((c) => ({ value: c, label: TRANSITION_LABEL[c] })),
         ]}
         onChange={(v) => store.update(playlist.id, { transition: (v || undefined) as TransitionChoice | undefined })}
       />
 
       <Slider
-        label="Dauer pro Modus"
+        label="Time per mode"
         value={playlist.defaultDuration}
         min={15}
         max={600}
@@ -269,7 +269,7 @@ function PlaylistEditor({ engine, playlist, onActivate }: { engine: Engine; play
               <button
                 className="flex min-w-0 flex-1 items-center gap-8 text-left"
                 onClick={() => engine.playback.select(item.modeId)}
-                title="Jetzt abspielen"
+                title="Play now"
               >
                 <span className={cn(ui.art, 'size-32')} style={modeArt(item.modeId)} />
                 <span className="truncate text-[13px] font-normal">{meta?.name ?? item.modeId}</span>
@@ -277,7 +277,7 @@ function PlaylistEditor({ engine, playlist, onActivate }: { engine: Engine; play
               <select
                 className={cn(select, 'w-[76px] shrink-0')}
                 value={item.duration ?? ''}
-                title="Dauer"
+                title="Duration"
                 onChange={(e) =>
                   store.updateItem(playlist.id, item.id, { duration: e.target.value ? Number(e.target.value) : undefined })
                 }
@@ -301,7 +301,7 @@ function PlaylistEditor({ engine, playlist, onActivate }: { engine: Engine; play
               <button
                 className={cn(ui.btn, ui.btnIcon, 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100')}
                 onClick={() => store.removeItem(playlist.id, item.id)}
-                title="Entfernen"
+                title="Remove"
               >
                 <X size={14} strokeWidth={1.5} />
               </button>
@@ -311,14 +311,14 @@ function PlaylistEditor({ engine, playlist, onActivate }: { engine: Engine; play
       </ol>
 
       {playlist.items.length === 0 && !adding && (
-        <p className="mb-8 text-caption text-smoke">Noch leer. Füge Modi hinzu, um die Playlist zu starten.</p>
+        <p className="mb-8 text-caption text-smoke">Still empty. Add modes to start the playlist.</p>
       )}
 
       {adding ? (
         <div className="mb-12 rounded-xl border border-white/8 p-8">
           <div className="mb-8 flex items-center justify-between px-4">
-            <span className="text-caption text-smoke">Modus hinzufügen</span>
-            <button className={cn(ui.btn, ui.btnIcon)} onClick={() => setAdding(false)} title="Fertig">
+            <span className="text-caption text-smoke">Add a mode</span>
+            <button className={cn(ui.btn, ui.btnIcon)} onClick={() => setAdding(false)} title="Done">
               <X size={14} strokeWidth={1.5} />
             </button>
           </div>
@@ -337,19 +337,19 @@ function PlaylistEditor({ engine, playlist, onActivate }: { engine: Engine; play
         </div>
       ) : (
         <button className={cn(ui.btn, 'mb-12')} onClick={() => setAdding(true)}>
-          <Plus {...ICON} /> Modus hinzufügen
+          <Plus {...ICON} /> Add a mode
         </button>
       )}
 
       <div className="flex flex-wrap gap-4 border-t border-white/8 pt-12">
         <button className={ui.btn} onClick={() => { const id = store.duplicate(playlist.id); if (id) onActivate(id); }}>
-          <Copy {...ICON} /> Duplizieren
+          <Copy {...ICON} /> Duplicate
         </button>
         <button className={ui.btn} onClick={download}>
-          <Download {...ICON} /> Exportieren
+          <Download {...ICON} /> Export
         </button>
         <button className={cn(ui.btn, confirmDelete && ui.btnActive)} onClick={remove} onBlur={() => setConfirmDelete(false)}>
-          <Trash2 {...ICON} /> {confirmDelete ? 'Wirklich löschen?' : 'Löschen'}
+          <Trash2 {...ICON} /> {confirmDelete ? 'Really delete?' : 'Delete'}
         </button>
       </div>
     </Group>
@@ -384,12 +384,12 @@ function ShuffleView({ engine, categories }: { engine: Engine; categories: ModeC
   };
 
   return (
-    <Group title="Zufällig durch alle Modi">
-      <Slider label="Dauer pro Modus" value={duration} min={15} max={600} step={15} format={fmtDuration} onChange={(v) => setPlayback({ shuffleDuration: v })} />
-      <p className="mb-8 text-[13px] font-normal">Kategorien</p>
+    <Group title="Shuffle through all modes">
+      <Slider label="Time per mode" value={duration} min={15} max={600} step={15} format={fmtDuration} onChange={(v) => setPlayback({ shuffleDuration: v })} />
+      <p className="mb-8 text-[13px] font-normal">Categories</p>
       <div className="mb-8 flex flex-wrap gap-4">
         <button className={cn(ui.chip, categories.length === 0 && ui.chipOn)} onClick={() => setPlayback({ mode: { kind: 'shuffle', categories: [] } })}>
-          Alle
+          All
         </button>
         {all.map((c) => (
           <button key={c} className={cn(ui.chip, categories.includes(c) && ui.chipOn)} onClick={() => toggle(c)}>
@@ -398,7 +398,7 @@ function ShuffleView({ engine, categories }: { engine: Engine; categories: ModeC
         ))}
       </div>
       <p className="mb-12 text-caption text-smoke">
-        {pool.length} Modi im Pool. Jeder kommt einmal dran, bevor sich etwas wiederholt.
+        {pool.length} modes in the pool. Each plays once before anything repeats.
       </p>
     </Group>
   );
@@ -407,8 +407,8 @@ function ShuffleView({ engine, categories }: { engine: Engine; categories: ModeC
 function SingleView({ engine }: { engine: Engine }) {
   const modeId = useSettings((s) => s.playback.modeId);
   return (
-    <Group title="Ein Modus, dauerhaft">
-      <p className="mb-12 text-caption text-smoke">Kein Timer. Der Modus bleibt, bis du ihn selbst wechselst.</p>
+    <Group title="One mode, for good">
+      <p className="mb-12 text-caption text-smoke">No timer. The mode stays until you change it.</p>
       <div className="mb-12 flex flex-col gap-[2px]">
         {engine.modes.map((m) => (
           <button

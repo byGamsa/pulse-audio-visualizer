@@ -22,19 +22,19 @@ export function ModeBrowser({ engine, onClose }: { engine: Engine; onClose: () =
           ui.surface,
         )}
         role="dialog"
-        aria-label="Modi"
+        aria-label="Modes"
       >
         <div className="flex items-center justify-between px-8 pt-8 pb-12">
           <h2 className="text-[13px] font-medium">
-            Modi <span className="ml-4 font-light text-smoke">{modes.length}</span>
+            Modes <span className="ml-4 font-light text-smoke">{modes.length}</span>
           </h2>
-          <button className={cn(ui.btn, ui.btnIcon)} onClick={onClose} title="Schließen (M)">
+          <button className={cn(ui.btn, ui.btnIcon)} onClick={onClose} title="Close (M)">
             <X {...ICON} />
           </button>
         </div>
         <div className="flex flex-wrap gap-4 px-8 pb-8">
           <button className={cn(ui.chip, filter === 'all' && ui.chipOn)} onClick={() => setFilter('all')}>
-            Alle
+            All
           </button>
           {categories.map((c) => (
             <button key={c} className={cn(ui.chip, filter === c && ui.chipOn)} onClick={() => setFilter(c)}>

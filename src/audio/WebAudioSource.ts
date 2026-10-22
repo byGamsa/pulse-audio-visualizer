@@ -163,7 +163,7 @@ export async function createDemoSource(): Promise<AudioSource> {
   const synth = new DemoSynth(ctx);
   synth.output.connect(ctx.destination);
   synth.start();
-  return new WebAudioSource('demo', 'Demo-Beat (124 BPM)', synth.output, () => synth.dispose());
+  return new WebAudioSource('demo', 'Demo beat (124 BPM)', synth.output, () => synth.dispose());
 }
 
 export async function createFileSource(file: File): Promise<AudioSource> {
@@ -193,7 +193,7 @@ export async function createMicSource(): Promise<AudioSource> {
   await ctx.resume();
   const stream = await navigator.mediaDevices.getUserMedia({ audio: RAW_AUDIO });
   const node = ctx.createMediaStreamSource(stream);
-  const label = stream.getAudioTracks()[0]?.label || 'Mikrofon';
+  const label = stream.getAudioTracks()[0]?.label || 'Microphone';
   return new WebAudioSource('mic', label, node, () => stopStream(stream, node));
 }
 
@@ -204,10 +204,10 @@ export async function createDisplaySource(): Promise<AudioSource> {
   const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: RAW_AUDIO });
   stream.getVideoTracks().forEach((t) => t.stop());
   if (stream.getAudioTracks().length === 0) {
-    throw new Error('Keine Audiospur freigegeben. Bitte „Systemaudio teilen“ aktivieren.');
+    throw new Error('No audio track shared. Please tick “Share system audio”.');
   }
   const node = ctx.createMediaStreamSource(stream);
-  return new WebAudioSource('display', 'Systemaudio', node, () => stopStream(stream, node));
+  return new WebAudioSource('display', 'System audio', node, () => stopStream(stream, node));
 }
 
 function stopStream(stream: MediaStream, node: AudioNode) {

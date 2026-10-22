@@ -28,23 +28,23 @@ export function TopBar({ sourceLabel, settingsOpen, onPickSource, onToggleSettin
     >
       <span className={ui.wordmark}>Pulse</span>
       <div className="flex items-center gap-4">
-        <button className={ui.btn} onClick={onPickSource} title="Audioquelle wechseln">
+        <button className={ui.btn} onClick={onPickSource} title="Change audio source">
           <span
             className={cn(
               'size-[6px] rounded-full',
               sourceLabel ? 'bg-warm-cream shadow-[0_0_0_3px_rgb(247_244_239/0.12)]' : 'bg-smoke/50',
             )}
           />
-          <span className="max-w-[220px] truncate">{sourceLabel ?? 'Keine Quelle'}</span>
+          <span className="max-w-[220px] truncate">{sourceLabel ?? 'No source'}</span>
         </button>
         <button
           className={cn(ui.btn, ui.btnOutlined, settingsOpen && ui.btnActive)}
           onClick={onToggleSettings}
-          title="Einstellungen (S)"
+          title="Settings (S)"
         >
-          <SlidersHorizontal {...ICON} /> Einstellungen
+          <SlidersHorizontal {...ICON} /> Settings
         </button>
-        <button className={cn(ui.btn, ui.btnIcon)} onClick={onToggleFullscreen} title="Vollbild (F)">
+        <button className={cn(ui.btn, ui.btnIcon)} onClick={onToggleFullscreen} title="Fullscreen (F)">
           <Maximize2 {...ICON} />
         </button>
       </div>
@@ -103,20 +103,20 @@ export function PlayerBar({ engine, browserOpen, playbackOpen, onToggleBrowser, 
         <span className="truncate text-caption text-smoke" title={meta.description}>
           {status.label}
           {status.position && ` · ${status.position}`}
-          {status.hold ? ' · gehalten' : status.waitingForBeat ? ' · wartet auf den Beat' : ` · ${CATEGORY_LABEL[meta.category]}`}
+          {status.hold ? ' · held' : status.waitingForBeat ? ' · waiting for the beat' : ` · ${CATEGORY_LABEL[meta.category]}`}
         </span>
       </div>
       <div className="flex items-center gap-[2px]">
-        <button className={cn(ui.btn, ui.btnIcon)} onClick={() => engine.nextMode(-1)} title="Vorheriger Modus (←)">
+        <button className={cn(ui.btn, ui.btnIcon)} onClick={() => engine.nextMode(-1)} title="Previous mode (←)">
           <ChevronLeft {...ICON} />
         </button>
-        <button className={cn(ui.btn, ui.btnIcon)} onClick={() => engine.nextMode(1)} title="Nächster Modus (→)">
+        <button className={cn(ui.btn, ui.btnIcon)} onClick={() => engine.nextMode(1)} title="Next mode (→)">
           <ChevronRight {...ICON} />
         </button>
         <button
           className={cn(ui.btn, ui.btnIcon, hold && ui.btnActive)}
           onClick={() => setPlayback({ hold: !hold })}
-          title={hold ? 'Timer freigeben (Leertaste)' : 'Aktuellen Modus halten (Leertaste)'}
+          title={hold ? 'Release the timer (Space)' : 'Hold the current mode (Space)'}
           aria-pressed={hold}
         >
           <Pin {...ICON} />
@@ -124,14 +124,14 @@ export function PlayerBar({ engine, browserOpen, playbackOpen, onToggleBrowser, 
         <button
           className={cn(ui.btn, ui.btnIcon, browserOpen && ui.btnActive)}
           onClick={onToggleBrowser}
-          title="Alle Modi (M)"
+          title="All modes (M)"
         >
           <LayoutGrid {...ICON} />
         </button>
         <button
           className={cn(ui.btn, ui.btnIcon, playbackOpen && ui.btnActive)}
           onClick={onTogglePlayback}
-          title="Wiedergabe & Playlists (P)"
+          title="Playback & playlists (P)"
         >
           <ListMusic {...ICON} />
         </button>

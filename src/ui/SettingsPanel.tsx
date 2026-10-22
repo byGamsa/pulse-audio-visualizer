@@ -15,15 +15,15 @@ const STANDARD_ENTRY = {
 type Tab = 'audio' | 'look' | 'performance';
 
 const NOW_PLAYING_OPTIONS: { value: NowPlayingMode; label: string }[] = [
-  { value: 'always', label: 'Immer' },
-  { value: 'change', label: 'Bei Liedwechsel' },
-  { value: 'off', label: 'Aus' },
+  { value: 'always', label: 'Always' },
+  { value: 'change', label: 'On track change' },
+  { value: 'off', label: 'Off' },
 ];
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'audio', label: 'Audio' },
   { id: 'look', label: 'Look' },
-  { id: 'performance', label: 'Leistung' },
+  { id: 'performance', label: 'Performance' },
 ];
 
 export function SettingsPanel({ onClose }: { onClose: () => void }) {
@@ -37,11 +37,11 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
         ui.surface,
         'bg-deep-anvil/92!',
       )}
-      aria-label="Einstellungen"
+      aria-label="Settings"
     >
       <header className="flex items-center justify-between pt-12 pr-12 pl-16">
-        <h2 className="text-[13px] font-medium">Einstellungen</h2>
-        <button className={cn(ui.btn, ui.btnIcon)} onClick={onClose} title="Schließen (S)">
+        <h2 className="text-[13px] font-medium">Settings</h2>
+        <button className={cn(ui.btn, ui.btnIcon)} onClick={onClose} title="Close (S)">
           <X {...ICON} />
         </button>
       </header>
@@ -64,9 +64,9 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
         {tab === 'performance' && <PerformanceTab />}
       </div>
       <footer className="flex items-center justify-between border-t border-white/8 px-16 py-12">
-        <small className="text-caption text-smoke">Änderungen gelten sofort</small>
+        <small className="text-caption text-smoke">Changes apply instantly</small>
         <button className={ui.btn} onClick={reset}>
-          <RotateCcw size={14} strokeWidth={1.5} /> Zurücksetzen
+          <RotateCcw size={14} strokeWidth={1.5} /> Reset
         </button>
       </footer>
     </aside>
@@ -78,21 +78,21 @@ function AudioTab() {
   const set = useSettings((s) => s.setAudio);
   return (
     <>
-      <Group title="Pegel">
-        <Slider label="Sensitivität" value={audio.sensitivity} min={0.2} max={3} step={0.05} format={times} onChange={(v) => set({ sensitivity: v })} />
+      <Group title="Levels">
+        <Slider label="Sensitivity" value={audio.sensitivity} min={0.2} max={3} step={0.05} format={times} onChange={(v) => set({ sensitivity: v })} />
         <Switch label="Auto-Gain" value={audio.autoGain} onChange={(v) => set({ autoGain: v })} />
-        <Slider label="Beat-Schwelle" value={audio.beatThreshold} min={0.5} max={3} step={0.05} format={(v) => v.toFixed(2)} onChange={(v) => set({ beatThreshold: v })} />
+        <Slider label="Beat threshold" value={audio.beatThreshold} min={0.5} max={3} step={0.05} format={(v) => v.toFixed(2)} onChange={(v) => set({ beatThreshold: v })} />
       </Group>
-      <Group title="Glättung">
+      <Group title="Smoothing">
         <Slider label="Attack" value={audio.attack * 1000} min={1} max={200} step={1} format={ms} onChange={(v) => set({ attack: v / 1000 })} />
         <Slider label="Release" value={audio.release * 1000} min={20} max={1500} step={10} format={ms} onChange={(v) => set({ release: v / 1000 })} />
       </Group>
-      <Group title="Frequenzbänder">
-        <Slider label="Bass bis" value={audio.bassCutoff} min={60} max={500} step={10} format={hz} onChange={(v) => set({ bassCutoff: v })} />
-        <Slider label="Höhen ab" value={audio.trebleCutoff} min={1500} max={10000} step={100} format={hz} onChange={(v) => set({ trebleCutoff: v })} />
+      <Group title="Frequency bands">
+        <Slider label="Bass up to" value={audio.bassCutoff} min={60} max={500} step={10} format={hz} onChange={(v) => set({ bassCutoff: v })} />
+        <Slider label="Highs from" value={audio.trebleCutoff} min={1500} max={10000} step={100} format={hz} onChange={(v) => set({ trebleCutoff: v })} />
         <Slider label="Bass" value={audio.bassGain} min={0} max={2.5} step={0.05} format={times} onChange={(v) => set({ bassGain: v })} />
-        <Slider label="Mitten" value={audio.midGain} min={0} max={2.5} step={0.05} format={times} onChange={(v) => set({ midGain: v })} />
-        <Slider label="Höhen" value={audio.trebleGain} min={0} max={2.5} step={0.05} format={times} onChange={(v) => set({ trebleGain: v })} />
+        <Slider label="Mids" value={audio.midGain} min={0} max={2.5} step={0.05} format={times} onChange={(v) => set({ midGain: v })} />
+        <Slider label="Highs" value={audio.trebleGain} min={0} max={2.5} step={0.05} format={times} onChange={(v) => set({ trebleGain: v })} />
       </Group>
     </>
   );
@@ -105,7 +105,7 @@ function LookTab() {
   const setUi = useSettings((s) => s.setUi);
   return (
     <>
-      <Group title="Titelanzeige">
+      <Group title="Now playing">
         <div className="mb-16 flex gap-4">
           {NOW_PLAYING_OPTIONS.map((o) => (
             <button
@@ -145,13 +145,13 @@ function LookTab() {
       </Group>
       <Group title="Glow">
         <Slider label="Bloom" value={visual.bloomIntensity} min={0} max={4} step={0.05} format={(v) => v.toFixed(2)} onChange={(v) => set({ bloomIntensity: v })} />
-        <Slider label="Schwelle" value={visual.bloomThreshold} min={0} max={1.5} step={0.01} format={(v) => v.toFixed(2)} onChange={(v) => set({ bloomThreshold: v })} />
+        <Slider label="Threshold" value={visual.bloomThreshold} min={0} max={1.5} step={0.01} format={(v) => v.toFixed(2)} onChange={(v) => set({ bloomThreshold: v })} />
         <Slider label="Radius" value={visual.bloomRadius} min={0.1} max={1} step={0.01} format={(v) => v.toFixed(2)} onChange={(v) => set({ bloomRadius: v })} />
-        <Slider label="Reagiert auf Bass" value={visual.bloomReactive} min={0} max={2} step={0.05} format={percent(2)} onChange={(v) => set({ bloomReactive: v })} />
+        <Slider label="Reacts to bass" value={visual.bloomReactive} min={0} max={2} step={0.05} format={percent(2)} onChange={(v) => set({ bloomReactive: v })} />
       </Group>
-      <Group title="Linse">
-        <Slider label="Chromatische Aberration" value={visual.chromaticAberration} min={0} max={1.5} step={0.01} format={percent(1.5)} onChange={(v) => set({ chromaticAberration: v })} />
-        <Slider label="Filmkorn" value={visual.grain} min={0} max={0.3} step={0.005} format={percent(0.3)} onChange={(v) => set({ grain: v })} />
+      <Group title="Lens">
+        <Slider label="Chromatic aberration" value={visual.chromaticAberration} min={0} max={1.5} step={0.01} format={percent(1.5)} onChange={(v) => set({ chromaticAberration: v })} />
+        <Slider label="Film grain" value={visual.grain} min={0} max={0.3} step={0.005} format={percent(0.3)} onChange={(v) => set({ grain: v })} />
         <Slider label="Vignette" value={visual.vignette} min={0} max={1} step={0.01} format={percent(1)} onChange={(v) => set({ vignette: v })} />
       </Group>
     </>
@@ -165,9 +165,9 @@ function PerformanceTab() {
   const setUi = useSettings((s) => s.setUi);
   return (
     <Group title="Rendering">
-      <Slider label="Auflösung" value={visual.renderScale * 100} min={40} max={100} step={5} format={(v) => `${v.toFixed(0)} %`} onChange={(v) => set({ renderScale: v / 100 })} />
-      <Switch label="Dynamische Auflösung" value={visual.dynamicResolution} onChange={(v) => set({ dynamicResolution: v })} />
-      <Switch label="HUD anzeigen" value={ui.showHud} onChange={(v) => setUi({ showHud: v })} />
+      <Slider label="Resolution" value={visual.renderScale * 100} min={40} max={100} step={5} format={(v) => `${v.toFixed(0)} %`} onChange={(v) => set({ renderScale: v / 100 })} />
+      <Switch label="Dynamic resolution" value={visual.dynamicResolution} onChange={(v) => set({ dynamicResolution: v })} />
+      <Switch label="Show HUD" value={ui.showHud} onChange={(v) => setUi({ showHud: v })} />
     </Group>
   );
 }

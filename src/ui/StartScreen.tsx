@@ -21,41 +21,41 @@ interface Props {
 const SOURCES: { kind: AudioSourceKind; label: string; title: string; hint: string; Icon: typeof Mic }[] = [
   {
     kind: 'display',
-    label: 'Systemaudio',
-    title: 'Alles, was dein Rechner gerade abspielt',
-    hint: 'Im Freigabe-Dialog „Systemaudio teilen“ aktivieren.',
+    label: 'System audio',
+    title: 'Everything your computer is playing',
+    hint: 'Tick “Share system audio” in the sharing dialog.',
     Icon: MonitorSpeaker,
   },
   {
     kind: 'file',
-    label: 'Datei',
-    title: 'Einen eigenen Track laden',
-    hint: 'MP3, WAV, FLAC oder OGG, läuft in Schleife.',
+    label: 'File',
+    title: 'Load a track of your own',
+    hint: 'MP3, WAV, FLAC or OGG, plays on a loop.',
     Icon: FileAudio,
   },
   {
     kind: 'mic',
-    label: 'Mikrofon',
-    title: 'Mikrofon oder Line-In',
-    hint: 'Für Plattenspieler, Mischpult oder den Raum.',
+    label: 'Microphone',
+    title: 'Microphone or line-in',
+    hint: 'For turntables, a mixer or the room.',
     Icon: Mic,
   },
   {
     kind: 'demo',
     label: 'Demo',
-    title: 'Eingebauter House-Loop, 124 BPM',
-    hint: 'Zum Ausprobieren ohne eigene Musik.',
+    title: 'Built-in house loop, 124 BPM',
+    hint: 'Try Pulse without music of your own.',
     Icon: AudioLines,
   },
 ];
 
 const SHORTCUTS: [string[], string][] = [
-  [['←', '→'], 'Modus wechseln'],
-  [['M'], 'Alle Modi'],
+  [['←', '→'], 'Switch mode'],
+  [['M'], 'All modes'],
   [['P'], 'Playlists'],
-  [['Leertaste'], 'Modus halten'],
-  [['S'], 'Einstellungen'],
-  [['F'], 'Vollbild'],
+  [['Space'], 'Hold mode'],
+  [['S'], 'Settings'],
+  [['F'], 'Fullscreen'],
   [['H'], 'HUD'],
 ];
 
@@ -75,7 +75,7 @@ export function StartScreen({ engine, canClose, onClose, onConnected }: Props) {
   }, [native]);
   const deviceKind = kind === 'display' ? 'output' : kind === 'mic' ? 'input' : null;
   const deviceOptions = deviceKind ? devices.filter((d) => d.kind === deviceKind) : [];
-  const hint = native && kind === 'display' ? 'Direkt per WASAPI-Loopback, ohne Freigabe-Dialog.' : selected.hint;
+  const hint = native && kind === 'display' ? 'Straight through WASAPI loopback, no sharing dialog.' : selected.hint;
 
   const connect = async (factory: () => Promise<AudioSource>) => {
     setBusy(true);
@@ -85,7 +85,7 @@ export function StartScreen({ engine, canClose, onClose, onConnected }: Props) {
       engine.setSource(source);
       onConnected(source.label, source.kind);
     } catch (e) {
-      if (e instanceof DOMException && e.name === 'NotAllowedError') setError('Freigabe abgebrochen.');
+      if (e instanceof DOMException && e.name === 'NotAllowedError') setError('Sharing was cancelled.');
       else setError(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
@@ -113,18 +113,18 @@ export function StartScreen({ engine, canClose, onClose, onConnected }: Props) {
         <span className={ui.wordmark}>Pulse</span>
         {canClose && (
           <button className={ui.btn} onClick={onClose}>
-            <X {...ICON} /> Schließen
+            <X {...ICON} /> Close
           </button>
         )}
       </nav>
 
       <main className="flex flex-1 flex-col items-center justify-center px-16 pb-32 text-center">
-        <p className="mb-20 text-[13px] font-normal text-warm-cream/60">Echtzeit-Audio-Visualizer</p>
+        <p className="mb-20 text-[13px] font-normal text-warm-cream/60">Real-time audio visualizer</p>
         <h1 className="font-editorial-new text-[clamp(48px,8.5vw,112px)] leading-[0.95] font-normal tracking-[-0.026em] italic">
-          Musik, <span className="not-italic">die man</span> sieht.
+          See what <span className="not-italic">you</span> hear.
         </h1>
         <p className="mt-24 mb-40 max-w-[440px] text-body text-smoke">
-          Pulse übersetzt jedes Signal in Licht, vom Kick bis zur letzten Hi-Hat. Wähle, was du hören willst.
+          Pulse turns every signal into light, from the kick to the last hi-hat. Pick what you want to hear.
         </p>
 
         <div className="w-full max-w-[680px] rounded-2xl border border-white/8 bg-deep-anvil/60 p-16 text-left shadow-xl backdrop-blur-xl">
@@ -141,19 +141,19 @@ export function StartScreen({ engine, canClose, onClose, onConnected }: Props) {
                 className={cn(select, 'max-w-[220px] shrink-0')}
                 value={device[kind] ?? ''}
                 onChange={(e) => setDevice((d) => ({ ...d, [kind]: e.target.value }))}
-                title="Gerät"
+                title="Device"
               >
-                <option value="">Standardgerät</option>
+                <option value="">Default device</option>
                 {deviceOptions.map((d) => (
                   <option key={d.name} value={d.name}>
-                    {d.name}{d.isDefault ? ' (Standard)' : ''}
+                    {d.name}{d.isDefault ? ' (default)' : ''}
                   </option>
                 ))}
               </select>
             )}
           </div>
           <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
-            <div className="flex flex-1 flex-wrap gap-4" role="radiogroup" aria-label="Audioquelle">
+            <div className="flex flex-1 flex-wrap gap-4" role="radiogroup" aria-label="Audio source">
               {SOURCES.map((s) => (
                 <button
                   key={s.kind}
@@ -167,7 +167,7 @@ export function StartScreen({ engine, canClose, onClose, onConnected }: Props) {
               ))}
             </div>
             <button className={ui.create} disabled={busy} onClick={start}>
-              Starten <ArrowRight size={16} strokeWidth={1.75} />
+              Start <ArrowRight size={16} strokeWidth={1.75} />
             </button>
           </div>
           {error && <p className="mx-4 mt-12 text-[13px] text-smoke">{error}</p>}

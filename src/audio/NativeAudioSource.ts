@@ -70,6 +70,6 @@ class NativeAudioSource implements AudioSource {
 export async function createNativeSource(device: string | undefined, loopback: boolean): Promise<AudioSource> {
   const channel = new Channel<ArrayBuffer>();
   const info = await invoke<CaptureInfo>('audio_start', { device: device ?? null, loopback, onFrame: channel });
-  const label = loopback ? `Systemaudio · ${info.name}` : info.name;
+  const label = loopback ? `System audio · ${info.name}` : info.name;
   return new NativeAudioSource(loopback ? 'display' : 'mic', label, channel, info.id);
 }

@@ -11,42 +11,42 @@ const mode = (meta: ModeMeta, load: RegistryEntry['load']): RegistryEntry => ({ 
 export const MODES: RegistryEntry[] = [
   mode(
     { id: 'halo', name: 'Halo', category: 'experimental', gpuCost: 1, vivid: 0.25,
-      description: 'Radiales Spektrum als Lichtring, mit Schockwellen und Funkenregen auf Beats.' },
+      description: 'The spectrum as a ring of light. Beats send out shockwaves and showers of sparks.' },
     () => import('../modes/halo').then((m) => m.default),
   ),
   mode(
     { id: 'silk-ribbon', name: 'Silk Ribbon', category: 'lineart', gpuCost: 2, vivid: 0.25,
-      description: 'Ein Band aus 1 800 haarfeinen Fäden, das sich mit der Musik verdreht und flirrt.' },
+      description: 'A ribbon of 1,800 hair-thin threads that twists and shimmers with the music.' },
     () => import('../modes/silk-ribbon').then((m) => m.default),
   ),
   mode(
     { id: 'nebula-galaxy', name: 'Nebula Galaxy', category: 'particles', gpuCost: 2, vivid: 0.25,
-      description: '300 000 Sterne in Spiralarmen. Beats schicken Dichtewellen durch die Scheibe.' },
+      description: '300,000 stars in spiral arms. Every beat sends a density wave through the disc.' },
     () => import('../modes/nebula-galaxy').then((m) => m.default),
   ),
   mode(
     { id: 'neon-tunnel', name: 'Neon Tunnel', category: 'retro', gpuCost: 2, vivid: 0.4,
-      description: 'Flug durch einen endlosen Tunnel aus Neonringen, die das Spektrum nachzeichnen.' },
+      description: 'Fly through an endless tunnel of neon rings that trace the spectrum.' },
     () => import('../modes/neon-tunnel').then((m) => m.default),
   ),
   mode(
     { id: 'dot-matrix', name: 'Dot Matrix', category: 'lineart', gpuCost: 2, vivid: 0.3,
-      description: 'Ein Punktraster als Gelände aus den letzten Sekunden Spektrum, mit Bokeh im Vordergrund.' },
+      description: 'A field of dots shaped by the last few seconds of sound, with bokeh in the foreground.' },
     () => import('../modes/dot-matrix').then((m) => m.default),
   ),
   mode(
     { id: 'aurora', name: 'Aurora', category: 'ambient', gpuCost: 2, vivid: 0.25,
-      description: 'Nordlicht über einem stillen See. Die Mitten bewegen die Vorhänge.' },
+      description: 'Northern lights over a still lake. The mids move the curtains.' },
     () => import('../modes/aurora').then((m) => m.default),
   ),
   mode(
     { id: 'liquid-silk', name: 'Liquid Silk', category: 'organic', gpuCost: 2, vivid: 0.2,
-      description: 'Echte Flüssigkeitssimulation. Drei Strömungen für Bass, Mitten und Höhen rühren Farbe.' },
+      description: 'A real fluid simulation. Bass, mids and highs each stir their own current of color.' },
     () => import('../modes/liquid-silk').then((m) => m.default),
   ),
   mode(
     { id: 'ferrofluid', name: 'Ferrofluid', category: 'organic', gpuCost: 3, vivid: 0.2,
-      description: 'Schwarz glänzende Magnetflüssigkeit; jede Stachelreihe folgt einem Frequenzband.' },
+      description: 'Glossy black magnetic liquid. Every row of spikes follows its own frequency band.' },
     () => import('../modes/ferrofluid').then((m) => m.default),
   ),
   mode(
@@ -56,17 +56,17 @@ export const MODES: RegistryEntry[] = [
   ),
   mode(
     { id: 'jellyfish', name: 'Jellyfish', category: 'organic', gpuCost: 2, vivid: 0.25,
-      description: 'Biolumineszente Quallen in der Tiefsee; jeder Beat lässt eine von ihnen pumpen.' },
+      description: 'Bioluminescent jellyfish in the deep sea. Every beat makes one of them pulse.' },
     () => import('../modes/jellyfish').then((m) => m.default),
   ),
   mode(
     { id: 'mycelium', name: 'Mycelium', category: 'organic', gpuCost: 2, vivid: 0.25,
-      description: 'Ein Pilzgeflecht wächst aus der Mitte. Jeder Stamm leuchtet mit seinem Frequenzband.' },
+      description: 'A fungal network growing from the center. Each strand glows with its frequency band.' },
     () => import('../modes/mycelium').then((m) => m.default),
   ),
   mode(
     { id: 'midnight-ocean', name: 'Midnight Ocean', category: 'organic', gpuCost: 2, vivid: 0.25,
-      description: 'Nächtliche See unter Mondlicht. Der Bass treibt die Dünung, die Höhen glitzern.' },
+      description: 'The sea at night under moonlight. Bass drives the swell, highs make it glitter.' },
     () => import('../modes/midnight-ocean').then((m) => m.default),
   ),
   mode(
@@ -76,12 +76,12 @@ export const MODES: RegistryEntry[] = [
   ),
   mode(
     { id: 'outrun', name: 'Outrun', category: 'retro', gpuCost: 1, vivid: 0.2,
-      description: 'Synthwave-Highway mit Streifensonne. Die vordere Bergkette ist das Spektrum.' },
+      description: 'A synthwave highway under a striped sun. The front mountain range is the spectrum.' },
     () => import('../modes/outrun').then((m) => m.default),
   ),
   mode(
     { id: 'phosphor-scope', name: 'Phosphor Scope', category: 'retro', gpuCost: 1,
-      description: 'Analoges XY-Oszilloskop mit Nachleuchten. Stereo zeichnet Lissajous-Figuren.' },
+      description: 'An analog XY oscilloscope with afterglow. Stereo draws Lissajous figures.' },
     () => import('../modes/phosphor-scope').then((m) => m.default),
   ),
   mode(
@@ -91,22 +91,22 @@ export const MODES: RegistryEntry[] = [
   ),
   mode(
     { id: 'neon-waves', name: 'Neon Waves', category: 'lineart', gpuCost: 2, vivid: 0.25,
-      description: 'Dutzende Leuchtlinien formen eine wogende Fläche; vorn das Jetzt, hinten die letzten Sekunden.' },
+      description: 'Dozens of light lines form a rolling surface: now in front, the last seconds behind.' },
     () => import('../modes/neon-waves').then((m) => m.default),
   ),
   mode(
     { id: 'silk-light', name: 'Silk Light', category: 'lineart', gpuCost: 1, vivid: 0.3,
-      description: 'Ein Bündel weicher Lichtstränge mit wanderndem Farbton; der Bass spreizt es auf.' },
+      description: 'A bundle of soft light strands with drifting hues. The bass fans it open.' },
     () => import('../modes/silk-light').then((m) => m.default),
   ),
   mode(
     { id: 'lightspeed', name: 'Lightspeed', category: 'particles', gpuCost: 2, vivid: 0.25,
-      description: 'Lichtstrahlen und Punktströme schießen auf dich zu; Beats geben Schub.' },
+      description: 'Beams and streams of light rush toward you. Every beat is a boost.' },
     () => import('../modes/lightspeed').then((m) => m.default),
   ),
   mode(
     { id: 'dot-vortex', name: 'Dot Vortex', category: 'particles', gpuCost: 2, vivid: 0.3,
-      description: 'Ein gewundener Tunnel aus Punkt-Ringen in Regenbogenfarben, vorn verformt vom Klang.' },
+      description: 'A winding tunnel of rainbow dot rings, bent by the sound up front.' },
     () => import('../modes/dot-vortex').then((m) => m.default),
   ),
   mode(
@@ -116,7 +116,7 @@ export const MODES: RegistryEntry[] = [
   ),
   mode(
     { id: 'neon-stage', name: 'Neon Stage', category: 'experimental', gpuCost: 1, vivid: 0.25,
-      description: 'Feine Regenbogen-Spektrumlinien mit Lichtvorhängen auf einem Spiegelboden.' },
+      description: 'Fine rainbow spectrum lines and light curtains over a mirror floor.' },
     () => import('../modes/neon-stage').then((m) => m.default),
   ),
   mode(
@@ -126,7 +126,7 @@ export const MODES: RegistryEntry[] = [
   ),
   mode(
     { id: 'mercury-pool', name: 'Mercury Pool', category: 'organic', gpuCost: 2,
-      description: 'Ein Becken aus Quecksilber; jeder Kick lässt einen Chromtropfen hineinfallen.' },
+      description: 'A pool of mercury. Every kick drops a chrome bead into it.' },
     () => import('../modes/mercury-pool').then((m) => m.default),
   ),
   mode(
@@ -141,97 +141,97 @@ export const MODES: RegistryEntry[] = [
   ),
   mode(
     { id: 'bar-grid', name: 'Bar Grid', category: 'retro', gpuCost: 1, vivid: 0.4,
-      description: 'Ein 3D-Raster aus Leuchtsäulen: quer die Frequenz, nach hinten die Zeit.' },
+      description: 'A 3D grid of light columns: frequency across, time going back.' },
     () => import('../modes/bar-grid').then((m) => m.default),
   ),
   mode(
     { id: 'spectrum-disc', name: 'Spectrum Disc', category: 'lineart', gpuCost: 1, vivid: 0.35,
-      description: 'Eine Regenbogen-Scheibe, auf deren Ring Spektrum-Nadeln wachsen und nach außen laufen.' },
+      description: 'A rainbow disc where spectrum needles grow on the rim and race outward.' },
     () => import('../modes/spectrum-disc').then((m) => m.default),
   ),
   mode(
     { id: 'laser-weave', name: 'Laser Weave', category: 'experimental', gpuCost: 1, vivid: 0.3,
-      description: 'Laserbündel kreuzen sich wie in einer Langzeitbelichtung, jedes Bündel ein Frequenzband.' },
+      description: 'Laser bundles cross like a long exposure, one bundle per frequency band.' },
     () => import('../modes/laser-weave').then((m) => m.default),
   ),
   mode(
     { id: 'oil-paint', name: 'Oil Paint', category: 'organic', gpuCost: 2, vivid: 0.4,
-      description: 'Dicke, glänzende Farbstriche spritzen auf jeden Beat aus der Mitte und zerfließen.' },
+      description: 'Thick, glossy brushstrokes burst from the center on every beat and run.' },
     () => import('../modes/oil-paint').then((m) => m.default),
   ),
   mode(
     { id: 'cosmic-tunnel', name: 'Cosmic Tunnel', category: 'ambient', gpuCost: 2, vivid: 0.2,
-      description: 'Flug durch eine gekrümmte Sternenröhre mit spiralförmigen Nebeln und Spektrum-Bögen.' },
+      description: 'Fly through a curved tube of stars, spiral nebulae and spectrum arcs.' },
     () => import('../modes/cosmic-tunnel').then((m) => m.default),
   ),
   mode(
     { id: 'neon-lasers', name: 'Neon Lasers', category: 'experimental', gpuCost: 1, vivid: 0.4,
-      description: 'Neonstrahlen kreuzen sich über das ganze Bild; wo sie sich treffen, glüht es weiß.' },
+      description: 'Neon beams cross the whole frame. Where they meet, they burn white.' },
     () => import('../modes/neon-lasers').then((m) => m.default),
   ),
   mode(
     { id: 'tesla-waves', name: 'Tesla Waves', category: 'experimental', gpuCost: 1, vivid: 0.35,
-      description: 'Knisternde elektrische Entladungen mit weitem Neonschein, mal als Bahnen, mal als Kaleidoskop.' },
+      description: 'Crackling electric discharges with a wide neon glow, as paths or as a kaleidoscope.' },
     () => import('../modes/tesla-waves').then((m) => m.default),
   ),
   mode(
     { id: 'red-lattice', name: 'Red Lattice', category: 'lineart', gpuCost: 2, vivid: 0.3,
-      description: 'Ein rot glühendes Dreiecksnetz in mehreren Ebenen; jede Kante hängt an einem Frequenzband.' },
+      description: 'A red-hot triangle mesh in layers. Every edge hangs on a frequency band.' },
     () => import('../modes/red-lattice').then((m) => m.default),
   ),
   mode(
     { id: 'aurora-horizon', name: 'Aurora Horizon', category: 'ambient', gpuCost: 1,
-      description: 'Lichtvorhänge in Rosa und Blau über einem spiegelnden Horizont, jede Spalte ein Band.' },
+      description: 'Pink and blue light curtains over a mirrored horizon, one band per column.' },
     () => import('../modes/aurora-horizon').then((m) => m.default),
   ),
   mode(
     { id: 'energy-tendrils', name: 'Energy Tendrils', category: 'particles', gpuCost: 2, vivid: 0.3,
-      description: 'Hunderte Energiefäden schießen aus einem Kern; vorbeiziehende verschwimmen zu Schlieren.' },
+      description: 'Hundreds of energy tendrils shoot from a core and blur into streaks as they pass.' },
     () => import('../modes/energy-tendrils').then((m) => m.default),
   ),
   mode(
     { id: 'neon-arches', name: 'Neon Arches', category: 'retro', gpuCost: 1, vivid: 0.3,
-      description: 'Flug durch einen Tunnel aus Neonbögen über spiegelndem Boden; Kicks treiben das Tempo.' },
+      description: 'Fly through a tunnel of neon arches over a mirror floor. Kicks set the pace.' },
     () => import('../modes/neon-arches').then((m) => m.default),
   ),
   mode(
     { id: 'saber-stage', name: 'Saber Stage', category: 'experimental', gpuCost: 1, vivid: 0.45,
-      description: 'Bühne im Stil von Beat Saber: Lichtringe, Laserfächer und taktgenau geschnittene Würfel.' },
+      description: 'A Beat Saber-style stage: light rings, laser fans and cubes sliced on the beat.' },
     () => import('../modes/saber-stage').then((m) => m.default),
   ),
   mode(
     { id: 'macrodata', name: 'Macrodata', category: 'retro', gpuCost: 1,
-      description: 'Ein Zahlenraster auf alter Röhre; wo die Musik hinzieht, blähen sich die Ziffern auf.' },
+      description: 'A grid of numbers on an old CRT. Where the music pulls, the digits swell.' },
     () => import('../modes/macrodata').then((m) => m.default),
   ),
   mode(
     { id: 'terminal', name: 'Terminal', category: 'retro', gpuCost: 1,
-      description: 'Ein Coding-Terminal tippt den echten Quellcode von Pulse, im Tempo der Musik.' },
+      description: 'A coding terminal types the actual Pulse source code, in time with the music.' },
     () => import('../modes/terminal').then((m) => m.default),
   ),
   mode(
     { id: 'text-tetris', name: 'Text Tetris', category: 'retro', gpuCost: 1,
-      description: 'Tetris im Textmodus wie 1984. Spielt sich selbst, die Steine fallen im Takt.' },
+      description: 'Tetris in text mode, like 1984. It plays itself, the blocks fall on the beat.' },
     () => import('../modes/text-tetris').then((m) => m.default),
   ),
   mode(
     { id: 'vfd-hifi', name: 'VFD Hi-Fi', category: 'retro', gpuCost: 1,
-      description: 'Vakuum-Fluoreszenz-Display einer alten Stereoanlage: 32-Band-Analyzer und VU-Meter.' },
+      description: 'The vacuum fluorescent display of a vintage stereo: 32-band analyzer and VU meters.' },
     () => import('../modes/vfd-hifi').then((m) => m.default),
   ),
   mode(
     { id: 'spectrum-mirror', name: 'Spectrum Mirror', category: 'retro', gpuCost: 1, vivid: 0.3,
-      description: 'Gespiegelte Regenbogen-LED-Säulen mit Echo-Ebenen, die in die Tiefe laufen.' },
+      description: 'Mirrored rainbow LED columns with echo layers running into the distance.' },
     () => import('../modes/spectrum-mirror').then((m) => m.default),
   ),
   mode(
     { id: 'led-tubes', name: 'LED Tubes', category: 'retro', gpuCost: 1, vivid: 0.25,
-      description: 'Zehn Glasröhren mit LED-Säulen auf dem Schreibtisch, eine pro Frequenzband.' },
+      description: 'Ten glass tubes with LED columns on a desk, one per frequency band.' },
     () => import('../modes/led-tubes').then((m) => m.default),
   ),
   mode(
     { id: 'arcade', name: '8-Bit Arcade', category: 'retro', gpuCost: 1,
-      description: 'Pixel-Aliens marschieren im Takt, jede Spalte hüpft mit ihrem Band. Das Schiff feuert auf Beats.' },
+      description: 'Pixel aliens march in time, every column hopping with its band. The ship fires on the beat.' },
     () => import('../modes/arcade').then((m) => m.default),
   ),
   mode(
@@ -306,7 +306,7 @@ export const MODES: RegistryEntry[] = [
   ),
   mode(
     { id: 'liquid-gradient', name: 'Liquid Gradient', category: 'ambient', gpuCost: 1,
-      description: 'Weiche, fließende Mesh-Gradients. Ruhig und nur sanft audio-reaktiv.' },
+      description: 'Soft, flowing mesh gradients. Calm, and only gently reactive.' },
     () => import('../modes/liquid-gradient').then((m) => m.default),
   ),
 ];

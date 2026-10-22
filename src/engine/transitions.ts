@@ -10,8 +10,8 @@ export type TransitionType = (typeof TRANSITIONS)[number];
 export type TransitionChoice = TransitionType | 'auto' | 'random';
 
 export const TRANSITION_LABEL: Record<TransitionChoice, string> = {
-  auto: 'Automatisch',
-  random: 'Zufällig',
+  auto: 'Automatic',
+  random: 'Random',
   crossfade: 'Crossfade',
   dissolve: 'Noise Dissolve',
   zoom: 'Zoom Warp',

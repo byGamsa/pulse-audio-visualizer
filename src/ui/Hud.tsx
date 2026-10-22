@@ -52,7 +52,7 @@ export function Hud({ engine }: { engine: Engine }) {
       <span><b>{stats.width}×{stats.height}</b></span>
       <span><b>{Math.round(stats.renderScale * 100)}</b> %</span>
       <span><b>{stats.bpm.toFixed(0)}</b> bpm</span>
-      <span>energie <b>{Math.round(stats.energy * 100)}</b></span>
+      <span>energy <b>{Math.round(stats.energy * 100)}</b></span>
       <canvas ref={meterRef} className="col-span-full mt-8 h-[28px] w-[200px] opacity-80" />
     </div>
   );

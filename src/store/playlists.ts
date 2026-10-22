@@ -126,7 +126,7 @@ export const usePlaylists = create<PlaylistState>()(
     (set, get) => ({
       playlists: SEED,
 
-      create: (name = 'Neue Playlist') => {
+      create: (name = 'New playlist') => {
         const id = uid();
         set((s) => ({ playlists: [...s.playlists, { id, name, items: [], defaultDuration: 180, order: 'sequential' }] }));
         return id;
@@ -138,7 +138,7 @@ export const usePlaylists = create<PlaylistState>()(
         const copy: Playlist = {
           ...src,
           id: uid(),
-          name: `${src.name} (Kopie)`,
+          name: `${src.name} (copy)`,
           items: src.items.map((i) => ({ ...i, id: uid() })),
         };
         set((s) => ({ playlists: [...s.playlists, copy] }));
@@ -170,10 +170,10 @@ export const usePlaylists = create<PlaylistState>()(
 
       importJson: (json) => {
         const raw = JSON.parse(json) as Partial<Playlist>;
-        if (!Array.isArray(raw.items)) throw new Error('Keine gültige Playlist-Datei.');
+        if (!Array.isArray(raw.items)) throw new Error('Not a valid playlist file.');
         const playlist: Playlist = {
           id: uid(),
-          name: String(raw.name ?? 'Importiert'),
+          name: String(raw.name ?? 'Imported'),
           defaultDuration: Number(raw.defaultDuration) > 0 ? Number(raw.defaultDuration) : 180,
           order: raw.order === 'shuffle' ? 'shuffle' : 'sequential',
           transition: isTransitionChoice(raw.transition) ? raw.transition : undefined,

@@ -171,8 +171,8 @@ const ART: Record<string, string> = {
 };
 
 export const CATEGORY_LABEL: Record<ModeCategory, string> = {
-  organic: 'Organisch',
-  particles: 'Partikel',
+  organic: 'Organic',
+  particles: 'Particles',
   retro: 'Retro',
   ambient: 'Ambient',
   lineart: 'Line Art',
