@@ -65,6 +65,8 @@ export interface UiSettings {
   nowPlaying: NowPlayingMode;
   // Desktop: beim Start und alle 6 h nach neuen Versionen sehen
   autoUpdate: boolean;
+  // Desktop: Visuals im Vollbild auf diesem Monitor, null = im Hauptfenster
+  displayMonitor: string | null;
 }
 
 export interface SettingsState {
@@ -119,8 +121,11 @@ const defaults = {
     playbackOpen: false,
     nowPlaying: 'change' as NowPlayingMode,
     autoUpdate: true,
+    displayMonitor: null as string | null,
   } satisfies UiSettings,
 };
+
+export const SETTINGS_KEY = 'pulse-settings';
 
 export const useSettings = create<SettingsState>()(
   persist(
@@ -133,7 +138,7 @@ export const useSettings = create<SettingsState>()(
       reset: () => set({ audio: defaults.audio, visual: defaults.visual }),
     }),
     {
-      name: 'pulse-settings',
+      name: SETTINGS_KEY,
       version: 2,
       // v1 kannte nur „autoSwitch“; alles Übrige ergänzt merge() mit Defaults
       migrate: (persisted) => {

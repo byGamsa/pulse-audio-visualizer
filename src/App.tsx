@@ -14,6 +14,7 @@ import { useNowPlaying } from './media/nowPlaying';
 import type { AudioSourceKind } from './audio/types';
 import { startUpdateChecks } from './update/updater';
 import { UpdateNotice } from './ui/UpdateNotice';
+import { useDisplayOutput } from './display/output';
 
 export function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -26,6 +27,7 @@ export function App() {
   const setUi = useSettings((s) => s.setUi);
   const idle = useIdle(3000);
   const track = useNowPlaying(sourceKind, sourceLabel);
+  const displayActive = useDisplayOutput(engine, track);
 
   useEffect(() => (ui.autoUpdate ? startUpdateChecks() : undefined), [ui.autoUpdate]);
 
@@ -76,6 +78,9 @@ export function App() {
     <div className="group/app fixed inset-0 data-[idle=true]:cursor-none" data-idle={chromeIdle}>
       <div className="absolute inset-0 bg-pure-ink">
         <canvas ref={canvasRef} className="block size-full" />
+        {displayActive && (
+          <p className="absolute inset-0 grid place-items-center text-caption text-smoke">Visuals are playing on another monitor</p>
+        )}
       </div>
       {engine && startOpen && (
         <StartScreen

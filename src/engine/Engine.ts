@@ -11,7 +11,8 @@ import {
   VignetteEffect,
 } from 'postprocessing';
 import { FeatureBus } from '../audio/FeatureBus';
-import type { AudioSource } from '../audio/types';
+import type { AudioFeatures, AudioSource } from '../audio/types';
+import type { SendToDisplay } from '../display/link';
 import { useSettings } from '../store/settings';
 import { CompositePass } from './CompositePass';
 import { MODES, findMode } from './ModeRegistry';
@@ -35,6 +36,11 @@ export interface EngineStats {
   modeName: string;
   bpm: number;
   energy: number;
+}
+
+export interface EngineOptions {
+  // Ausgabefenster: Audio und Modus kommen vom Hauptfenster, nichts wird gespeichert
+  follower?: boolean;
 }
 
 const MAX_PIXEL_RATIO = 2;
@@ -68,6 +74,12 @@ export class Engine {
   private paletteOverride: string | null = null;
   private transitionType: TransitionType = 'dissolve';
 
+  // Ein anderes Fenster rendert; hier laufen nur Audio und Playback
+  private remote: SendToDisplay | null = null;
+  private remoteMode: { id: string; transition: TransitionChoice } | null = null;
+  private readonly follower: boolean;
+  private pendingBeat = false;
+
   private raf = 0;
   private lastFrame = 0;
   private time = 0;
@@ -83,7 +95,8 @@ export class Engine {
   private fpsFrames = 0;
   private fpsTime = 0;
 
-  constructor(readonly canvas: HTMLCanvasElement) {
+  constructor(readonly canvas: HTMLCanvasElement, options: EngineOptions = {}) {
+    this.follower = options.follower ?? false;
     this.renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: false,
@@ -134,6 +147,44 @@ export class Engine {
     this.paletteOverride = id;
   }
 
+  // Auf einen anderen Monitor ausgeben (null = wieder selbst rendern)
+  setRemote(send: SendToDisplay | null) {
+    if (send === this.remote) return;
+    this.remote = send;
+    this.remoteMode = null;
+    this.loadingId = null;
+    if (send) {
+      for (const slot of [this.current, this.next]) if (slot) this.disposeSlot(slot);
+      this.current = this.next = null;
+      this.renderer.setRenderTarget(null);
+      this.renderer.clear();
+    }
+    void this.setMode(useSettings.getState().playback.modeId, 0);
+  }
+
+  // Takt vom Ausgabefenster; minimierte Fenster bekommen kein requestAnimationFrame
+  tick() {
+    if (this.remote) this.frame(performance.now());
+  }
+
+  // Ausgabefenster ist (neu) geladen
+  syncRemote() {
+    if (this.remote && this.remoteMode) this.remote({ type: 'mode', id: this.remoteMode.id, seconds: 0, transition: this.remoteMode.transition });
+  }
+
+  // Ausgabefenster: Features aus dem Hauptfenster übernehmen
+  receive(src: AudioFeatures, palette: string | null) {
+    const f = this.bus.features;
+    const { spectrum, waveL, waveR, time: _t, dt: _dt, beat, ...scalars } = src;
+    f.spectrum.set(spectrum);
+    f.waveL.set(waveL);
+    f.waveR.set(waveR);
+    Object.assign(f, scalars);
+    // Bei unterschiedlichen Bildraten keinen Beat verlieren
+    this.pendingBeat ||= beat;
+    this.paletteOverride = palette;
+  }
+
   setSource(source: AudioSource | null) {
     this.bus.source?.dispose();
     this.bus.source = source;
@@ -144,6 +195,15 @@ export class Engine {
     transitionSeconds = useSettings.getState().playback.transitionDuration,
     transition: TransitionChoice = useSettings.getState().playback.transition,
   ) {
+    if (this.remote) {
+      if (this.remoteMode?.id === id) return;
+      this.remoteMode = { id, transition };
+      this.remote({ type: 'mode', id, seconds: transitionSeconds, transition });
+      this.lastSwitch = this.time;
+      this.stats.modeName = findMode(id).meta.name;
+      useSettings.getState().setPlayback({ modeId: id });
+      return;
+    }
     if (this.current?.meta.id === id && !this.next) return;
     if (this.loadingId === id || this.next?.meta.id === id) return;
     this.loadingId = id;
@@ -173,7 +233,7 @@ export class Engine {
     }
     this.lastSwitch = this.time;
     this.stats.modeName = def.meta.name;
-    useSettings.getState().setPlayback({ modeId: id });
+    if (!this.follower) useSettings.getState().setPlayback({ modeId: id });
   }
 
   nextMode(direction: 1 | -1 = 1) {
@@ -184,7 +244,7 @@ export class Engine {
     this.lastFrame = performance.now();
     const loop = (now: number) => {
       this.raf = requestAnimationFrame(loop);
-      this.frame(now);
+      if (!this.remote) this.frame(now);
     };
     this.raf = requestAnimationFrame(loop);
   }
@@ -206,12 +266,25 @@ export class Engine {
     this.time += dt;
 
     const settings = useSettings.getState();
-    this.bus.update(this.time, dt, settings.audio);
     const audio = this.bus.features;
+    if (this.follower) {
+      audio.time = this.time;
+      audio.dt = dt;
+      audio.beat = this.pendingBeat;
+      this.pendingBeat = false;
+    } else {
+      this.bus.update(this.time, dt, settings.audio);
+      // Erst wenn der erste Modus steht
+      if (this.current || this.remoteMode) this.playback.update(dt, audio);
+    }
+
+    if (this.remote) {
+      this.remote({ type: 'frame', features: audio, palette: this.paletteOverride });
+      this.updateStats(dt);
+      return;
+    }
 
     this.applyVisualSettings(dt);
-    // Erst wenn der erste Modus steht
-    if (this.current) this.playback.update(dt, audio);
     this.updateDynamicResolution(dt);
 
     if (this.current) {

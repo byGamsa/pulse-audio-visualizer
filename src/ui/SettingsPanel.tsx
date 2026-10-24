@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RefreshCw, RotateCcw, X } from 'lucide-react';
 import { useSettings, type NowPlayingMode } from '../store/settings';
 import { PALETTES, STANDARD_PALETTE } from '../engine/palette';
 import { ICON, cn, ui } from './ui';
 import { Group, Slider, Switch } from './controls';
 import { canUpdate, useUpdater, type UpdateStatus } from '../update/updater';
+import { canUseDisplays, listMonitors, type MonitorInfo } from '../display/output';
 
 // Standard = Originalfarben, Vorschau als bunte Streifen
 const STANDARD_ENTRY = {
@@ -169,10 +170,49 @@ function PerformanceTab() {
   const set = useSettings((s) => s.setVisual);
   const setUi = useSettings((s) => s.setUi);
   return (
-    <Group title="Rendering">
-      <Slider label="Resolution" value={visual.renderScale * 100} min={40} max={100} step={5} format={(v) => `${v.toFixed(0)} %`} onChange={(v) => set({ renderScale: v / 100 })} />
-      <Switch label="Dynamic resolution" value={visual.dynamicResolution} onChange={(v) => set({ dynamicResolution: v })} />
-      <Switch label="Show HUD" value={ui.showHud} onChange={(v) => setUi({ showHud: v })} />
+    <>
+      {canUseDisplays() && <OutputGroup />}
+      <Group title="Rendering">
+        <Slider label="Resolution" value={visual.renderScale * 100} min={40} max={100} step={5} format={(v) => `${v.toFixed(0)} %`} onChange={(v) => set({ renderScale: v / 100 })} />
+        <Switch label="Dynamic resolution" value={visual.dynamicResolution} onChange={(v) => set({ dynamicResolution: v })} />
+        <Switch label="Show HUD" value={ui.showHud} onChange={(v) => setUi({ showHud: v })} />
+      </Group>
+    </>
+  );
+}
+
+// Visuals im Vollbild auf einem anderen Monitor, die Bedienung bleibt hier
+function OutputGroup() {
+  const selected = useSettings((s) => s.ui.displayMonitor);
+  const setUi = useSettings((s) => s.setUi);
+  const [monitors, setMonitors] = useState<MonitorInfo[]>([]);
+
+  useEffect(() => {
+    void listMonitors().then(setMonitors, () => setMonitors([]));
+  }, [selected]);
+
+  return (
+    <Group title="Show visuals on">
+      <div className="mb-16 flex flex-col items-start gap-4">
+        <button className={cn(ui.chip, selected === null && ui.chipOn)} onClick={() => setUi({ displayMonitor: null })}>
+          This window
+        </button>
+        {monitors.map((m, i) => (
+          <button
+            key={m.id}
+            className={cn(ui.chip, selected === m.id && ui.chipOn)}
+            onClick={() => setUi({ displayMonitor: m.id })}
+            title={m.current ? 'The visuals will cover this window. Press Esc on that screen to return.' : undefined}
+          >
+            Monitor {i + 1}
+            <span className="font-light text-smoke tabular-nums">
+              {m.width}×{m.height}
+              {m.primary && ' · primary'}
+              {m.current && ' · this screen'}
+            </span>
+          </button>
+        ))}
+      </div>
     </Group>
   );
 }

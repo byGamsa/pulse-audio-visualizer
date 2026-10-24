@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Rechte für das Hauptfenster",
-  "windows": ["main"],
+  "description": "Rechte für Haupt- und Ausgabefenster",
+  "windows": ["main", "display"],
   "permissions": ["core:default", "updater:default", "process:allow-restart"]
 }

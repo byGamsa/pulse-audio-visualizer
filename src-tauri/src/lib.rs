@@ -1,4 +1,5 @@
 mod audio;
+mod display;
 mod media;
 
 use std::sync::Mutex;
@@ -76,7 +77,15 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .manage(AudioState::default())
-        .invoke_handler(tauri::generate_handler![audio_devices, audio_start, audio_stop, now_playing])
+        .on_window_event(display::on_window_event)
+        .invoke_handler(tauri::generate_handler![
+            audio_devices,
+            audio_start,
+            audio_stop,
+            now_playing,
+            display::monitors,
+            display::display_set
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
