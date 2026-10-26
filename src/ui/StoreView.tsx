@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, Lock, Search } from 'lucide-react';
 import { signIn, useAccount, type AccountStatus } from '../account/account';
-import { installMode, loadCatalog, redeemCode, removeMode, useCatalog, type CatalogMode } from '../catalog/catalog';
+import { installMode, loadCatalog, openTerms, redeemCode, removeMode, useCatalog, type CatalogMode } from '../catalog/catalog';
 import type { DeepLink } from '../deeplink/deeplink';
 import { useInstalledModes } from '../engine/packages';
 import type { ModeCategory } from '../engine/types';
@@ -108,7 +108,13 @@ export function StoreView({ link }: { link: DeepLink | null }) {
         ))}
       </div>
 
-      <RedeemBar account={account} initialCode={link?.kind === 'redeem' ? link.code : ''} error={error && modes.length ? error : ''} notice={notice} />
+      <RedeemBar
+        account={account}
+        initialCode={link?.kind === 'redeem' ? link.code : ''}
+        initialConsent={link?.kind === 'redeem' && link.consent}
+        error={error && modes.length ? error : ''}
+        notice={notice}
+      />
     </>
   );
 }
@@ -173,31 +179,64 @@ function StoreRow({ mode, owned, focused }: { mode: CatalogMode; owned: boolean;
   );
 }
 
-function RedeemBar({ account, initialCode, error, notice }: { account: AccountStatus; initialCode: string; error: string; notice: string }) {
+function RedeemBar({
+  account,
+  initialCode,
+  initialConsent,
+  error,
+  notice,
+}: {
+  account: AccountStatus;
+  initialCode: string;
+  initialConsent: boolean;
+  error: string;
+  notice: string;
+}) {
   const [code, setCode] = useState(initialCode);
+  const [waive, setWaive] = useState(initialConsent);
   const [busy, setBusy] = useState(false);
 
   return (
     <div className="mt-4 border-t border-white/8 px-8 pt-12 pb-4">
       {account === 'signed-in' ? (
         <form
-          className="flex gap-8"
+          className="flex flex-col gap-8"
           onSubmit={async (e) => {
             e.preventDefault();
             setBusy(true);
-            if (await redeemCode(code)) setCode('');
+            if (await redeemCode(code, waive)) {
+              setCode('');
+              setWaive(false);
+            }
             setBusy(false);
           }}
         >
-          <input
-            className={cn(input, 'min-w-0 flex-1 font-mono uppercase tracking-[0.08em] placeholder:normal-case placeholder:tracking-normal')}
-            placeholder="Have a code? PULSE-XXXX-…"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-          />
-          <button type="submit" className={cn(ui.btn, ui.btnOutlined)} disabled={busy || code.trim().length < 8}>
-            {busy ? 'Unlocking…' : 'Redeem'}
-          </button>
+          <div className="flex gap-8">
+            <input
+              className={cn(input, 'min-w-0 flex-1 font-mono uppercase tracking-[0.08em] placeholder:normal-case placeholder:tracking-normal')}
+              placeholder="Have a code? PULSE-XXXX-…"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+            <button type="submit" className={cn(ui.btn, ui.btnOutlined)} disabled={busy || !waive || code.trim().length < 8}>
+              {busy ? 'Unlocking…' : 'Redeem'}
+            </button>
+          </div>
+          {/* Ohne diese ausdrückliche Zustimmung erlischt das Widerrufsrecht nicht vorzeitig (§ 356 Abs. 5 BGB) */}
+          <label className="flex items-start gap-8 text-caption text-smoke">
+            <input
+              type="checkbox"
+              className="mt-[3px] size-[14px] shrink-0 accent-ember-coral"
+              checked={waive}
+              onChange={(e) => setWaive(e.target.checked)}
+            />
+            <span>
+              Start the download right away. I know that I lose my right of withdrawal once it has started.{' '}
+              <button type="button" className="text-warm-cream underline underline-offset-2" onClick={() => void openTerms()}>
+                Terms of sale
+              </button>
+            </span>
+          </label>
         </form>
       ) : account === 'waiting' || account === 'mfa' ? (
         <p className="py-8 text-caption text-smoke">

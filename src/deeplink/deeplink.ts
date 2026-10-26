@@ -1,8 +1,9 @@
 import { isTauri } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 
-// pulse://install/<id> (Store), pulse://redeem?code=… (Code eintragen), pulse://mode/<id> (abspielen)
-export type DeepLink = { kind: 'install' | 'mode'; id: string } | { kind: 'redeem'; code: string };
+// pulse://install/<id> (Store), pulse://redeem?code=…&consent=1 (Code eintragen), pulse://mode/<id> (abspielen)
+// consent: auf der Website wurde dem Erlöschen des Widerrufsrechts schon ausdrücklich zugestimmt
+export type DeepLink = { kind: 'install' | 'mode'; id: string } | { kind: 'redeem'; code: string; consent: boolean };
 
 export function parseDeepLink(url: string): DeepLink | null {
   const match = /^pulse:\/\/([a-z]+)\/?([^?#]*)\??([^#]*)/i.exec(url.trim());
@@ -14,8 +15,9 @@ export function parseDeepLink(url: string): DeepLink | null {
     case 'mode':
       return /^[a-z0-9-]{2,48}$/.test(id) ? { kind: action.toLowerCase() as 'install' | 'mode', id } : null;
     case 'redeem': {
-      const code = new URLSearchParams(query).get('code')?.trim().toUpperCase() ?? '';
-      return /^[A-Z0-9-]{8,64}$/.test(code) ? { kind: 'redeem', code } : null;
+      const params = new URLSearchParams(query);
+      const code = params.get('code')?.trim().toUpperCase() ?? '';
+      return /^[A-Z0-9-]{8,64}$/.test(code) ? { kind: 'redeem', code, consent: params.get('consent') === '1' } : null;
     }
     default:
       return null;

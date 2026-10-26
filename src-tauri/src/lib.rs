@@ -81,6 +81,13 @@ fn modes_dir<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
     Ok(dir)
 }
 
+// Feste Adresse, damit die Oberfläche keine beliebigen Seiten öffnen kann
+#[tauri::command]
+fn open_terms(app: AppHandle) -> Result<(), String> {
+    use tauri_plugin_opener::OpenerExt;
+    app.opener().open_url("https://pulse.dendree.de/terms", None::<&str>).map_err(|e| e.to_string())
+}
+
 #[tauri::command]
 fn auth_begin(app: AppHandle, auth_url: String, state: String) -> Result<(), String> {
     auth::begin(app, &auth_url, state)
@@ -158,6 +165,7 @@ pub fn run() {
             display::monitors,
             display::display_set,
             auth_begin,
+            open_terms,
             modes_list,
             modes_install,
             modes_install_file,

@@ -1,3 +1,4 @@
+import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import { SUPABASE_URL, accessToken, useAccount } from '../account/account';
 import { SDK_VERSION, installPackage, uninstallPackage, useOwnership } from '../engine/packages';
@@ -134,10 +135,14 @@ export async function removeMode(id: string) {
 }
 
 // Schaltet frei und installiert alle Modi des Produkts gleich mit
-export async function redeemCode(code: string): Promise<boolean> {
+// waiveWithdrawal: Zustimmung, dass die Lieferung sofort beginnt und das Widerrufsrecht damit erlischt
+export async function redeemCode(code: string, waiveWithdrawal: boolean): Promise<boolean> {
   set({ error: '', notice: '' });
   try {
-    const result = await call<{ product: { id: string; kind: string; name: string }; owned: string[] }>('pulse-redeem', { code });
+    const result = await call<{ product: { id: string; kind: string; name: string }; owned: string[] }>('pulse-redeem', {
+      code,
+      waiveWithdrawal,
+    });
     set({ owned: result.owned });
     useOwnership.getState().setOwnership({ owned: result.owned });
     const { packs, modes } = useCatalog.getState();
@@ -168,4 +173,9 @@ export function startCatalog() {
   });
   // Erst laden, wenn die Anmeldung feststeht, sonst ersetzt ein anonymer Katalog kurz den Besitz-Cache
   if (last !== 'loading') void loadCatalog();
+}
+
+// Öffnet die Verkaufsbedingungen im Browser, die Adresse steht fest in Rust
+export function openTerms() {
+  return invoke('open_terms');
 }
