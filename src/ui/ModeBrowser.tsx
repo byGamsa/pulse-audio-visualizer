@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AudioLines, X } from 'lucide-react';
 import { hasAccount } from '../account/account';
+import type { DeepLink } from '../deeplink/deeplink';
 import type { Engine } from '../engine/Engine';
 import { useModes } from '../engine/ModeRegistry';
 import type { ModeCategory } from '../engine/types';
@@ -9,8 +10,8 @@ import { CATEGORY_LABEL, modeArt } from './modeArt';
 import { StoreView } from './StoreView';
 import { ICON, cn, ui } from './ui';
 
-export function ModeBrowser({ engine, onClose }: { engine: Engine; onClose: () => void }) {
-  const [view, setView] = useState<'installed' | 'store'>('installed');
+export function ModeBrowser({ engine, link, onClose }: { engine: Engine; link?: DeepLink | null; onClose: () => void }) {
+  const [view, setView] = useState<'installed' | 'store'>(link ? 'store' : 'installed');
   const count = useModes().length;
 
   return (
@@ -53,7 +54,7 @@ export function ModeBrowser({ engine, onClose }: { engine: Engine; onClose: () =
             <X {...ICON} />
           </button>
         </div>
-        {view === 'store' ? <StoreView /> : <InstalledList engine={engine} />}
+        {view === 'store' ? <StoreView link={link ?? null} /> : <InstalledList engine={engine} />}
       </div>
     </>
   );

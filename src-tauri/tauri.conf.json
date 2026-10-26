@@ -58,6 +58,9 @@
     "createUpdaterArtifacts": true
   },
   "plugins": {
+    "deep-link": {
+      "desktop": { "schemes": ["pulse"] }
+    },
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDJGOEREODA4ODM3MTdGQUIKUldTcmYzR0RDTmlOTCtQTnZTMTJWR08zSDdUak1qaDczSS9DVzcxdTYzbE9mMTkxK3N2OGR6ODQK",
       "endpoints": ["https://github.com/byGamsa/pulse-audio-visualizer/releases/latest/download/latest.json"],

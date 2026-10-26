@@ -127,10 +127,27 @@ fn serve_mode_file<R: Runtime>(app: &AppHandle<R>, path: &str) -> Response<Vec<u
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        // Muss zuerst kommen: ein zweiter Start (z. B. per pulse://-Link) übergibt nur den Link und beendet sich
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.unminimize();
+                let _ = window.set_focus();
+            }
+        }))
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_opener::init())
         .manage(AudioState::default())
+        .setup(|_app| {
+            // Installer registrieren pulse:// selbst, Debug-Builds und AppImage nicht
+            #[cfg(any(debug_assertions, target_os = "linux"))]
+            {
+                use tauri_plugin_deep_link::DeepLinkExt;
+                let _ = _app.deep_link().register_all();
+            }
+            Ok(())
+        })
         .on_window_event(display::on_window_event)
         .register_uri_scheme_protocol("pulsemode", |ctx, request| serve_mode_file(ctx.app_handle(), request.uri().path()))
         .invoke_handler(tauri::generate_handler![

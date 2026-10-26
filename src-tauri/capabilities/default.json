@@ -3,5 +3,5 @@
   "identifier": "default",
   "description": "Rechte für Haupt- und Ausgabefenster",
   "windows": ["main", "display"],
-  "permissions": ["core:default", "updater:default", "process:allow-restart"]
+  "permissions": ["core:default", "updater:default", "process:allow-restart", "deep-link:default"]
 }

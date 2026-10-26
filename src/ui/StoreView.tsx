@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Check, Lock, Search } from 'lucide-react';
 import { signIn, useAccount, type AccountStatus } from '../account/account';
 import { installMode, loadCatalog, redeemCode, removeMode, useCatalog, type CatalogMode } from '../catalog/catalog';
+import type { DeepLink } from '../deeplink/deeplink';
 import { useInstalledModes } from '../engine/packages';
 import type { ModeCategory } from '../engine/types';
 import { CATEGORY_LABEL } from './modeArt';
@@ -10,14 +11,26 @@ import { cn, ui } from './ui';
 const input =
   'h-32 rounded-md border border-transparent bg-white/6 px-12 text-[13px] font-normal outline-none transition-colors placeholder:text-smoke/60 focus:border-ember-coral/40';
 
-export function StoreView() {
+export function StoreView({ link }: { link: DeepLink | null }) {
   const { status, modes, packs, owned, error, notice } = useCatalog();
+  const focusId = link?.kind === 'install' ? link.id : null;
+  const handled = useRef(false);
   const account = useAccount((s) => s.status);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<ModeCategory | 'all'>('all');
 
   // Nach dem Anmelden zeigt der Katalog, was dem Konto gehört
   useEffect(() => void loadCatalog(), [account]);
+
+  // pulse://install/<id>: Kostenloses oder Freigeschaltetes gleich installieren
+  useEffect(() => {
+    if (!focusId || status !== 'ready' || handled.current) return;
+    handled.current = true;
+    const mode = modes.find((m) => m.id === focusId);
+    if (!mode) return void useCatalog.setState({ error: 'This mode is not in the store.' });
+    const installed = useInstalledModes.getState().modes.some((p) => p.manifest.id === focusId);
+    if (!installed && mode.available && (mode.free || owned.includes(mode.id))) void installMode(mode.id);
+  }, [focusId, status, modes, owned]);
 
   const q = query.trim().toLowerCase();
   const categories = [...new Set(modes.flatMap((m) => (m.category ? [m.category] : [])))];
@@ -91,11 +104,11 @@ export function StoreView() {
           );
         })}
         {visible.map((m) => (
-          <StoreRow key={m.id} mode={m} owned={m.free || owned.includes(m.id)} />
+          <StoreRow key={m.id} mode={m} owned={m.free || owned.includes(m.id)} focused={m.id === focusId} />
         ))}
       </div>
 
-      <RedeemBar account={account} error={error && modes.length ? error : ''} notice={notice} />
+      <RedeemBar account={account} initialCode={link?.kind === 'redeem' ? link.code : ''} error={error && modes.length ? error : ''} notice={notice} />
     </>
   );
 }
@@ -104,7 +117,11 @@ function thumb(url: string | undefined) {
   return url ? { background: `url(${url}) center / cover no-repeat` } : undefined;
 }
 
-function StoreRow({ mode, owned }: { mode: CatalogMode; owned: boolean }) {
+function StoreRow({ mode, owned, focused }: { mode: CatalogMode; owned: boolean; focused: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (focused) ref.current?.scrollIntoView({ block: 'nearest' });
+  }, [focused]);
   const installed = useInstalledModes((s) => s.modes.find((p) => p.manifest.id === mode.id)?.manifest.version);
   const busy = useCatalog((s) => s.busy.includes(mode.id));
 
@@ -142,7 +159,7 @@ function StoreRow({ mode, owned }: { mode: CatalogMode; owned: boolean }) {
     );
 
   return (
-    <div className="flex items-center gap-12 rounded-md p-8">
+    <div ref={ref} className={cn('flex items-center gap-12 rounded-md p-8', focused && 'bg-white/6')}>
       <span className={cn(ui.art, 'h-[54px] w-[96px] bg-white/6')} style={thumb(mode.thumb)} />
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-8 text-body-sm font-normal">
@@ -156,8 +173,8 @@ function StoreRow({ mode, owned }: { mode: CatalogMode; owned: boolean }) {
   );
 }
 
-function RedeemBar({ account, error, notice }: { account: AccountStatus; error: string; notice: string }) {
-  const [code, setCode] = useState('');
+function RedeemBar({ account, initialCode, error, notice }: { account: AccountStatus; initialCode: string; error: string; notice: string }) {
+  const [code, setCode] = useState(initialCode);
   const [busy, setBusy] = useState(false);
 
   return (

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Engine } from './engine/Engine';
 import { BUILTIN_IDS } from './engine/ModeRegistry';
 import { devSignIn, hasAccount, startAccount } from './account/account';
+import { allModes } from './engine/ModeRegistry';
+import { startDeepLinks, takeDeepLink, useDeepLink, type DeepLink } from './deeplink/deeplink';
 import {
   canInstallModes,
   devPackageSource,
@@ -36,6 +38,8 @@ export function App() {
   const [sourceKind, setSourceKind] = useState<AudioSourceKind | null>(null);
   const [startOpen, setStartOpen] = useState(true);
   const [browserOpen, setBrowserOpen] = useState(false);
+  const [storeLink, setStoreLink] = useState<DeepLink | null>(null);
+  const pendingLink = useDeepLink((s) => s.pending);
   const ui = useSettings((s) => s.ui);
   const setUi = useSettings((s) => s.setUi);
   const idle = useIdle(3000);
@@ -47,7 +51,10 @@ export function App() {
   useEffect(() => {
     stopStaleNativeCapture();
     void syncInstalledModes(packageSource, BUILTIN_IDS);
-    if (hasAccount()) startAccount();
+    if (hasAccount()) {
+      startAccount();
+      void startDeepLinks();
+    }
     const e = new Engine(canvasRef.current!);
     e.start();
     void e.setMode(useSettings.getState().playback.modeId, 0);
@@ -99,6 +106,23 @@ export function App() {
     return () => window.removeEventListener('keydown', onKey);
   }, [engine, startOpen]);
 
+  // Links aus Browser oder Website, erst nach dem Startbildschirm
+  useEffect(() => {
+    if (!engine || startOpen || !pendingLink) return;
+    const link = takeDeepLink();
+    if (!link) return;
+    if (link.kind === 'mode' && allModes().some((m) => m.meta.id === link.id)) {
+      engine.playback.select(link.id);
+      return;
+    }
+    setStoreLink(link.kind === 'mode' ? { kind: 'install', id: link.id } : link);
+    setBrowserOpen(true);
+  }, [engine, startOpen, pendingLink]);
+
+  useEffect(() => {
+    if (!browserOpen) setStoreLink(null);
+  }, [browserOpen]);
+
   const chromeIdle = idle && !ui.panelOpen && !ui.playbackOpen && !browserOpen && !startOpen;
 
   return (
@@ -132,7 +156,14 @@ export function App() {
             onToggleSettings={() => setUi({ panelOpen: !ui.panelOpen })}
             onToggleFullscreen={toggleFullscreen}
           />
-          {browserOpen && <ModeBrowser engine={engine} onClose={() => setBrowserOpen(false)} />}
+          {browserOpen && (
+            <ModeBrowser
+              key={JSON.stringify(storeLink)}
+              engine={engine}
+              link={storeLink}
+              onClose={() => setBrowserOpen(false)}
+            />
+          )}
           <PlayerBar
             engine={engine}
             browserOpen={browserOpen}
