@@ -190,6 +190,8 @@ Pushing a `vX.Y.Z` tag runs the release workflow: it builds Windows, macOS and L
 
 Pulse is free for personal and other non-commercial use under the [Pulse Non-Commercial License](LICENSE). Commercial use, such as selling it, bundling it into a paid product or using it at paid events, requires written permission. Open an issue to ask for a commercial license.
 
+Modes that load as separate packages through the mode SDK may carry their own license. Modes from the Pulse store are not covered by this license; they come with the [terms of sale](https://pulse.dendree.de/terms).
+
 <br />
 
 <p align="center">
