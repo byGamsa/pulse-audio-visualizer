@@ -1,6 +1,6 @@
 [package]
 name = "pulse"
-version = "0.7.0"
+version = "0.7.1"
 description = "Real-time audio visualizer"
 edition = "2021"
 
