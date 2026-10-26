@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { invoke, isTauri } from '@tauri-apps/api/core';
 import { Engine } from '../engine/Engine';
+import { INSTALLED_KEY, useInstalledModes } from '../engine/packages';
 import { SETTINGS_KEY, useSettings } from '../store/settings';
 import type { Track } from '../media/nowPlaying';
 import { NowPlaying } from '../ui/NowPlaying';
@@ -36,6 +37,7 @@ export function DisplayApp() {
     // Einstellungen speichert nur das Hauptfenster, hier nur nachladen
     const onStorage = (e: StorageEvent) => {
       if (e.key === SETTINGS_KEY) void useSettings.persist.rehydrate();
+      if (e.key === INSTALLED_KEY) void useInstalledModes.persist.rehydrate();
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') link.send({ type: 'next', direction: 1 });

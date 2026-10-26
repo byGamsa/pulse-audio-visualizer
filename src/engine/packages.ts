@@ -67,9 +67,11 @@ interface InstalledState {
   setModes: (modes: InstalledMode[]) => void;
 }
 
+export const INSTALLED_KEY = 'pulse-installed-modes';
+
 // Gecacht, damit Playlists und der letzte Modus beim Start sofort bekannt sind
 export const useInstalledModes = create<InstalledState>()(
-  persist((set) => ({ modes: [], setModes: (modes) => set({ modes }) }), { name: 'pulse-installed-modes', version: 1 }),
+  persist((set) => ({ modes: [], setModes: (modes) => set({ modes }) }), { name: INSTALLED_KEY, version: 1 }),
 );
 
 let active: { source: PackageSource | null; builtinIds: ReadonlySet<string> } | null = null;
