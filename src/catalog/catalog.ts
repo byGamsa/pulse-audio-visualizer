@@ -3,7 +3,7 @@ import { SUPABASE_URL, accessToken } from '../account/account';
 import { SDK_VERSION, installPackage, uninstallPackage } from '../engine/packages';
 import type { ModeCategory } from '../engine/types';
 
-// Antworten von supabase/functions/pulse-catalog
+// Antworten der Edge Function pulse-catalog
 export interface CatalogMode {
   id: string;
   name: string;

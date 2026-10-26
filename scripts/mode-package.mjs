@@ -1,4 +1,4 @@
-// Gemeinsam für build-mode.mjs und store-admin.mjs: Format und Signatur von .pulsemode-Dateien
+// Format und Signatur von .pulsemode-Dateien, auch für die Store-Verwaltung
 import { createHash, createPublicKey, verify } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
