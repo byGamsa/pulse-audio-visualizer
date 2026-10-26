@@ -6,6 +6,7 @@ import { ICON, cn, ui } from './ui';
 import { Group, Slider, Switch } from './controls';
 import { canUpdate, useUpdater, type UpdateStatus } from '../update/updater';
 import { canUseDisplays, listMonitors, type MonitorInfo } from '../display/output';
+import { cancelSignIn, hasAccount, signIn, signOut, useAccount, verifyCode } from '../account/account';
 
 // Standard = Originalfarben, Vorschau als bunte Streifen
 const STANDARD_ENTRY = {
@@ -67,7 +68,12 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
         {tab === 'audio' && <AudioTab />}
         {tab === 'look' && <LookTab />}
         {tab === 'performance' && <PerformanceTab />}
-        {tab === 'about' && <AboutTab />}
+        {tab === 'about' && (
+          <>
+            {hasAccount() && <AccountGroup />}
+            <AboutTab />
+          </>
+        )}
       </div>
       <footer className="flex items-center justify-between border-t border-white/8 px-16 py-12">
         <small className="text-caption text-smoke">Changes apply instantly</small>
@@ -213,6 +219,78 @@ function OutputGroup() {
           </button>
         ))}
       </div>
+    </Group>
+  );
+}
+
+function AccountGroup() {
+  const { status, email, error } = useAccount();
+  const [code, setCode] = useState('');
+  return (
+    <Group title="Dendree account">
+      {status === 'signed-in' ? (
+        <>
+          <p className="mb-12 flex items-baseline justify-between gap-8 text-[13px] font-normal">
+            Signed in
+            <span className="truncate text-caption font-light text-smoke">{email}</span>
+          </p>
+          <p className="mb-16 text-caption text-smoke">Modes you unlock with a code belong to this account.</p>
+          <button className={cn(ui.btn, ui.btnOutlined)} onClick={() => void signOut()}>
+            Sign out
+          </button>
+        </>
+      ) : status === 'mfa' ? (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void verifyCode(code).then(() => setCode(''));
+          }}
+        >
+          <p className="mb-12 text-caption text-smoke">Enter the code your authenticator app shows for Dendree.</p>
+          <input
+            className="mb-12 h-40 w-full rounded-xl border border-transparent bg-white/6 px-12 text-center font-mono text-body tracking-[0.4em] outline-none transition-colors focus:border-ember-coral/40"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            autoFocus
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+          />
+          {error && <p className="mb-12 text-caption text-ember-coral">{error}</p>}
+          <div className="flex gap-8">
+            <button type="submit" className={cn(ui.create, 'h-32 px-16 text-[13px]')} disabled={code.length !== 6}>
+              Confirm
+            </button>
+            <button type="button" className={ui.btn} onClick={() => void signOut()}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      ) : status === 'waiting' ? (
+        <>
+          <p className="mb-16 text-caption text-smoke" aria-live="polite">
+            Continue in your browser. Pulse signs in as soon as you confirm there.
+          </p>
+          <div className="flex gap-8">
+            <button className={cn(ui.btn, ui.btnOutlined)} onClick={() => void signIn()}>
+              Open browser again
+            </button>
+            <button className={ui.btn} onClick={cancelSignIn}>
+              Cancel
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <p className="mb-16 text-caption text-smoke">
+            Sign in to unlock modes with a code and keep them on every computer. Everything else works without an account.
+          </p>
+          {error && <p className="mb-12 text-caption text-ember-coral">{error}</p>}
+          <button className={cn(ui.create, 'h-32 px-16 text-[13px]')} disabled={status === 'loading'} onClick={() => void signIn()}>
+            Sign in with Dendree
+          </button>
+        </>
+      )}
     </Group>
   );
 }

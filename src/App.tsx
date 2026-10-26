@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Engine } from './engine/Engine';
 import { BUILTIN_IDS } from './engine/ModeRegistry';
+import { devSignIn, hasAccount, startAccount } from './account/account';
 import {
   canInstallModes,
   devPackageSource,
@@ -46,6 +47,7 @@ export function App() {
   useEffect(() => {
     stopStaleNativeCapture();
     void syncInstalledModes(packageSource, BUILTIN_IDS);
+    if (hasAccount()) startAccount();
     const e = new Engine(canvasRef.current!);
     e.start();
     void e.setMode(useSettings.getState().playback.modeId, 0);
@@ -59,6 +61,11 @@ export function App() {
         __syncModes: () => syncInstalledModes(packageSource, BUILTIN_IDS),
         __installModeFile: installPackageFile,
         __uninstallMode: uninstallPackage,
+        // Desktop-Anmeldung ohne Loopback testen: Token aus auth/desktop einlösen
+        __devSignIn: (tokenHash: string) => {
+          startAccount();
+          return devSignIn(tokenHash);
+        },
       });
       // Vorschaubilder neu aufnehmen: await __captureThumbnails()
       void import('./dev/captureThumbnails').then(({ captureThumbnails }) =>

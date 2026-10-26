@@ -1,4 +1,5 @@
 mod audio;
+mod auth;
 mod display;
 mod media;
 mod modes;
@@ -81,6 +82,11 @@ fn modes_dir<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf, String> {
 }
 
 #[tauri::command]
+fn auth_begin(app: AppHandle, auth_url: String, state: String) -> Result<(), String> {
+    auth::begin(app, &auth_url, state)
+}
+
+#[tauri::command]
 async fn modes_list(app: AppHandle) -> Result<Vec<serde_json::Value>, String> {
     Ok(modes::list(&modes_dir(&app)?))
 }
@@ -123,6 +129,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_opener::init())
         .manage(AudioState::default())
         .on_window_event(display::on_window_event)
         .register_uri_scheme_protocol("pulsemode", |ctx, request| serve_mode_file(ctx.app_handle(), request.uri().path()))
@@ -133,6 +140,7 @@ pub fn run() {
             now_playing,
             display::monitors,
             display::display_set,
+            auth_begin,
             modes_list,
             modes_install,
             modes_install_file,
