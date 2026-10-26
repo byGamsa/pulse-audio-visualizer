@@ -5,7 +5,7 @@ import { persist } from 'zustand/middleware';
 import type { ModeCategory, ModeDefinition, ModeMeta } from './types';
 
 // Muss zu SDK_VERSION in src/sdk passen, hier als Zahl, damit das SDK erst beim Laden kommt
-const SDK_VERSION = 1;
+export const SDK_VERSION = 1;
 const CATEGORIES: readonly ModeCategory[] = ['organic', 'particles', 'retro', 'ambient', 'lineart', 'experimental'];
 
 export interface ModeManifest {
