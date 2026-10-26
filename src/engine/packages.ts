@@ -19,6 +19,8 @@ export interface ModeManifest {
   gpuCost: 1 | 2 | 3;
   vivid?: number;
   palette?: string;
+  // Gekaufter Store-Modus: nur sichtbar, wenn das Konto ihn besitzt
+  paid?: boolean;
 }
 
 export interface InstalledMode {
@@ -43,6 +45,7 @@ export function parseManifest(raw: unknown): ModeManifest | null {
   if (m.gpuCost !== 1 && m.gpuCost !== 2 && m.gpuCost !== 3) return null;
   if (m.vivid !== undefined && typeof m.vivid !== 'number') return null;
   if (m.palette !== undefined && typeof m.palette !== 'string') return null;
+  if (m.paid !== undefined && typeof m.paid !== 'boolean') return null;
   return {
     id: m.id as string,
     name: m.name as string,
@@ -54,6 +57,7 @@ export function parseManifest(raw: unknown): ModeManifest | null {
     gpuCost: m.gpuCost,
     vivid: m.vivid as number | undefined,
     palette: m.palette as string | undefined,
+    paid: m.paid as boolean | undefined,
   };
 }
 
@@ -77,6 +81,26 @@ export const useInstalledModes = create<InstalledState>()(
 let active: { source: PackageSource | null; builtinIds: ReadonlySet<string> } | null = null;
 
 // Ohne Quelle (Web-App) gibt es keine installierten Modi
+interface OwnershipState {
+  // Laut letztem Katalog: was das Konto besitzt und was kostet
+  owned: string[];
+  paid: string[];
+  setOwnership: (patch: Partial<Pick<OwnershipState, 'owned' | 'paid'>>) => void;
+}
+
+export const OWNED_KEY = 'pulse-owned-modes';
+
+// Gecacht, damit gekaufte Modi auch offline erscheinen
+export const useOwnership = create<OwnershipState>()(
+  persist((set) => ({ owned: [], paid: [], setOwnership: (patch) => set(patch) }), { name: OWNED_KEY, version: 1 }),
+);
+
+// Kopierte Bezahlpakete ohne Kauf bleiben ausgeblendet
+export function isUnlocked(p: InstalledMode, owned: readonly string[], paid: readonly string[]) {
+  const id = p.manifest.id;
+  return !(p.manifest.paid || paid.includes(id)) || owned.includes(id);
+}
+
 export async function syncInstalledModes(source: PackageSource | null, builtinIds: ReadonlySet<string>) {
   active = { source, builtinIds };
   const modes = source ? (await source.list()).filter((m) => !builtinIds.has(m.manifest.id)) : [];

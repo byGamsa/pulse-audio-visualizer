@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { invoke, isTauri } from '@tauri-apps/api/core';
 import { Engine } from '../engine/Engine';
-import { INSTALLED_KEY, useInstalledModes } from '../engine/packages';
+import { INSTALLED_KEY, OWNED_KEY, useInstalledModes, useOwnership } from '../engine/packages';
 import { SETTINGS_KEY, useSettings } from '../store/settings';
 import type { Track } from '../media/nowPlaying';
 import { NowPlaying } from '../ui/NowPlaying';
@@ -38,6 +38,7 @@ export function DisplayApp() {
     const onStorage = (e: StorageEvent) => {
       if (e.key === SETTINGS_KEY) void useSettings.persist.rehydrate();
       if (e.key === INSTALLED_KEY) void useInstalledModes.persist.rehydrate();
+      if (e.key === OWNED_KEY) void useOwnership.persist.rehydrate();
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') link.send({ type: 'next', direction: 1 });

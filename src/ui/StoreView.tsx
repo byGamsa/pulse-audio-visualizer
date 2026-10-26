@@ -134,7 +134,7 @@ function StoreRow({ mode, owned, focused }: { mode: CatalogMode; owned: boolean;
         Update
       </button>
     );
-  else if (installed)
+  else if (installed && owned)
     action = (
       <span className="flex items-center gap-8">
         <span className="flex items-center gap-4 text-caption text-smoke">

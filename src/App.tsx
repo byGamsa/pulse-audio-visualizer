@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Engine } from './engine/Engine';
 import { BUILTIN_IDS } from './engine/ModeRegistry';
 import { devSignIn, hasAccount, startAccount } from './account/account';
+import { startCatalog } from './catalog/catalog';
 import { allModes } from './engine/ModeRegistry';
 import { startDeepLinks, takeDeepLink, useDeepLink, type DeepLink } from './deeplink/deeplink';
 import {
@@ -53,6 +54,7 @@ export function App() {
     void syncInstalledModes(packageSource, BUILTIN_IDS);
     if (hasAccount()) {
       startAccount();
+      startCatalog();
       void startDeepLinks();
     }
     const e = new Engine(canvasRef.current!);

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { SUPABASE_URL, accessToken } from '../account/account';
-import { SDK_VERSION, installPackage, uninstallPackage } from '../engine/packages';
+import { SUPABASE_URL, accessToken, useAccount } from '../account/account';
+import { SDK_VERSION, installPackage, uninstallPackage, useOwnership } from '../engine/packages';
 import type { ModeCategory } from '../engine/types';
 
 // Antworten der Edge Function pulse-catalog
@@ -94,6 +94,11 @@ export async function loadCatalog() {
   try {
     const data = await call<{ modes: CatalogMode[]; packs: CatalogPack[]; owned: string[] }>('pulse-catalog');
     set({ status: 'ready', modes: data.modes, packs: data.packs, owned: data.owned });
+    const account = useAccount.getState().status;
+    const paid = data.modes.filter((m) => !m.free).map((m) => m.id);
+    // Nur ein eindeutiger Kontostatus darf den Besitz-Cache überschreiben
+    if (account === 'signed-in' || account === 'signed-out') useOwnership.getState().setOwnership({ owned: data.owned, paid });
+    else useOwnership.getState().setOwnership({ paid });
   } catch (err) {
     set({ status: 'error', error: (err as Error).message });
   }
@@ -134,6 +139,7 @@ export async function redeemCode(code: string): Promise<boolean> {
   try {
     const result = await call<{ product: { id: string; kind: string; name: string }; owned: string[] }>('pulse-redeem', { code });
     set({ owned: result.owned });
+    useOwnership.getState().setOwnership({ owned: result.owned });
     const { packs, modes } = useCatalog.getState();
     const ids = result.product.kind === 'pack' ? (packs.find((p) => p.id === result.product.id)?.modes ?? []) : [result.product.id];
     for (const id of ids) {
@@ -145,4 +151,21 @@ export async function redeemCode(code: string): Promise<boolean> {
     set({ error: (err as Error).message });
     return false;
   }
+}
+
+let started = false;
+
+// Besitz beim Start und bei jedem Kontowechsel neu laden, abgemeldet gilt nur Kostenloses
+export function startCatalog() {
+  if (started) return;
+  started = true;
+  let last = useAccount.getState().status;
+  useAccount.subscribe((s) => {
+    if (s.status === last) return;
+    last = s.status;
+    if (s.status === 'signed-out') useOwnership.getState().setOwnership({ owned: [] });
+    if (s.status === 'signed-in' || s.status === 'signed-out') void loadCatalog();
+  });
+  // Erst laden, wenn die Anmeldung feststeht, sonst ersetzt ein anonymer Katalog kurz den Besitz-Cache
+  if (last !== 'loading') void loadCatalog();
 }

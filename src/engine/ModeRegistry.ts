@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { loadPackage, packageMeta, useInstalledModes } from './packages';
+import { isUnlocked, loadPackage, packageMeta, useInstalledModes, useOwnership } from './packages';
 import type { ModeDefinition, ModeMeta } from './types';
 
 export interface RegistryEntry {
@@ -315,9 +315,12 @@ export const BUILTIN_MODES: RegistryEntry[] = [
 
 export const BUILTIN_IDS: ReadonlySet<string> = new Set(BUILTIN_MODES.map((m) => m.meta.id));
 
-function withInstalled(installed = useInstalledModes.getState().modes): RegistryEntry[] {
+function withInstalled(
+  installed = useInstalledModes.getState().modes,
+  { owned, paid }: { owned: readonly string[]; paid: readonly string[] } = useOwnership.getState(),
+): RegistryEntry[] {
   const extra = installed
-    .filter((p) => !BUILTIN_IDS.has(p.manifest.id))
+    .filter((p) => !BUILTIN_IDS.has(p.manifest.id) && isUnlocked(p, owned, paid))
     .map((p) => mode(packageMeta(p), () => loadPackage(p)));
   return extra.length ? [...BUILTIN_MODES, ...extra] : BUILTIN_MODES;
 }
@@ -334,5 +337,7 @@ export function findMode(id: string): RegistryEntry {
 
 export function useModes(): ModeMeta[] {
   const installed = useInstalledModes((s) => s.modes);
-  return useMemo(() => withInstalled(installed).map((m) => m.meta), [installed]);
+  const owned = useOwnership((s) => s.owned);
+  const paid = useOwnership((s) => s.paid);
+  return useMemo(() => withInstalled(installed, { owned, paid }).map((m) => m.meta), [installed, owned, paid]);
 }
