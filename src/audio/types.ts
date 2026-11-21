@@ -1,5 +1,8 @@
 export const BAND_COUNT = 128;
 export const WAVE_SIZE = 512;
+// Fertiger Analyse-Frame: Bänder in dB, Wellenform links und rechts, Kick-RMS
+// Muss zu FRAME_FLOATS in src-tauri/src/audio/analysis.rs passen
+export const FRAME_FLOATS = BAND_COUNT + 2 * WAVE_SIZE + 1;
 
 // Werte 0..1, sofern nicht anders angegeben
 export interface AudioFeatures {
@@ -41,7 +44,7 @@ export function createEmptyFeatures(): AudioFeatures {
   };
 }
 
-export type AudioSourceKind = 'demo' | 'file' | 'mic' | 'display';
+export type AudioSourceKind = 'demo' | 'file' | 'mic' | 'display' | 'remote';
 
 export const MIN_FREQ = 30;
 export const MAX_FREQ = 16000;

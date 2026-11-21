@@ -112,6 +112,35 @@ pnpm tauri build
 
 The installers end up in `src-tauri/target/release/bundle/` (`nsis/*.exe` and `msi/*.msi`). Prebuilt installers are available under [Releases](https://github.com/byGamsa/pulse-audio-visualizer/releases).
 
+### Embedding
+
+Another website can run Pulse as a background that reacts to its own music. The page keeps playing the audio, `embed.js` analyses it and sends the frames to Pulse in an iframe.
+
+```html
+<iframe id="pulse" src="https://bygamsa.github.io/pulse-audio-visualizer/?embed&mode=halo&quality=medium"
+        style="position:fixed;inset:0;width:100%;height:100%;border:0;z-index:-1;pointer-events:none"></iframe>
+<audio id="music" src="/music.mp3" loop></audio>
+<script src="https://bygamsa.github.io/pulse-audio-visualizer/embed.js"></script>
+<script>
+  const pulse = Pulse.connect('#music', '#pulse');
+  // pulse.setMode('aurora'); pulse.setPalette('sunset'); pulse.disconnect();
+</script>
+```
+
+| Parameter | Effect |
+|---|---|
+| `mode` | One fixed mode, e.g. `halo` |
+| `category` | Without `mode`: rotate through these categories, e.g. `ambient,organic` |
+| `duration` | Seconds per mode when rotating (default 120) |
+| `palette` | Palette id, e.g. `aurora`, `sunset`, `ice` |
+| `quality` | `low`, `medium` or `high` render resolution |
+| `sensitivity` | Input gain, 0.1 to 4 |
+
+- The audio file has to come from the same origin as the page or be served with CORS headers, otherwise Web Audio only hears silence.
+- Browsers start audio only after a click or key press. Until the music plays, Pulse idles.
+- `Pulse.connect` also accepts an `AudioNode` if the page already routes its audio through Web Audio.
+- The embed stores nothing. `examples/embed/` is a test page for the dev server (`/examples/embed/?src=<audio url>`).
+
 ## `/06/` Controls
 
 | Key | Action |
@@ -129,7 +158,8 @@ The installers end up in `src-tauri/target/release/bundle/` (`nsis/*.exe` and `m
 
 ```
 src/
-  audio/      Audio sources (Web Audio, native) and FeatureBus
+  audio/      Audio sources (Web Audio, native, embed) and FeatureBus
+  embed/      Embed mode and embed.js for host pages
   engine/     Render loop, transitions, palettes, mode registry
     field/    Shared audio field, lines and dot grids
     text/     Glyph atlas and text grid for the retro modes

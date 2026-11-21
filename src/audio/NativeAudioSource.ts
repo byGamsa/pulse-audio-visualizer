@@ -1,8 +1,5 @@
 import { Channel, invoke, isTauri } from '@tauri-apps/api/core';
-import { BAND_COUNT, WAVE_SIZE, type AudioSource, type AudioSourceKind } from './types';
-
-// Muss zu FRAME_FLOATS in src-tauri/src/audio/analysis.rs passen
-const FRAME_FLOATS = BAND_COUNT + 2 * WAVE_SIZE + 1;
+import { BAND_COUNT, FRAME_FLOATS, WAVE_SIZE, type AudioSource, type AudioSourceKind } from './types';
 
 export interface NativeDevice {
   name: string;

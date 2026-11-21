@@ -12,7 +12,7 @@ export function getAudioContext(): AudioContext {
 const LOW_HIGH_SPLIT = 300;
 
 // Große FFT für Bässe, kleine für Mitten und Höhen, Tiefpass für Kicks
-class AnalysisGraph {
+export class AnalysisGraph {
   private readonly low: AnalyserNode;
   private readonly high: AnalyserNode;
   private readonly left: AnalyserNode;

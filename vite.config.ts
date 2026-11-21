@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defineConfig, type Plugin } from 'vite';
+import { build, defineConfig, type Plugin, type Rollup } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import pkg from './package.json' with { type: 'json' };
@@ -65,9 +65,47 @@ function devModePackages(): Plugin {
   };
 }
 
+// Baut src/embed/host.ts als eigenständiges embed.js für Gastseiten einer Einbettung
+function embedScript(): Plugin {
+  const entry = fileURLToPath(new URL('./src/embed/host.ts', import.meta.url));
+  const bundle = (write: boolean, outDir?: string) =>
+    build({
+      configFile: false,
+      logLevel: 'warn',
+      publicDir: false,
+      build: {
+        write,
+        outDir,
+        emptyOutDir: false,
+        target: 'es2020',
+        lib: { entry, name: 'Pulse', formats: ['iife'], fileName: () => 'embed.js' },
+      },
+    });
+  let outDir = '';
+  return {
+    name: 'pulse-embed-script',
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir);
+    },
+    configureServer(server) {
+      server.middlewares.use('/embed.js', (_req, res) => {
+        void bundle(false).then((result) => {
+          const output = (Array.isArray(result) ? result[0] : result) as Rollup.RollupOutput;
+          res.setHeader('Content-Type', 'text/javascript');
+          res.setHeader('Cache-Control', 'no-store');
+          res.end(output.output[0].code);
+        });
+      });
+    },
+    async closeBundle() {
+      if (outDir) await bundle(true, outDir);
+    },
+  };
+}
+
 // Tauri braucht einen festen Port
 export default defineConfig({
-  plugins: [react(), tailwindcss(), thumbnailSink(), devModePackages()],
+  plugins: [react(), tailwindcss(), thumbnailSink(), devModePackages(), embedScript()],
   clearScreen: false,
   server: { port: 1420, strictPort: true },
   envPrefix: ['VITE_', 'TAURI_'],
